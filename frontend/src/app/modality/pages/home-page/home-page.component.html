@@ -1,13 +1,13 @@
 <div class="p-6">
-  <div class="flex flex-col md:flex-row md:justify-between items-center md:gap-4">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
     <div>
-      <h2 class="text-base font-medium">Lista de Modalidades</h2>
-      <p class="text-sm text-gray-500">Administra las modalidades de posgrado del sistema</p>
+      <p class="font-medium text-base">Lista de Modalidades</p>
+      <p class="text-sm text-gray-500">Administra las modalidades de posgrado</p>
     </div>
     <button
-      (click)="openModal()"
       type="button"
-      class="w-full md:w-fit mt-4 md:mt-0 flex items-center justify-center gap-2 font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+      (click)="openModal()"
+      class="w-full md:w-fit bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium transition-colors hover:bg-emerald-700"
     >
       <shared-icon icon="add" classList="w-4 h-4" />
       <span class="text-sm">Agregar</span>
