@@ -1,0 +1,65 @@
+<form class="flex flex-col gap-4" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium" for="email">Correo electrónico</label>
+
+    <div>
+      <div class="relative">
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4">
+          <shared-icon classList="w-4 h-4 text-gray-500" icon="email" />
+        </div>
+        <input
+          placeholder="tucorreo@correo.com"
+          class="pl-10"
+          type="text"
+          formControlName="email"
+          id="email"
+        />
+      </div>
+      @if (formUtil.isValidField(myForm, 'email')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'email') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <div class="flex justify-between items-center">
+      <label class="text-sm font-medium" for="password">Contraseña</label>
+      <a
+        class="text-sm text-emerald-600 hover:text-emerald-700 hover:underline cursor-pointer"
+        href="#"
+        >¿Olvidaste tu contraseña?</a
+      >
+    </div>
+
+    <div>
+      <div class="relative">
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4">
+          <shared-icon classList="w-4 h-4 text-gray-500" icon="password" />
+        </div>
+        <input
+          placeholder="*********"
+          class="pl-10"
+          type="password"
+          formControlName="password"
+          id="password"
+        />
+      </div>
+
+      @if (formUtil.isValidField(myForm, 'password')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'password') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium">
+    @if (isLoading()) {
+    <shared-loading classList="w-5 h-5 border-3" />
+    }@else {
+    <span class="h-5">Iniciar sesión</span>
+    }
+  </button>
+</form>

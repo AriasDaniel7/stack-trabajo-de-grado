@@ -1,0 +1,30 @@
+<div class="grid xl:grid-cols-2 gap-4">
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Total Docentes</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ docentResponse()?.count || 0 }}
+      </p>
+    </div>
+    <div class="bg-emerald-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="student" classList="text-emerald-600 h-6 w-6" />
+    </div>
+  </div>
+
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Nuevos Registros</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ lastDays() }}
+      </p>
+      <p class="text-xs text-gray-500">Últimos 30 días</p>
+    </div>
+    <div class="bg-amber-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="add" classList="text-amber-600 h-6 w-6" />
+    </div>
+  </div>
+</div>

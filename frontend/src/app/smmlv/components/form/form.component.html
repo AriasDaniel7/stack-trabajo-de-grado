@@ -1,0 +1,48 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-1 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="year">Año:</label>
+      <select formControlName="year" id="year">
+        <option selected [value]="null">Seleccion año</option>
+        @for (year of years(); track $index) {
+        <option [value]="year">{{ year }}</option>
+        }
+      </select>
+      @if (formUtil.isValidField(myForm, 'year')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'year') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="value">Valor:</label>
+      <input
+        appNumberFormat
+        [maxIntegerDigits]="10"
+        [maxDecimalDigits]="0"
+        formControlName="value"
+        type="text"
+      />
+      @if (formUtil.isValidField(myForm, 'value')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'value') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-emerald-500 flex justify-center items-center gap-2 hover:bg-emerald-600 text-white font-medium mt-4"
+    >
+      <shared-icon icon="save" classList="w-4 h-4 text-white" />
+      @if(smmlvInfo()){
+      <span>Actualizar</span>
+      }@else {
+      <span>Crear</span>
+      }
+    </button>
+  </div>
+</form>

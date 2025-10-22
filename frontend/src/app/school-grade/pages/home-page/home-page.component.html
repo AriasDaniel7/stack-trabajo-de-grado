@@ -1,0 +1,50 @@
+<div class="p-6">
+  <school-grade-info [schoolGradeResponse]="schoolGQuery.data()" />
+</div>
+
+<div class="px-6">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <div>
+      <p class="font-medium text-base">Listado de Niveles Académicos</p>
+      <p class="text-sm text-gray-500">Gestiona los niveles educativos del sistema</p>
+    </div>
+    <button
+      type="button"
+      (click)="openModal()"
+      class="w-full md:w-fit bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium transition-colors hover:bg-emerald-700"
+    >
+      <shared-icon icon="add" classList="w-4 h-4" />
+      <span class="text-sm">Agregar</span>
+    </button>
+  </div>
+</div>
+
+<div class="p-6">
+  @if (schoolGQuery.isLoading()) {
+  <div class="w-full h-[442px] flex justify-center items-center">
+    <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
+  </div>
+  }@else if (schoolGQuery.isSuccess()) {
+  <school-grade-table
+    (onDelete)="onDelete($event)"
+    (onEdit)="openModal($event)"
+    [schoolGrades]="schoolGQuery.data().data"
+  />
+
+  <div class="mt-4">
+    <shared-pagination [currentPage]="currentPage()" [pages]="schoolGQuery.data().pages" />
+  </div>
+  }
+</div>
+
+@if (isOpenModal()) {
+<shared-modal>
+  <school-grade-form [schoolGradeInfo]="schoolGradeInfo()" />
+</shared-modal>
+}
+
+<!--  -->
+
+@if (isOpenModalConfirmation()) {
+<shared-modal-confirmation />
+}

@@ -1,0 +1,22 @@
+@if (isOpen()) {
+<div class="w-full h-full fixed top-0 left-0 bg-black/50 flex justify-center items-center z-50">
+  <div
+    [class.animate-fade-in]="isOpen() && !isClosing()"
+    [class.animate-fade-out]="isClosing()"
+    class="bg-white m-6 p-6 rounded-md w-full md:w-xl shadow-xs overflow-y-auto max-h-[calc(100vh-3rem)]"
+  >
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="font-semibold text-lg">{{ options()?.title || 'Titulo Modal' }}</h2>
+        <p class="text-sm text-gray-500">{{ options()?.subTitle || 'Subtitulo Modal' }}</p>
+      </div>
+      <button (click)="close()" type="button" class="border border-gray-300 hover:bg-gray-100 p-2">
+        <shared-icon icon="close" classList="w-4 h-4 text-gray-700" />
+      </button>
+    </div>
+    <div class="mt-2">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+}

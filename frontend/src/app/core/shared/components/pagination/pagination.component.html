@@ -1,0 +1,20 @@
+<div class="flex justify-center items-center gap-4">
+  <button
+    [routerLink]="[]"
+    [queryParams]="{ page: activePage() - 1 }"
+    (click)="previous()"
+    [disabled]="activePage() === 1 || pages() === 0"
+    class="px-2 py-1 border border-gray-300 hover:bg-gray-100 text-sm disabled:border-gray-200 disabled:text-gray-300 disabled:cursor-not-allowed disabled:hover:bg-transparent shadow-xs"
+  >
+    Anterior
+  </button>
+  <button
+    [routerLink]="[]"
+    [queryParams]="{ page: activePage() + 1 }"
+    (click)="next()"
+    [disabled]="pages() === 0 || activePage() === pages()"
+    class="px-2 py-1 border border-gray-300 hover:bg-gray-100 text-sm disabled:border-gray-200 disabled:text-gray-300 disabled:cursor-not-allowed disabled:hover:bg-transparent shadow-xs"
+  >
+    Siguiente
+  </button>
+</div>

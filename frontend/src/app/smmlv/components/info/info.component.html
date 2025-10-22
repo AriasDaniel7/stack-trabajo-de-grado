@@ -1,0 +1,44 @@
+<div class="grid xl:grid-cols-3 gap-4">
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">SMMLV Actual</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ currentData()?.value || 0 | currency : 'COP' : 'symbol' : '1.0-0' }}
+      </p>
+      <p class="text-xs text-emerald-600">Año: {{ currentData()?.year || 'NaN' }}</p>
+    </div>
+    <div class="bg-emerald-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="economic" classList="text-emerald-600 h-6 w-6" />
+    </div>
+  </div>
+  <!--  -->
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Total Registros</p>
+      <p class="text-2xl font-bold text-gray-900">{{ smmlvResponse()?.count || 0 }}</p>
+      <p class="text-xs text-blue-600">Años configurados</p>
+    </div>
+    <div class="bg-blue-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="report" classList="text-blue-600 h-6 w-6" />
+    </div>
+  </div>
+  <!--  -->
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Variación Anual</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ annualVariationPercent() ?? 0 | percent : '1.2-2' }}
+      </p>
+      <p class="text-xs text-purple-600">vs año anterior</p>
+    </div>
+    <div class="bg-purple-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="report" classList="text-purple-600 h-6 w-6" />
+    </div>
+  </div>
+</div>

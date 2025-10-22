@@ -1,0 +1,81 @@
+<div class="overflow-x-auto">
+  <table
+    class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+  >
+    <thead>
+      <tr class="h-10 bg-gray-100">
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Nombre
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Fecha de Creación
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Última Actualización
+        </th>
+        <th
+          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+        >
+          Acciones
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (faculty of faculties(); track faculty.id; let last = $last) {
+      <tr class="h-10 hover:bg-gray-50 border border-gray-300">
+        <td
+          [class.border-b]="!last"
+          class="px-2 text-left text-sm whitespace-nowrap border-gray-300"
+        >
+          Facultad De {{ faculty.name | titlecase }}
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 text-left text-sm whitespace-nowrap border-gray-300"
+        >
+          <span class="bg-gray-200 text-gray-950 font-medium text-xs px-2 py-1 rounded-full">
+            {{ faculty.createdAt | date : 'longDate' }}
+          </span>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 text-left text-sm whitespace-nowrap border-gray-300"
+        >
+          <span class="bg-gray-200 text-gray-950 font-medium text-xs px-2 py-1 rounded-full">
+            {{ faculty.updatedAt | date : 'longDate' }}
+          </span>
+        </td>
+
+        <td
+          [class.border-b]="!last"
+          class="px-2 text-right text-sm whitespace-nowrap border-gray-300"
+        >
+          <div class="flex justify-end items-center">
+            <button
+              (click)="onEdit.emit(faculty)"
+              class="p-2 transition-colors hover:bg-blue-100"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-blue-600" icon="edit" />
+            </button>
+
+            <button
+              (click)="onDelete.emit(faculty)"
+              class="p-2 transition-colors hover:bg-red-100"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-red-600" icon="delete" />
+            </button>
+          </div>
+        </td>
+      </tr>
+      }@empty {
+      <tr class="h-10">
+        <td colspan="4" class="px-2 text-center text-sm text-gray-500 whitespace-nowrap">
+          No hay datos disponibles
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

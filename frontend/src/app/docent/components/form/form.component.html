@@ -1,0 +1,117 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1 col-span-2">
+      <label class="text-sm font-semibold text-gray-800" for="name">Nombre Completo:</label>
+      <input type="text" formControlName="name" id="name" />
+      @if (formUtil.isValidField(myForm, 'name')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'name') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
+      <label class="text-sm font-semibold text-gray-800" for="nationality">Nacionalidad:</label>
+      <select formControlName="nationality" id="nationality">
+        <option [value]="null" selected disabled>Seleccionar nacionalidad</option>
+        @for (nationality of nationalities(); track nationality.value) {
+        <option [value]="nationality.value">{{ nationality.label }}</option>
+        }
+      </select>
+      @if (formUtil.isValidField(myForm, 'nationality')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'nationality') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
+      <label class="text-sm font-semibold text-gray-800" for="document_type"
+        >Tipo de Documento:</label
+      >
+      <select formControlName="document_type" id="document_type">
+        <option [value]="null" selected disabled>Seleccionar documento</option>
+        @for (document of typeDocuments(); track document.value) {
+        <option [value]="document.value">{{ document.label }}</option>
+        }
+      </select>
+      @if (formUtil.isValidField(myForm, 'document_type')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'document_type') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
+      <label class="text-sm font-semibold text-gray-800" for="document_number"
+        >Número de Documento:</label
+      >
+      <input
+        appNumberFormat
+        [maxDecimalDigits]="0"
+        [maxIntegerDigits]="10"
+        type="text"
+        formControlName="document_number"
+        id="document_number"
+      />
+      @if (formUtil.isValidField(myForm, 'document_number')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'document_number') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
+      <label class="text-sm font-semibold text-gray-800" for="phone">Teléfono:</label>
+      <input type="number" formControlName="phone" id="phone" />
+      @if (formUtil.isValidField(myForm, 'phone')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'phone') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2">
+      <label class="text-sm font-semibold text-gray-800" for="address">Dirección:</label>
+      <input type="text" formControlName="address" id="address" />
+      @if (formUtil.isValidField(myForm, 'address')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'address') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 col-span-2">
+      <label class="text-sm font-semibold text-gray-800" for="id_school_grade"
+        >Nivel Académico:</label
+      >
+      <select formControlName="id_school_grade" id="id_school_grade">
+        <option [value]="null" selected disabled>Seleccionar el nivel académico</option>
+        @for (schoolGrade of schoolGrades(); track schoolGrade.id) {
+        <option [value]="schoolGrade.id">
+          {{ schoolGrade.level }} - {{ schoolGrade.name | titlecase }}
+        </option>
+        }
+      </select>
+      @if (formUtil.isValidField(myForm, 'id_school_grade')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'id_school_grade') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-emerald-500 flex justify-center items-center gap-2 hover:bg-emerald-600 text-white font-medium mt-4"
+    >
+      <shared-icon icon="save" classList="w-4 h-4 text-white" />
+      @if(docentInfo()){
+      <span>Actualizar</span>
+      }@else {
+      <span>Crear</span>
+      }
+    </button>
+  </div>
+</form>

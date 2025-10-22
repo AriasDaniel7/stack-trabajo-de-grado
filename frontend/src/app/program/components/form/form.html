@@ -1,0 +1,126 @@
+<form [formGroup]="myForm">
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
+        >Nivel Educativo:</label
+      >
+      <select formControlName="idEducationalLevel" id="idEducationalLevel">
+        <option selected disabled [value]="null">Seleccionar Nivel Educativo</option>
+        @for (schoolG of schoolGQuery.data()?.data; track $index) {
+        <option [value]="schoolG.id">{{ schoolG.description | lowercase | titlecase }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="idMethodology">Metodologia:</label>
+      <select formControlName="idMethodology" id="idMethodology">
+        <option selected disabled [value]="null">Seleccionar Metodologia</option>
+        @for (methodology of methodologyQuery.data()?.data; track $index) {
+        <option [value]="methodology.id">
+          {{ methodology.description | lowercase | titlecase }}
+        </option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="idModality">Modalidad:</label>
+      <select formControlName="idModality" id="idModality">
+        <option selected disabled [value]="null">Seleccionar Modalidad</option>
+        @for (modality of modalityQuery.data()?.data; track $index) {
+        <option [value]="modality.id">
+          {{ modality.description | lowercase | titlecase }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="pt-6">
+    <div
+      class="flex flex-col xl:flex-row justify-center xl:justify-between xl:items-center items-start mb-4 gap-1"
+    >
+      <div>
+        <p class="text-sm font-medium">Seleccionar Programa: *</p>
+      </div>
+      <div class="w-full xl:w-fit">
+        <input
+          (input)="searchTerm.set(txtSearch.value)"
+          #txtSearch
+          type="text"
+          placeholder="Buscar programa por nombre..."
+          class="w-full xl:w-sm"
+        />
+      </div>
+    </div>
+
+    <program-table-existing
+      [programs]="programQuery.data()?.data"
+      [isLoading]="programQuery.isLoading()"
+      (onSelectProgram)="programSelected.set($event)"
+    />
+
+    <div class="mt-4">
+      @if(programQuery.isSuccess()){
+      <shared-pagination [currentPage]="currentPage()" [pages]="programQuery.data().pages" />
+      }
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <div class="p-2 border border-gray-200 shadow-xs rounded-md">
+      <p class="text-sm font-medium pb-1 text-center">Seleccionado:</p>
+      @if(programSelected()){
+      <div class="">
+        <div class="flex justify-center items-center gap-4">
+          <div class="bg-emerald-100 rounded-lg w-12 h-12 flex justify-center items-center">
+            <shared-icon icon="program" classList="w-6 h-6 text-emerald-600" />
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-2 xl:gap-6">
+            <div>
+              <p class="text-sm font-semibold">
+                Programa: <span class="font-normal">{{ programSelected()?.name | titlecase }}</span>
+              </p>
+              <p class="text-sm font-semibold">
+                Facultad:
+                <span class="font-normal">{{
+                  (programSelected()?.faculty | titlecase) || 'Sin Facultad'
+                }}</span>
+              </p>
+              <p class="text-sm font-semibold">
+                Creditos:
+                <span class="font-normal">{{ programSelected()?.credits || 0 }}</span>
+              </p>
+            </div>
+            <div>
+              <p class="text-sm font-semibold">
+                Nivel Educativo:
+                <span class="font-normal">{{
+                  programSelected()?.educationalLevel | titlecase
+                }}</span>
+              </p>
+              <p class="text-sm font-semibold">
+                Metodologia:
+                <span class="font-normal">{{ programSelected()?.methodology | titlecase }}</span>
+              </p>
+              <p class="text-sm font-semibold">
+                Modalidad:
+                <span class="font-normal">{{ programSelected()?.modality | titlecase }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      }@else {
+      <p class="text-center text-gray-500 text-sm">No se ha seleccionado un programa.</p>
+      }
+    </div>
+  </div>
+</form>
+
+<div class="p-2 border border-gray-200 shadow-xs rounded-md mt-4">
+  <p class="text-center font-medium">DEBUG:</p>
+  <pre>{{ myForm.value | json }}</pre>
+  <pre>{{ programSelected() | json }}</pre>
+</div>

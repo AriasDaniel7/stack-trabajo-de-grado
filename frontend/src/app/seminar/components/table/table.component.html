@@ -1,0 +1,164 @@
+<div class="overflow-x-auto">
+  <table
+    class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+  >
+    <thead>
+      <tr class="h-10 bg-gray-100">
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Seminario
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Docente
+        </th>
+        <th
+          class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+        >
+          Créditos
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Fechas
+        </th>
+        <th
+          class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+        >
+          Vinculación
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Tipo de Pago
+        </th>
+        <th
+          class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+        >
+          Estado
+        </th>
+        <th
+          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+        >
+          Acciones
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (seminar of seminaries(); track seminar.id; let last = $last) {
+      <tr class="h-10 hover:bg-gray-50">
+        <td [class.border-b]="!last" class="px-2 py-4 text-left whitespace-nowrap border-gray-300">
+          <div class="flex flex-col justify-center items-start">
+            <p class="text-sm font-medium">{{ seminar.name | titlecase }}</p>
+            <span class="text-xs text-gray-500"
+              >Creado: {{ seminar.createdAt | date : 'medium' }}</span
+            >
+          </div>
+        </td>
+        <td [class.border-b]="!last" class="px-2 py-4 text-left whitespace-nowrap border-gray-300">
+          <div class="flex flex-col justify-center items-start">
+            <p class="text-sm font-medium">{{ seminar.seminarDocent.docent.name | titlecase }}</p>
+            <span class="text-xs text-gray-500 uppercase"
+              >{{ seminar.seminarDocent.docent.document_type }}:
+              {{ seminar.seminarDocent.docent.document_number | number }}</span
+            >
+            <span class="text-xs text-gray-500">{{
+              seminar.seminarDocent.schoolGrade.name | titlecase
+            }}</span>
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="flex flex-col justify-center items-center">
+            <span class="text-xs border border-gray-300 px-2 rounded-md font-medium">{{
+              seminar.credits
+            }}</span>
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="space-y-1">
+            @for (date of seminar.dates; track date.id) {
+            <div class="flex flex-row justify-start items-center gap-1">
+              <shared-icon icon="calendar" classList="w-3 h-3 text-gray-500" />
+              <span class="text-xs text-gray-500">{{ date.date | date : 'd MMM y' }}</span>
+            </div>
+            }
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="flex flex-col justify-center items-center">
+            <span
+              [class.text-amber-600]="seminar.seminarDocent.vinculation === 'EXTERNAL'"
+              [class.bg-amber-100]="seminar.seminarDocent.vinculation === 'EXTERNAL'"
+              [class.border-amber-300]="seminar.seminarDocent.vinculation === 'EXTERNAL'"
+              [class.text-purple-600]="seminar.seminarDocent.vinculation === 'INTERNAL'"
+              [class.bg-purple-100]="seminar.seminarDocent.vinculation === 'INTERNAL'"
+              [class.border-purple-300]="seminar.seminarDocent.vinculation === 'INTERNAL'"
+              class="text-xs border px-2 rounded-md font-medium"
+              >{{ seminar.seminarDocent.vinculation | i18nSelect : docentVinculationMapping }}</span
+            >
+          </div>
+        </td>
+
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="flex flex-col justify-center items-start">
+            <span class="text-xs text-gray-500">{{
+              seminar.payment_type | i18nSelect : paymentTypeMapping
+            }}</span>
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="flex flex-col justify-center items-center">
+            <span
+              [class.border-emerald-300]="seminar.is_active"
+              [class.bg-emerald-100]="seminar.is_active"
+              [class.text-emerald-600]="seminar.is_active"
+              [class.border-red-300]="!seminar.is_active"
+              [class.bg-red-100]="!seminar.is_active"
+              [class.text-red-600]="!seminar.is_active"
+              class="text-xs font-medium border px-2 rounded-md"
+              >{{ seminar.is_active ? 'Activo' : 'Inactivo' }}</span
+            >
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 text-right text-sm whitespace-nowrap border-gray-300"
+        >
+          <div class="flex justify-end items-center">
+            <button
+              (click)="onEdit.emit(seminar)"
+              class="p-2 transition-colors hover:bg-blue-100"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-blue-600" icon="edit" />
+            </button>
+
+            <button
+              (click)="onDelete.emit(seminar)"
+              class="p-2 transition-colors hover:bg-red-100"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-red-600" icon="delete" />
+            </button>
+          </div>
+        </td>
+      </tr>
+      }@empty {
+      <tr class="h-10">
+        <td colspan="7" class="px-2 text-center text-sm text-gray-500 whitespace-nowrap">
+          No hay datos disponibles
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

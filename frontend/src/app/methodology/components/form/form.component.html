@@ -1,0 +1,27 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-1 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="name">Nombre de la Metodología:</label>
+      <input id="name" type="text" formControlName="name" />
+      @if (formUtil.isValidField(myForm, 'name')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'name') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-emerald-500 flex justify-center items-center gap-2 hover:bg-emerald-600 text-white font-medium mt-4"
+    >
+      <shared-icon icon="save" classList="w-4 h-4 text-white" />
+      @if (methodologyInfo()) {
+      <span>Actualizar</span>
+      }@else {
+      <span>Crear</span>
+      }
+    </button>
+  </div>
+</form>

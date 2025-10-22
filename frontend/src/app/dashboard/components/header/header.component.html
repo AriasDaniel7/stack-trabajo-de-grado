@@ -1,0 +1,47 @@
+<header
+  class="border-b border-gray-300 shadow-xs fixed bg-white top-0 left-0 md:left-[20rem] right-0 z-40"
+>
+  <div class="px-6 py-4">
+    <div class="flex flex-col xl:flex-row justify-between w-full">
+      <!--  -->
+      <div class="flex justify-between items-center gap-4">
+        <div class="md:hidden">
+          <button
+            (click)="openMenu()"
+            type="button"
+            class="border border-gray-300 hover:bg-gray-100 p-2"
+          >
+            <shared-icon icon="menu" classList="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h2 class="text-base font-semibold text-gray-900">
+            {{ options().title ?? 'Default Title' }}
+          </h2>
+          <p class="text-xs text-gray-600 truncate overflow-hidden whitespace-nowrap">
+            {{ options().subTitle ?? 'Default SubTitle' }}
+          </p>
+        </div>
+      </div>
+      <!--  -->
+      @if (options().showSearch) {
+      <div class="flex items-center mt-4 xl:mt-0">
+        <div class="relative w-full xl:w-sm">
+          <div class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4">
+            <shared-icon icon="search" classList="w-4 h-4 text-gray-700" />
+          </div>
+          <input
+            #txtInput
+            id="search"
+            type="text"
+            [placeholder]="options().placeholder ?? 'Default Placeholder'"
+            class="pl-10"
+            (input)="setSearch(txtInput.value)"
+          />
+        </div>
+      </div>
+      }
+      <!--  -->
+    </div>
+  </div>
+</header>

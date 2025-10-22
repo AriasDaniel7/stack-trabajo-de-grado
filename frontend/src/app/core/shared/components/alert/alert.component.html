@@ -1,0 +1,26 @@
+@if (isOpen()) {
+<div
+  class="animate-slide-down px-4 py-2 shadow-sm fixed left-1/2 top-6 -translate-x-1/2 z-50 border rounded-lg"
+  [ngClass]="{
+    'border-emerald-300 bg-emerald-100': options()?.type === 'success',
+    'border-red-300 bg-red-100': options()?.type === 'error'
+  }"
+>
+  <div class="flex items-center gap-2">
+    <span>
+      @switch(options()?.type) {
+      <!--  -->
+      @case ('success') {
+      <shared-icon classList="w-4 h-4 text-emerald-600" icon="success" />
+      }
+      <!--  -->
+      @case ('error') {
+      <shared-icon classList="w-4 h-4 text-red-600" icon="error" />
+      }
+      <!--  -->
+      }
+    </span>
+    <p class="text-sm">{{ options()?.message }}</p>
+  </div>
+</div>
+}

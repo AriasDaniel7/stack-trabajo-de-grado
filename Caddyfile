@@ -1,0 +1,55 @@
+{
+    auto_https off
+}
+
+danielariaspruebas.site {
+    tls /etc/ssl/certs/origin.pem /etc/ssl/certs/origin-key.pem
+    encode gzip zstd
+    
+    handle {
+        reverse_proxy frontend:4000
+    }
+
+    header {
+        # Eliminar cabeceras que revelan información del servidor
+        -Server
+        # Políticas de seguridad básicas (HSTS será efectivo solo sobre HTTPS)
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Access-Control-Allow-Origin "https://danielariaspruebas.site"
+        # Access-Control-Allow-Credentials "true"
+    }
+
+    log {
+        output file /var/log/caddy/access-frontend.log
+        format json
+    }
+}
+
+api.danielariaspruebas.site {
+    tls /etc/ssl/certs/origin.pem /etc/ssl/certs/origin-key.pem
+    encode gzip zstd
+
+    handle {
+        reverse_proxy backend:3001
+    }
+
+    header {
+        # Eliminar cabeceras que revelan información del servidor
+        -Server
+        # Políticas de seguridad básicas (HSTS será efectivo solo sobre HTTPS)
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Access-Control-Allow-Origin "https://danielariaspruebas.site"
+        # Access-Control-Allow-Credentials "true"
+    }
+
+    log {
+        output file /var/log/caddy/access-backend.log
+        format json
+    }
+}

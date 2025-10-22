@@ -1,0 +1,48 @@
+<div class="grid xl:grid-cols-3 gap-4">
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Total de Programas</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ schoolGradeResponse()?.count || 0 }}
+      </p>
+      <p class="text-xs text-emerald-600">Registrados en el sistema</p>
+    </div>
+    <div class="bg-emerald-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="book-open" classList="text-emerald-600 h-6 w-6" />
+    </div>
+  </div>
+
+  <!--  -->
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Programas Activos</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ levelMin() }}
+      </p>
+      <p class="text-xs text-blue-600">Nivel inicial</p>
+    </div>
+    <div class="bg-blue-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="program" classList="text-blue-600 h-6 w-6" />
+    </div>
+  </div>
+
+  <!--  -->
+  <div
+    class="p-4 border border-gray-300 rounded-lg shadow-xs flex justify-between items-center gap-4"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-600">Facultades</p>
+      <p class="text-2xl font-bold text-gray-900">
+        {{ levelMax() }}
+      </p>
+      <p class="text-xs text-purple-600">Con programas activos</p>
+    </div>
+    <div class="bg-purple-100 rounded-lg flex justify-center items-center h-12 w-12">
+      <shared-icon icon="program" classList="text-purple-600 h-6 w-6" />
+    </div>
+  </div>
+</div>

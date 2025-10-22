@@ -1,0 +1,69 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-1 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="modality_id">Modalidad:</label>
+
+      <select formControlName="modality_id" id="modality_id">
+        <option [value]="null" disabled selected>Seleccionar</option>
+        @for (modality of modalityQuery.data()?.data; track modality.id) {
+        <option [value]="modality.id">{{ modality.name | titlecase }}</option>
+        }
+      </select>
+      @if (formUtil.isValidField(myForm, 'modality_id')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'modality_id') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="factor_smmlv">Tarifa (SMMLV):</label>
+      <input
+        id="factor_smmlv"
+        type="text"
+        formControlName="factor_smmlv"
+        appNumberFormat
+        [maxIntegerDigits]="4"
+        [maxDecimalDigits]="2"
+      />
+      @if (formUtil.isValidField(myForm, 'factor_smmlv')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'factor_smmlv') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-gray-800" for="credit_value_smmlv"
+        >Valor Crédito (SMMLV):</label
+      >
+      <input
+        id="credit_value_smmlv"
+        type="text"
+        formControlName="credit_value_smmlv"
+        appNumberFormat
+        [maxIntegerDigits]="4"
+        [maxDecimalDigits]="2"
+      />
+      @if (formUtil.isValidField(myForm, 'credit_value_smmlv')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'credit_value_smmlv') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-emerald-500 flex justify-center items-center gap-2 hover:bg-emerald-600 text-white font-medium mt-4"
+    >
+      <shared-icon icon="save" classList="w-4 h-4 text-white" />
+      @if (feeInfo()) {
+      <span>Actualizar</span>
+      }@else {
+      <span>Crear</span>
+      }
+    </button>
+  </div>
+</form>

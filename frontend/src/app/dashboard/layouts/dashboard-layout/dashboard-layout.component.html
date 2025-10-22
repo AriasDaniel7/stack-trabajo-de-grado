@@ -1,0 +1,23 @@
+@if(status() === 'authenticated'){
+<div
+  class="fixed h-screen border-r border-gray-300 w-xs transform overflow-hidden bg-white z-50 transition-transform duration-200"
+  [class.translate-x-0]="isMenuOpen()"
+  [class.-translate-x-full]="!isMenuOpen()"
+  [class.md:translate-x-0]="true"
+>
+  <dashboard-menu (onClick)="toggleMenu()" />
+</div>
+<main class="flex flex-col flex-1 ml-0 md:ml-[20rem] min-h-screen transition-discrete duration-200">
+  <div class="flex-1">
+    <dashboard-header (onMenu)="toggleMenu()" />
+    <div class="mt-[123px] xl:mt-[73px]">
+      <router-outlet />
+    </div>
+  </div>
+  <shared-footer />
+</main>
+}@else {
+<div class="flex items-center justify-center h-screen w-full">
+  <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
+</div>
+}

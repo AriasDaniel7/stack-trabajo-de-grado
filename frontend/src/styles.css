@@ -1,0 +1,55 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+
+@layer base {
+  input {
+    @apply w-full shadow-xs outline-none border border-gray-300 px-3 py-1 rounded-md text-base focus-visible:ring-[3px] focus-visible:ring-gray-400/50 focus-visible:border-gray-400 placeholder:text-gray-500 disabled:bg-gray-200;
+  }
+
+  select {
+    @apply w-full  shadow-xs outline-none border border-gray-300 px-2 py-1 rounded-md text-base focus-visible:ring-[3px] focus-visible:ring-gray-400/50 focus-visible:border-gray-400 placeholder:text-gray-500 disabled:bg-gray-200;
+  }
+
+  button {
+    @apply px-4 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap;
+  }
+}
+
+@theme {
+  --animate-slide-down: slideDownFromTop 0.3s ease-in-out forwards;
+  --animate-fade-in: fadeIn 0.2s ease-in-out forwards;
+  --animate-fade-out: fadeOut 0.2s ease-in-out forwards;
+
+  @keyframes slideDownFromTop {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      scale: 0.95;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      scale: 1;
+      opacity: 1;
+    }
+    to {
+      scale: 0.95;
+      opacity: 0;
+    }
+  }
+}

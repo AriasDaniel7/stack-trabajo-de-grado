@@ -1,0 +1,58 @@
+<div class="relative w-full">
+  <input
+    #txtSearch
+    (blur)="onInputBlur()"
+    (input)="onSearchInput()"
+    (focus)="onInputFocus()"
+    type="text"
+    [placeholder]="placeholder()"
+    autocomplete="off"
+  />
+
+  @if(searchTerm()){
+  <button
+    (click)="clearInput()"
+    type="button"
+    class="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1/2 p-0 border bg-white border-gray-300 text-gray-500 rounded hover:bg-red-100 hover:border-red-200 hover:text-red-500"
+  >
+    <shared-icon icon="close" classList="w-4 h-4 " />
+  </button>
+  }
+  <!--  -->
+  @if (selectValid()) {
+  <div
+    class="absolute w-4 h-4 right-8 top-1/2 p-2 -translate-y-1/2 text-xs text-green-500 bg-white border border-gray-300 rounded flex items-center justify-center"
+  >
+    <span class="text-xs">✓</span>
+  </div>
+  }
+  <!--  -->
+  @if (showDropdown()) {
+  <div
+    class="absolute top-full left-0 right-0 z-10 bg-white border border-gray-300 mt-0 rounded-md shadow-xs max-h-[8rem] overflow-y-auto"
+  >
+    @if(isLoading()){
+    <div class="px-3 py-2">
+      <shared-loading classList="border-2 border-gray-500 w-5 h-5" />
+    </div>
+    }
+    <!--  -->
+    @if(items()){
+    <!--  -->
+    @for (item of items(); track $index) {
+    <div
+      (click)="selectItem(item)"
+      class="px-3 py-2 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
+    >
+      <span class="text-sm font-medium text-gray-800">
+        {{ displayWith()(item) }}
+      </span>
+    </div>
+    }@empty {
+    <div class="px-3 py-2 font-medium text-gray-800 text-sm">No se encontraron coincidencias</div>
+    }
+    <!--  -->
+    }
+  </div>
+  }
+</div>

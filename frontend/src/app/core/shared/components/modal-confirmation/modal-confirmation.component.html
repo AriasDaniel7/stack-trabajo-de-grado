@@ -1,0 +1,42 @@
+@if (isOpen()) {
+
+<div class="w-full h-full fixed top-0 left-0 bg-black/50 flex justify-center items-center z-50">
+  <div
+    [class.animate-fade-in]="isOpen() && !isClosing()"
+    [class.animate-fade-out]="isClosing()"
+    class="bg-white m-6 p-6 rounded-md w-full md:w-xl shadow-xs"
+  >
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="font-semibold text-lg">{{ options()?.title || 'Titulo Modal' }}</h2>
+      </div>
+      <button (click)="cancel()" type="button" class="border border-gray-300 hover:bg-gray-100 p-2">
+        <shared-icon icon="close" classList="w-4 h-4 text-gray-700" />
+      </button>
+    </div>
+    <div class="mt-2">
+      <p class="text-sm text-gray-500">{{ options()?.message || 'Mensaje Modal' }}</p>
+    </div>
+    <div class="mt-4">
+      <div class="flex justify-end gap-4">
+        <button
+          type="button"
+          (click)="cancel()"
+          class="text-sm flex justify-center items-center gap-2 border border-gray-300 hover:bg-gray-100 px-3 py-2 shadow-xs font-medium"
+        >
+          <shared-icon classList="w-4 h-4" icon="close" />
+          <span>{{ options()?.cancelText || 'Cancelar' }}</span>
+        </button>
+        <button
+          type="button"
+          (click)="confirm()"
+          class="text-sm flex justify-center items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 font-medium"
+        >
+          <shared-icon classList="w-4 h-4" icon="success" />
+          <span>{{ options()?.confirmText || 'Confirmar' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

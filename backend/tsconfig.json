@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@database/*": ["src/database/*"],
+      "@user/*": ["src/user/*"],
+      "@auth/*": ["src/auth/*"],
+      "@shared/*": ["src/core/shared/*"],
+      "@school-grade/*": ["src/school-grade/*"],
+      "@docent/*": ["src/docent/*"],
+      "@smmlv/*": ["src/smmlv/*"],
+      "@fee/*": ["src/fee/*"],
+      "@modality/*": ["src/modality/*"]
+    },
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  }
+}
