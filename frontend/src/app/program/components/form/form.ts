@@ -1,41 +1,31 @@
-import { JsonPipe, LowerCasePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   effect,
-  ElementRef,
   inject,
   OnInit,
   signal,
   untracked,
-  viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FormUtil } from '@core/utils/form';
 import { MethodologyService } from '@methodology/services/methodology.service';
 import { ModalityService } from '@modality/services/modality.service';
 import { SchoolGradeService } from '@school-grade/services/school-grade.service';
-import { tap } from 'rxjs';
-import { TableExisting } from '../table-existing/table-existing';
 import { ProgramService } from '@program/services/program.service';
-import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
 import { PaginationService } from '@core/shared/components/pagination/pagination.service';
 import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs';
+import { TableExisting } from '../table-existing/table-existing';
+import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
 import { ProgramExisting } from '@core/interfaces/program';
 import { IconComponent } from "@core/shared/components/icon/icon.component";
 
 @Component({
   selector: 'program-form',
-  imports: [
-    ReactiveFormsModule,
-    LowerCasePipe,
-    TitleCasePipe,
-    JsonPipe,
-    TableExisting,
-    PaginationComponent,
-    IconComponent
-],
+  imports: [ReactiveFormsModule, TitleCasePipe, TableExisting, PaginationComponent, IconComponent],
   templateUrl: './form.html',
   styleUrl: './form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,14 +39,14 @@ export class Form implements OnInit {
   private programService = inject(ProgramService);
   private paginationService = inject(PaginationService);
 
-  programSelected = signal<ProgramExisting | null>(null);
-  searchTerm = signal('');
-
   schoolGQuery = this.schoolGradeService.schoolGExistingQuery;
   methodologyQuery = this.methodologyService.methodologyExistingQuery;
   modalityQuery = this.modalityService.modalityExistingQuery;
   programQuery = this.programService.programExistingQuery;
   currentPage = this.paginationService.currentPage;
+
+  searchTerm = signal('');
+  programSelected = signal<ProgramExisting | null>(null);
 
   formUtil = FormUtil;
 
@@ -66,24 +56,12 @@ export class Form implements OnInit {
     idModality: [null],
   });
 
-  onEducationalLevelChange = toSignal(
-    this.myForm.controls.idEducationalLevel.valueChanges.pipe(
-      tap(() => {
-        this.myForm.controls.idModality.setValue(null);
-      })
-    )
-  );
-
-  onMethodologyChange = toSignal(this.myForm.controls.idMethodology.valueChanges);
-  onModalityChange = toSignal(this.myForm.controls.idModality.valueChanges);
-
   onFormChanges = effect(() => {
-    const idEducationalLevel = this.onEducationalLevelChange();
-    const idMethodology = this.onMethodologyChange();
-    const idModality = this.onModalityChange();
+    const idEducationalLevel = this.idEducationalLevel();
+    const idMethodology = this.idMethodology();
+    const idModality = this.idModality();
     const page = this.currentPage();
-    const limit = 10;
-    const expectedOffset = (page - 1) * limit;
+    const expectedOffset = (page - 1) * 10;
 
     if (idEducationalLevel) {
       untracked(() => {
@@ -96,12 +74,12 @@ export class Form implements OnInit {
     }
 
     this.programService.setPaginationExisting({
-      limit,
+      limit: 10,
       offset: expectedOffset,
-      idEducationalLevel: idEducationalLevel ? idEducationalLevel : undefined,
-      idMethodology: idMethodology ? idMethodology : undefined,
-      idModality: idModality ? idModality : undefined,
-      filter: this.searchTerm(),
+      idEducationalLevel: idEducationalLevel || undefined,
+      idMethodology: idMethodology || undefined,
+      idModality: idModality || undefined,
+      filter: this.searchTerm() || undefined,
     });
 
     const data = this.programQuery.data();
@@ -123,19 +101,30 @@ export class Form implements OnInit {
     }
   });
 
+  idEducationalLevel = toSignal(
+    this.myForm.controls.idEducationalLevel.valueChanges.pipe(
+      tap(() => {
+        this.myForm.controls.idModality.setValue(null);
+      })
+    )
+  );
+
+  idMethodology = toSignal(this.myForm.controls.idMethodology.valueChanges);
+  idModality = toSignal(this.myForm.controls.idModality.valueChanges);
+
   ngOnInit(): void {
-    this.initSchoolGradesExisting();
-    this.initMethodologiesExisting();
+    this.initEducationalLevels();
+    this.initMethodologies();
   }
 
-  private initMethodologiesExisting() {
+  private initMethodologies() {
     this.methodologyService.setPagination({
       limit: 100,
       offset: 0,
     });
   }
 
-  private initSchoolGradesExisting() {
+  private initEducationalLevels() {
     this.schoolGradeService.setPagination2({
       limit: 100,
       offset: 0,

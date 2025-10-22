@@ -14,6 +14,7 @@ export interface ProgramResponse {
 
 export interface Content {
   id: number;
+  idUnidadPrograma: number;
   unidad: string;
   jornada: string;
   modalidad: string;
@@ -22,9 +23,7 @@ export interface Content {
   estado: string;
   nombre: string;
   codigo: string;
-  facultad: null | string;
-  creditos: string;
-  pensum: string;
+  facultad: string;
 }
 
 export interface Pageable {

@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'https://api.danielariaspruebas.site/api',
+  apiUrl: 'http://localhost:3000/api',
   production: false,
 };

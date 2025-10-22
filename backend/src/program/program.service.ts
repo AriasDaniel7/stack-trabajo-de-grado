@@ -58,7 +58,6 @@ export class ProgramService {
 
     queryParams.append('page', page.toString());
     queryParams.append('size', limit.toString());
-    queryParams.append('sort', `NOMBRE,${order}`);
 
     if (idEducationalLevel) {
       queryParams.append('idNivelEducativo', idEducationalLevel.toString());
@@ -74,7 +73,7 @@ export class ProgramService {
 
     queryParams.append('filter', filter);
 
-    const url = `${this.API_HOST}/programaCommon/buscarProgramaFacultaCredito${`?${queryParams.toString()}`}`;
+    const url = `${this.API_HOST}/programaCommon/busquedaPrograma${`?${queryParams.toString()}`}`;
 
     try {
       const response = await fetch(url, {
@@ -116,7 +115,6 @@ export class ProgramService {
     queryParams.append('idPrograma', id.toString());
     queryParams.append('page', page.toString());
     queryParams.append('size', limit.toString());
-    queryParams.append('sort', `PENS_DESCRIPCION,${order}`);
 
     const url = `${this.API_HOST}/pensum/buscarPensumPorPrograma?${queryParams.toString()}`;
 

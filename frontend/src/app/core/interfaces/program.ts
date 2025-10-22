@@ -6,6 +6,7 @@ export interface ProgramExistingResponse {
 
 export interface ProgramExisting {
   id: number;
+  idUnityProgram: string;
   unity: string;
   workday: string;
   modality: string;
@@ -15,6 +16,4 @@ export interface ProgramExisting {
   name: string;
   code: string;
   faculty: null | string;
-  credits: string;
-  pensum: string;
 }

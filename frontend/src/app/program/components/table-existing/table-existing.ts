@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model, output, signal } from '@angular/core';
 import { ProgramExisting } from '@core/interfaces/program';
 import { LoadingComponent } from '@core/shared/components/loading/loading.component';
 
@@ -13,11 +13,9 @@ import { LoadingComponent } from '@core/shared/components/loading/loading.compon
 export class TableExisting {
   programs = input<ProgramExisting[]>();
   isLoading = input<boolean>();
-  selectProgram = signal<ProgramExisting | null>(null);
-  onSelectProgram = output<ProgramExisting>();
+  selectProgram = model<ProgramExisting | null>(null);
 
   onSelect(program: ProgramExisting) {
     this.selectProgram.set(program);
-    this.onSelectProgram.emit(program);
   }
 }

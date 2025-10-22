@@ -20,7 +20,7 @@ export default class ProgramDetail implements OnInit {
 
   ngOnInit(): void {
     this.headerService.setOptions({
-      title: this.programId() === 'new' ? 'Crear Programa' : 'Detalle del Programa',
+      title: this.programId() === 'new' ? 'Registrar Programa' : 'Detalle del Programa',
       subTitle: 'Administrar la información del programa seleccionado',
       showSearch: false,
     });

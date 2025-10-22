@@ -11,30 +11,22 @@
           Facultad
         </th>
         <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
-          Pensum
+          Unidad
         </th>
-        <th
-          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-        >
-          Creditos
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Jornada
         </th>
-        <th
-          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-        >
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
           Nivel Educativo
         </th>
-        <th
-          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-        >
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
           Metodologia
         </th>
-        <th
-          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-        >
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
           Modalidad
         </th>
         <th
-          class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
         >
           Seleccionado
         </th>
@@ -50,8 +42,13 @@
       }@else {
       <!--  -->
       @for (program of programs(); track $index; let last = $last) {
-      <tr (click)="onSelect(program)" class="h-10 hover:bg-gray-50">
-        <td [class.border-b]="!last" class="p-2 text-left text-sm border-gray-300">
+      <tr
+        (click)="onSelect(program)"
+        class="h-10"
+        [class.hover:bg-gray-50]="selectProgram()?.idUnityProgram !== program.idUnityProgram"
+        [class.bg-gray-200]="selectProgram()?.idUnityProgram === program.idUnityProgram"
+      >
+        <td [class.border-b]="!last" class="p-2 text-left text-xs md:text-sm border-gray-300">
           {{ program.name | titlecase }}
         </td>
 
@@ -63,37 +60,40 @@
             {{ (program.faculty | titlecase) || 'Sin Facultad' }}
           </span>
         </td>
-
-        <td [class.border-b]="!last" class="p-2 text-left text-sm border-gray-300">
-          {{ program.pensum | titlecase }}
-        </td>
-
         <td
           [class.border-b]="!last"
-          class="p-2 text-right text-sm whitespace-nowrap border-gray-300"
+          class="p-2 text-left text-xs md:text-sm whitespace-nowrap border-gray-300"
         >
-          {{ program.credits || 0 }}
+          {{ program.unity | titlecase }}
         </td>
         <td
           [class.border-b]="!last"
-          class="p-2 text-right text-sm whitespace-nowrap border-gray-300"
+          class="p-2 text-left text-xs md:text-sm whitespace-nowrap border-gray-300"
+        >
+          <span class="text-xs px-2 py-1 border border-gray-200 rounded-full font-semibold">
+            {{ program.workday | titlecase }}
+          </span>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="p-2 text-left text-xs md:text-sm whitespace-nowrap border-gray-300"
         >
           {{ program.educationalLevel | titlecase }}
         </td>
         <td
           [class.border-b]="!last"
-          class="p-2 text-right text-sm whitespace-nowrap border-gray-300"
+          class="p-2 text-left text-xs md:text-sm whitespace-nowrap border-gray-300"
         >
           {{ program.methodology | titlecase }}
         </td>
         <td
           [class.border-b]="!last"
-          class="p-2 text-right text-sm whitespace-nowrap border-gray-300"
+          class="p-2 text-left text-xs md:text-sm whitespace-nowrap border-gray-300"
         >
           {{ program.modality | titlecase }}
         </td>
         <td [class.border-b]="!last" class="p-2 border-gray-300">
-          @if(selectProgram()?.id === program.id){
+          @if(selectProgram()?.idUnityProgram === program.idUnityProgram){
           <div class="flex justify-center items-center">
             <div
               class="flex justify-center items-center w-4 h-4 text-xs text-green-500 bg-white border border-gray-300 rounded"
