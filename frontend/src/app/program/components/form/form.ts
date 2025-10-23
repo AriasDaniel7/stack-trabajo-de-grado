@@ -21,11 +21,22 @@ import { tap } from 'rxjs';
 import { TableExisting } from '../table-existing/table-existing';
 import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
 import { ProgramExisting } from '@core/interfaces/program';
-import { IconComponent } from "@core/shared/components/icon/icon.component";
+import { IconComponent } from '@core/shared/components/icon/icon.component';
+import { LoadingComponent } from '@core/shared/components/loading/loading.component';
+import { PensumList } from '../pensum-list/pensum-list';
+import { Pensum } from '@core/interfaces/pensum';
 
 @Component({
   selector: 'program-form',
-  imports: [ReactiveFormsModule, TitleCasePipe, TableExisting, PaginationComponent, IconComponent],
+  imports: [
+    ReactiveFormsModule,
+    TitleCasePipe,
+    TableExisting,
+    PaginationComponent,
+    IconComponent,
+    LoadingComponent,
+    PensumList,
+  ],
   templateUrl: './form.html',
   styleUrl: './form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,9 +55,11 @@ export class Form implements OnInit {
   modalityQuery = this.modalityService.modalityExistingQuery;
   programQuery = this.programService.programExistingQuery;
   currentPage = this.paginationService.currentPage;
+  pensumQuery = this.programService.pensumQuery;
 
   searchTerm = signal('');
   programSelected = signal<ProgramExisting | null>(null);
+  pensumSelected = signal<Pensum | null>(null);
 
   formUtil = FormUtil;
 
@@ -73,7 +86,7 @@ export class Form implements OnInit {
       });
     }
 
-    this.programService.setPaginationExisting({
+    this.programService.setPaginationProgramExisting({
       limit: 10,
       offset: expectedOffset,
       idEducationalLevel: idEducationalLevel || undefined,
@@ -98,6 +111,24 @@ export class Form implements OnInit {
           });
         }
       }
+    }
+  });
+
+  onSelectProgram = effect(() => {
+    const program = this.programSelected();
+
+    if (program) {
+      untracked(() => {
+        this.programService.setPaginationPensumByProgramId({
+          idProgram: program.id,
+          limit: 100,
+          offset: 0,
+        });
+      });
+    }
+
+    if (program === null) {
+      this.programService.setPaginationPensumByProgramId();
     }
   });
 
@@ -129,5 +160,10 @@ export class Form implements OnInit {
       limit: 100,
       offset: 0,
     });
+  }
+
+  deleteSelection() {
+    this.programSelected.set(null);
+    this.pensumSelected.set(null);
   }
 }

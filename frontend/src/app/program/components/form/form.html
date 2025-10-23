@@ -1,5 +1,7 @@
 <form [formGroup]="myForm">
-  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+  <div
+    class="grid grid-cols-1 xl:grid-cols-3 gap-4 border border-gray-200 p-4 rounded-md shadow-xs"
+  >
     <div class="col-span-1 xl:col-span-3 text-center">
       <h2 class="text-sm text-center font-medium">Filtros de busqueda:</h2>
     </div>
@@ -69,7 +71,7 @@
         <h2 class="text-sm font-medium mb-2 xl:mb-0">Programa Seleccionado:</h2>
         <button
           type="button"
-          (click)="programSelected.set(null)"
+          (click)="deleteSelection()"
           class="border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full xl:w-fit"
         >
           Quitar Seleccionado
@@ -85,7 +87,10 @@
             Programa: <span class="font-normal">{{ programSelected()?.name | titlecase }}</span>
           </p>
           <p class="text-sm font-semibold">
-            Facultad: <span class="font-normal">{{ programSelected()?.faculty | titlecase }}</span>
+            Facultad:
+            <span class="font-normal">{{
+              (programSelected()?.faculty | titlecase) || 'Sin Facultad'
+            }}</span>
           </p>
           <p class="text-sm font-semibold">
             Unidad: <span class="font-normal">{{ programSelected()?.unity | titlecase }}</span>
@@ -114,30 +119,32 @@
 
     <div class="border border-gray-200 shadow-xs p-4 rounded-md">
       <div class="mb-4">
-        <h2 class="text-sm font-medium text-center">Datos Basicos:</h2>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
-            >Cohorte:</label
+        <div class="mb-4 flex flex-col xl:flex-row justify-between items-center">
+          <h2 class="text-sm font-medium mb-2 xl:mb-0">Seleccionar Pensum:</h2>
+          <button
+            type="button"
+            (click)="pensumSelected.set(null)"
+            class="border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full xl:w-fit"
           >
-          <input type="text" />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
-            >Semestre:</label
-          >
-          <input type="text" />
-        </div>
-
-        <div class="flex flex-col gap-1 col-span-2">
-          <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
-            >CDP (Opcional):</label
-          >
-          <input type="text" />
+            Quitar Seleccionado
+          </button>
         </div>
       </div>
+
+      @if(pensumQuery.isLoading()){
+      <div class="w-full h-[140px] flex justify-center items-center">
+        <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
+      </div>
+      } @else if (pensumQuery.isSuccess()) {
+      <!--  -->
+      <program-pensum-list
+        [pensumList]="pensumQuery.data().data"
+        [(selectPensum)]="pensumSelected"
+      />
+      <!--  -->
+      }@else {
+      <div class="text-sm text-gray-500">No hay programa seleccionado</div>
+      }
     </div>
   </div>
 </form>

@@ -8,5 +8,6 @@ export const pensumMap = (pensum: Content) => {
     startPeriod: pensum.periodoInicio,
     status: pensum.estadoPensum,
     idStatus: pensum.idEstadoPensum,
+    credits: pensum.creditos,
   };
 };

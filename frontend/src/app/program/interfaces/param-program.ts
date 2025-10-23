@@ -6,3 +6,7 @@ export interface ParamProgramExisting extends PaginationOptions {
   idMethodology?: number;
   filter?: string;
 }
+
+export interface ParamProgramPensum extends PaginationOptions {
+  idProgram?: number;
+}

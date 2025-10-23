@@ -38,4 +38,5 @@ export const facultyKeys = {
 export const programKeys = {
   LIST_KEY: 'program-list',
   EXISTING_KEY: 'program-existing',
+  PENSUM_KEY: 'program-pensum',
 };
