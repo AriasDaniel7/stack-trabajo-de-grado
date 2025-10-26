@@ -1,6 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, model, output, signal } from '@angular/core';
-import { ProgramExisting } from '@core/interfaces/program';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { Program } from '@core/interfaces/program';
 import { LoadingComponent } from '@core/shared/components/loading/loading.component';
 
 @Component({
@@ -11,11 +11,11 @@ import { LoadingComponent } from '@core/shared/components/loading/loading.compon
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableExisting {
-  programs = input<ProgramExisting[]>();
+  programs = input<Program[]>();
   isLoading = input<boolean>();
-  selectProgram = model<ProgramExisting | null>(null);
+  selectProgram = model<Program | null>(null);
 
-  onSelect(program: ProgramExisting) {
+  onSelect(program: Program) {
     this.selectProgram.set(program);
   }
 }

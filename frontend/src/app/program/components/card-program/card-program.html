@@ -1,0 +1,45 @@
+<div class="flex justify-start items-start gap-4 border border-gray-200 p-4 rounded-md shadow-xs">
+  <div class="min-w-16 min-h-16 bg-emerald-100 rounded-lg flex justify-center items-center">
+    <shared-icon icon="program" classList="min-w-8 min-h-8 text-emerald-600" />
+  </div>
+  @if(program()){
+  <div>
+    <p class="text-sm font-semibold">
+      id: <span class="font-normal">{{ program()?.id }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      idUnity: <span class="font-normal">{{ program()?.idUnityProgram }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      idProgramExternal: <span class="font-normal">{{ program()?.idProgramExternal }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Programa: <span class="font-normal">{{ program()?.name | titlecase }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Facultad:
+      <span class="font-normal">{{ (program()?.faculty | titlecase) || 'Sin Facultad' }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Unidad: <span class="font-normal">{{ program()?.unity | titlecase }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Jornada: <span class="font-normal">{{ program()?.workday | titlecase }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Nivel Educativo:
+      <span class="font-normal">{{ program()?.educationalLevel | titlecase }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Metodologia:
+      <span class="font-normal">{{ program()?.methodology | titlecase }}</span>
+    </p>
+    <p class="text-sm font-semibold">
+      Modalidad:
+      <span class="font-normal">{{ program()?.modality | titlecase }}</span>
+    </p>
+  </div>
+  }@else {
+  <div class="text-sm text-red-400">No hay programa seleccionado</div>
+  }
+</div>

@@ -1,7 +1,10 @@
 import { Methodology } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { NormalizedUtil } from '@utils/normalized';
+import { ProgramOfferingEntity } from './program-offering';
+import { ProgramPlacementEntity } from './program-placement';
 
 @Entity('methodologies')
 export class MethodologyEntity extends BaseEntity implements Methodology {
@@ -9,9 +12,12 @@ export class MethodologyEntity extends BaseEntity implements Methodology {
   @Column({ unique: true, type: 'varchar', length: 100 })
   name: string;
 
+  @OneToMany(() => ProgramPlacementEntity, (pp) => pp.methodology)
+  placements: ProgramPlacementEntity[];
+
   @BeforeInsert()
   beforeInsertActions() {
-    this.name = this.name.toLowerCase().trim();
+    this.name = NormalizedUtil.normalizeNameWithoutTilde(this.name);
   }
 
   @BeforeUpdate()

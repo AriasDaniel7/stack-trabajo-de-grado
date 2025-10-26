@@ -1,22 +1,3 @@
-export interface ProgramResponse {
-  count: number;
-  pages: number;
-  data: Program[];
-}
-
-export interface Program {
-  id: number | string;
-  idUnityProgram: number | string;
-  unity: string;
-  workday: string;
-  modality: string;
-  methodology: string;
-  educationalLevel: string;
-  name: string;
-  faculty: string | null;
-  idProgramExternal?: number;
-}
-
 export interface ProgramCreate {
   idProgramExternal?: number;
   name: string;

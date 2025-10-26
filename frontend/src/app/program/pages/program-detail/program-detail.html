@@ -1,3 +1,15 @@
-<div class="p-6">
-  <program-form />
+@if(isLoading()){
+<div class="flex items-center justify-center h-[calc(100vh-126px)] w-full">
+  <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
 </div>
+}@else {
+
+<div class="p-6">
+  <program-form
+    [educationLevels]="educationLevels()"
+    [educationLevelPostgrado]="educationLevelPostgrado()"
+    [smmlvs]="smmlvs()"
+    [fees]="fees()"
+  />
+</div>
+}

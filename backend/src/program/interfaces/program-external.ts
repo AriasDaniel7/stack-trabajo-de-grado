@@ -1,5 +1,5 @@
 export interface ProgramResponse {
-  content: Content[];
+  content: Program[];
   pageable: Pageable;
   last: boolean;
   totalPages: number;
@@ -12,7 +12,7 @@ export interface ProgramResponse {
   empty: boolean;
 }
 
-export interface Content {
+export interface Program {
   id: number;
   idUnidadPrograma: number;
   unidad: string;

@@ -1,5 +1,5 @@
 export interface PensumResponse {
-  content: Content[];
+  content: PensumExternal[];
   pageable: Pageable;
   last: boolean;
   totalPages: number;
@@ -12,7 +12,7 @@ export interface PensumResponse {
   empty: boolean;
 }
 
-export interface Content {
+export interface PensumExternal {
   estadoPensum: string;
   id: number;
   anoInicio: string;

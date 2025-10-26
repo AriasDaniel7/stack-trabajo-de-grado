@@ -1,49 +1,5 @@
-<form [formGroup]="myForm">
-  <div
-    class="grid grid-cols-1 xl:grid-cols-3 gap-4 border border-gray-200 p-4 rounded-md shadow-xs"
-  >
-    <div class="col-span-1 xl:col-span-3 text-center">
-      <h2 class="text-sm text-center font-medium">Filtros de busqueda:</h2>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
-        >Nivel Educativo:</label
-      >
-      <select formControlName="idEducationalLevel" id="idEducationalLevel">
-        <option selected disabled [value]="null">Seleccionar Nivel Educativo</option>
-        @for (schoolG of schoolGQuery.data()?.data; track $index) {
-        <option [value]="schoolG.id">{{ schoolG.description | titlecase }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-semibold text-gray-800" for="idMethodology">Metodologia:</label>
-      <select formControlName="idMethodology" id="idMethodology">
-        <option selected disabled [value]="null">Seleccionar Metodologia</option>
-        @for (methodology of methodologyQuery.data()?.data; track $index) {
-        <option [value]="methodology.id">
-          {{ methodology.description | titlecase }}
-        </option>
-        }
-      </select>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-semibold text-gray-800" for="idModality">Modalidad:</label>
-      <select formControlName="idModality" id="idModality">
-        <option selected disabled [value]="null">Seleccionar Modalidad</option>
-        @for (modality of modalityQuery.data()?.data; track $index) {
-        <option [value]="modality.id">
-          {{ modality.description | titlecase }}
-        </option>
-        }
-      </select>
-    </div>
-  </div>
-
-  <div class="pt-6">
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div class="">
     <h2 class="text-center text-sm font-medium mb-4">Buscar Programa:</h2>
     <div class="flex flex-col xl:flex-row justify-start items-start xl:items-center mb-4 gap-4">
       <label class="text-sm font-semibold text-nowrap" for="txtSearch">Nombre de Programa:</label>
@@ -77,44 +33,7 @@
           Quitar Seleccionado
         </button>
       </div>
-      <div class="flex justify-start items-start gap-4">
-        <div class="min-w-16 min-h-16 bg-emerald-100 rounded-lg flex justify-center items-center">
-          <shared-icon icon="program" classList="min-w-8 min-h-8 text-emerald-600" />
-        </div>
-        @if(programSelected()){
-        <div>
-          <p class="text-sm font-semibold">
-            Programa: <span class="font-normal">{{ programSelected()?.name | titlecase }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Facultad:
-            <span class="font-normal">{{
-              (programSelected()?.faculty | titlecase) || 'Sin Facultad'
-            }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Unidad: <span class="font-normal">{{ programSelected()?.unity | titlecase }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Jornada: <span class="font-normal">{{ programSelected()?.workday | titlecase }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Nivel Educativo:
-            <span class="font-normal">{{ programSelected()?.educationalLevel | titlecase }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Metodologia:
-            <span class="font-normal">{{ programSelected()?.methodology | titlecase }}</span>
-          </p>
-          <p class="text-sm font-semibold">
-            Modalidad:
-            <span class="font-normal">{{ programSelected()?.modality | titlecase }}</span>
-          </p>
-        </div>
-        }@else {
-        <div class="text-sm text-gray-500">No hay programa seleccionado</div>
-        }
-      </div>
+      <program-card [program]="programSelected()" />
     </div>
 
     <div class="border border-gray-200 shadow-xs p-4 rounded-md">
@@ -143,8 +62,245 @@
       />
       <!--  -->
       }@else {
-      <div class="text-sm text-gray-500">No hay programa seleccionado</div>
+      <div class="text-sm border p-4 border-gray-200 rounded-md shadow-xs text-red-400">
+        No hay programa seleccionado
+      </div>
       }
     </div>
   </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-6 items-start justify-start">
+    <div class="border border-gray-200 p-4 rounded-md shadow-xs">
+      <h2 class="text-center text-sm font-medium mb-4">Datos Matrícula:</h2>
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="idSmmlv">S.M.M.L.V.:</label>
+          <select formControlName="idSmmlv" id="idSmmlv">
+            <option selected disabled [value]="null">Seleccionar S.M.M.L.V.</option>
+            @for (smmlv of smmlvs()?.data; track smmlv.id) {
+            <option [value]="smmlv.id">
+              {{ smmlv.year }}
+            </option>
+            }
+          </select>
+          @if (formUtil.isValidField(myForm, 'idSmmlv')) {
+          <span class="text-xs text-red-400">
+            {{ formUtil.getFieldError(myForm, 'idSmmlv') }}
+          </span>
+          }
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="idSmmlv">Valor S.M.M.L.V.:</label>
+          <input
+            type="text"
+            disabled
+            [value]="smmlvSelected()?.value | currency : 'COP' : 'symbol' : '1.0-0'"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+            >Número de créditos por semestre:</label
+          >
+          <input type="text" disabled [value]="pensumSelected()?.credits" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+            >Valor de la Matrícula:</label
+          >
+          <input
+            type="text"
+            disabled
+            [value]="tuitionValue() | currency : 'COP' : 'symbol' : '1.0-0'"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1 xl:col-span-2">
+          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+            >Crédito S.M.M.L.V.:</label
+          >
+          @let creditSmmlv = creditSmmlvValue() | currency : 'COP' : 'symbol' : '1.0-0';
+          <!--  -->
+          @let program = programSelected()?.modality | titlecase;
+
+          <input
+            type="text"
+            disabled
+            [value]="program ? `${program} - ${creditSmmlv}` : `${creditSmmlv}`"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 border border-gray-200 p-4 rounded-md shadow-xs">
+      <div class="text-center text-sm font-semibold">
+        <h2>Datos Basicos:</h2>
+      </div>
+      <div formGroupName="programOffering" class="flex flex-col gap-1">
+        <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel">Cohorte:</label>
+        <input formControlName="cohort" type="number" min="1" />
+        @if (formUtil.isValidField(myForm.controls.programOffering, 'cohort')) {
+        <span class="text-xs text-red-400">
+          {{ formUtil.getFieldError(myForm.controls.programOffering, 'cohort') }}
+        </span>
+        }
+      </div>
+
+      <div formGroupName="programOffering" class="flex flex-col gap-1">
+        <label class="text-sm font-semibold text-gray-800" for="idEducationalLevel"
+          >Semestre:</label
+        >
+        <input formControlName="semester" type="number" min="1" />
+        @if (formUtil.isValidField(myForm.controls.programOffering, 'semester')) {
+        <span class="text-xs text-red-400">
+          {{ formUtil.getFieldError(myForm.controls.programOffering, 'semester') }}
+        </span>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label
+          [formGroup]="myForm"
+          class="text-sm font-semibold text-gray-800"
+          for="idEducationalLevel"
+          >CDP (Opcional):</label
+        >
+        <input formControlName="codeCDP" type="text" />
+        @if (formUtil.isValidField(myForm, 'codeCDP')) {
+        <span class="text-xs text-red-400">
+          {{ formUtil.getFieldError(myForm, 'codeCDP') }}
+        </span>
+        }
+      </div>
+    </div>
+
+    <div class="border border-gray-200 p-4 rounded-md xl:col-span-2">
+      <div>
+        <h2 class="text-sm text-center font-semibold">
+          Aspirantes con Descuentos Institucionales (Opcional):
+        </h2>
+        <p class="text-sm text-gray-500 text-center">
+          (Egresado, Certificado Electoral, Convención Colectiva)
+        </p>
+      </div>
+      <div class="flex justify-end mb-2">
+        <button
+          type="button"
+          (click)="addDiscount()"
+          class="mt-4 mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full xl:w-fit flex items-center gap-2 justify-center"
+        >
+          <shared-icon icon="add" />
+          <span>Agregar Descuento</span>
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table
+          class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+        >
+          <thead>
+            <tr class="h-10 bg-gray-100">
+              <th
+                class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+              >
+                Porcentaje del Descuento
+              </th>
+              <th
+                class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+              >
+                Numero de Aspirantes
+              </th>
+              <th
+                class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+              >
+                $ Ingresos con Descuento
+              </th>
+              <th
+                class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+              ></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (discount of discountsFormArray.controls; track $index; let last = $last) {
+            <tr [formGroup]="discount" class="h-10">
+              <td class="p-2 border-gray-200 border-b">
+                <div class="flex flex-col">
+                  <input
+                    class="h-full w-full text-center"
+                    formControlName="percentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                  />
+                  @if (formUtil.isValidField(discount, 'percentage')) {
+                  <span class="text-xs text-red-400">
+                    {{ formUtil.getFieldError(discount, 'percentage') }}
+                  </span>
+                  }
+                </div>
+              </td>
+              <td class="p-2 border-gray-200 border-b">
+                <div class="flex flex-col">
+                  <input
+                    class="h-full w-full text-center"
+                    formControlName="numberOfApplicants"
+                    type="number"
+                    min="0"
+                  />
+                  @if (formUtil.isValidField(discount, 'numberOfApplicants')) {
+                  <span class="text-xs text-red-400">
+                    {{ formUtil.getFieldError(discount, 'numberOfApplicants') }}
+                  </span>
+                  }
+                </div>
+              </td>
+              <td class="text-right p-2 border-gray-200 border-b">
+                {{ discounntedIncomeValue($index) | currency : 'COP' : 'symbol' : '1.0-0' }}
+              </td>
+              <td class="p-2 border-gray-200 border-b">
+                <button
+                  type="button"
+                  (click)="deleteDiscount($index)"
+                  class="border border-red-300 bg-red-100 h-8 w-8 flex justify-center items-center"
+                >
+                  <shared-icon icon="delete" classList="text-red-600 w-4 h-4" />
+                </button>
+              </td>
+            </tr>
+            }@empty {
+            <tr class="h-10">
+              <td
+                class="p-2 text-center text-sm text-gray-500 border-b border-gray-200"
+                colspan="4"
+              >
+                No hay descuentos agregados.
+              </td>
+            </tr>
+            }
+            <tr>
+              <td class="p-2 text-sm font-semibold text-center">Total:</td>
+              <td class="p-2 text-center">{{ totalApplicants() }}</td>
+              <td class="text-right p-2">
+                {{ totalDiscountedIncome() | currency : 'COP' : 'symbol' : '1.0-0' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-emerald-500 flex justify-center items-center gap-2 hover:bg-emerald-600 text-white font-medium mt-4"
+    >
+      <shared-icon icon="save" />
+      <span>Crear</span>
+    </button>
+  </div>
 </form>
+
+<!-- <pre>{{ myForm.value | json }}</pre>
+<pre>{{ programSelected() | json }}</pre>
+<pre>{{ pensumSelected() | json }}</pre> -->

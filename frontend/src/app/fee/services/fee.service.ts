@@ -30,6 +30,13 @@ export class FeeService {
     this._pagination.set({ ...pagination });
   }
 
+  getFees(pagination: PaginationOptions) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [LIST_KEY, pagination],
+      queryFn: () => firstValueFrom(this.getAll(pagination)),
+    });
+  }
+
   create(body: FeeCreate) {
     return this.http.post<Fee>(`${BASE_URL}`, body, { withCredentials: true }).pipe(
       tap(() => {

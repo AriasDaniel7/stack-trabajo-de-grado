@@ -21,13 +21,13 @@ export abstract class BaseEntity extends BaseEntityTp implements Base {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ApiProperty({
-    type: Date,
-    format: 'date-time',
-    required: false,
-    nullable: true,
-    default: null,
-  })
-  @DeleteDateColumn({ type: 'timestamptz', select: false })
-  deletedAt?: Date | undefined;
+  // @ApiProperty({
+  //   type: Date,
+  //   format: 'date-time',
+  //   required: false,
+  //   nullable: true,
+  //   default: null,
+  // })
+  // @DeleteDateColumn({ type: 'timestamptz', select: false })
+  // deletedAt?: Date | undefined;
 }

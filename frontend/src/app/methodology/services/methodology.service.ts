@@ -10,7 +10,7 @@ import { PaginationOptions } from '@core/interfaces/pagination';
 import { methodologyKeys } from '@core/utils/keys';
 import { environment } from '@env/environment';
 import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { catchError, firstValueFrom, tap, throwError } from 'rxjs';
+import { catchError, delay, firstValueFrom, tap, throwError } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/methodology';
 const { LIST_KEY } = methodologyKeys;
@@ -31,11 +31,12 @@ export class MethodologyService {
     enabled: !!this.pagination(),
   }));
 
-  methodologyExistingQuery = injectQuery(() => ({
-    queryKey: [LIST_KEY, 'existing', this.pagination()],
-    queryFn: () => firstValueFrom(this.getAllExisting(this.pagination()!)),
-    enabled: !!this.pagination(),
-  }));
+  getMethodologies(pagination: PaginationOptions) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [LIST_KEY, 'existing', pagination],
+      queryFn: () => firstValueFrom(this.getAllExisting(pagination)),
+    });
+  }
 
   setPagination(pagination: PaginationOptions) {
     this._pagination.set({ ...pagination });

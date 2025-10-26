@@ -1,6 +1,8 @@
 import { Smmlv } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { ProgramOfferingEntity } from './program-offering';
+import { ProgramPlacementEntity } from './program-placement';
 
 @Entity('smmlvs')
 export class SmmlvEntity extends BaseEntity implements Smmlv {
@@ -17,4 +19,7 @@ export class SmmlvEntity extends BaseEntity implements Smmlv {
     },
   })
   value: number;
+
+  @OneToMany(() => ProgramOfferingEntity, (po) => po.smmlv)
+  offerings: ProgramOfferingEntity[];
 }

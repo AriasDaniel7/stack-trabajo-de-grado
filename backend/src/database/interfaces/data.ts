@@ -88,7 +88,38 @@ export interface Faculty {
 
 export interface Program {
   name: string; // Nombre del programa
-  cohort: number; // Cohorte del programa
-  semester: number; // Semestre del programa
-  city: string; // Ciudad del programa
+  idProgramExternal?: number; // ID externo del programa
+  codeCDP?: string; // Código CDP
+}
+
+export interface ProgramPlacement {
+  idProgram: string; // ID del programa
+  idMethodology: string; // ID de la metodología
+  idFaculty: string; // ID de la facultad
+  idModality: string; // ID de la modalidad
+  unity: string; // Unidad
+  workday: string; // Jornada
+}
+
+export interface ProgramOffering {
+  idProgramPlacement: string; // ID de la ubicación del programa
+  idSmmlv: string; // ID del SMMLV
+  idPensum: string; // ID del pensum
+  idProgram: string; // ID del programa
+  cohort: number; // Cohorte
+  semester: number; // Semestre
+}
+
+export interface Pensum {
+  idPensumExternal?: number; // ID externo del pensum
+  name: string; // Nombre del pensum
+  startYear: number; // Año de inicio
+  status: string; // Estado del pensum
+  credits: number; // Créditos totales
+  idProgram: string; // ID del programa
+}
+
+export interface Discount {
+  percentage: number; // Porcentaje de descuento
+  numberOfApplicants: number; // Número de aplicantes
 }

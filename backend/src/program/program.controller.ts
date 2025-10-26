@@ -12,8 +12,8 @@ import { ProgramService } from './program.service';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { ParamAllDto } from './dto/param-all.dto';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
+import { ParamProgramAllDto } from './dto/param-program-all.dto';
 
 @ApiTags('Programas')
 @Controller('program')
@@ -25,23 +25,23 @@ export class ProgramController {
     return this.programService.create(createProgramDto);
   }
 
-  @Get()
-  findAll() {
-    return this.programService.findAll();
+  @Get('all')
+  findAll(@Query() params: ParamProgramAllDto) {
+    return this.programService.findAll(params);
   }
 
   @Get('all-existing')
-  findAllExisting(@Query() params: ParamAllDto) {
+  findAllExisting(@Query() params: ParamProgramAllDto) {
     return this.programService.findAllExisting(params);
   }
 
-  @ApiParam({ name: 'idProgram', description: 'Program ID', type: Number })
+  @ApiParam({ name: 'idProgram', description: 'Program ID', type: String })
   @Get(':idProgram/pensum')
-  findOneExisting(
+  findPensumByIdProgram(
     @Query() pagination: PaginationDto,
     @Param('idProgram') id: string,
   ) {
-    return this.programService.findOneExisting(+id, pagination);
+    return this.programService.findPensumByIdProgram(id, pagination);
   }
 
   @Get(':id')

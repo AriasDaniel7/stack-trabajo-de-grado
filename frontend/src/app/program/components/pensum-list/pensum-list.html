@@ -4,7 +4,7 @@
     (click)="onSelect(pensum)"
     [class.bg-gray-100]="selectPensum()?.id === pensum.id"
     [class.hover:bg-gray-50]="selectPensum()?.id !== pensum.id"
-    class="flex gap-4 justify-center items-center border border-gray-200 p-4 rounded-md shadow-xs cursor-pointer max-h-[150px] overflow-y-auto"
+    class="flex gap-4 justify-center items-center border border-gray-200 p-4 rounded-md shadow-xs cursor-pointer max-h-[200px] overflow-y-auto"
   >
     <div
       class="min-w-16 min-h-16 bg-blue-100 rounded-lg flex justify-center items-center border border-blue-300"
@@ -12,6 +12,12 @@
       <shared-icon icon="document" classList="min-w-8 min-h-8 text-blue-600" />
     </div>
     <div class="w-full">
+      <p class="text-sm font-semibold">
+        Id: <span class="font-normal">{{ pensum.id }}</span>
+      </p>
+      <p class="text-sm font-semibold">
+        IdExternal: <span class="font-normal">{{ pensum.idPensumExternal }}</span>
+      </p>
       <p class="text-sm font-semibold">
         Nombre: <span class="font-normal">{{ pensum.description | titlecase }}</span>
       </p>
@@ -40,5 +46,7 @@
   </div>
   }@empty {
   <div class="text-sm text-gray-500">No hay pensum disponible</div>
+  } @if(!selectPensum()){
+  <div class="text-sm rounded-md text-red-400">Seleccione un pensum</div>
   }
 </div>

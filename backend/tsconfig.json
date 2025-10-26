@@ -23,7 +23,9 @@
       "@docent/*": ["src/docent/*"],
       "@smmlv/*": ["src/smmlv/*"],
       "@fee/*": ["src/fee/*"],
-      "@modality/*": ["src/modality/*"]
+      "@modality/*": ["src/modality/*"],
+      "@program/*": ["src/program/*"],
+      "@utils/*": ["src/core/utils/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

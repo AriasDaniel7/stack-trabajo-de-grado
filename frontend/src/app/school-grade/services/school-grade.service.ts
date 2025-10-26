@@ -22,10 +22,8 @@ export class SchoolGradeService {
   private http = inject(HttpClient);
   private queryClient = inject(QueryClient);
   private _pagination1 = signal<PaginationOptions | null>(null);
-  private _pagination2 = signal<PaginationOptions | null>(null);
 
   pagination1 = computed(this._pagination1);
-  pagination2 = computed(this._pagination2);
 
   schoolGQuery = injectQuery(() => ({
     queryKey: [LIST_KEY, this.pagination1()],
@@ -33,15 +31,16 @@ export class SchoolGradeService {
     enabled: !!this.pagination1(),
   }));
 
-  schoolGExistingQuery = injectQuery(() => ({
-    queryKey: [LIST_KEY, 'existing', this.pagination2()],
-    queryFn: () => firstValueFrom(this.getAllExisting(this.pagination2()!)),
-    enabled: !!this.pagination2(),
-  }));
+  getEducationalLevels(pagination: PaginationOptions) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [LIST_KEY, 'existing', pagination],
+      queryFn: () => firstValueFrom(this.getAllExisting(pagination)),
+    });
+  }
 
   fetch(pagination?: PaginationOptions) {
     const paginationToUse = pagination ?? this.pagination1();
-    return this.queryClient.fetchQuery({
+    return this.queryClient.ensureQueryData({
       queryKey: [LIST_KEY, paginationToUse],
       queryFn: () => firstValueFrom(this.getAll(paginationToUse!)),
     });
@@ -49,10 +48,6 @@ export class SchoolGradeService {
 
   setPagination1(pagination: PaginationOptions) {
     this._pagination1.set({ ...pagination });
-  }
-
-  setPagination2(pagination: PaginationOptions) {
-    this._pagination2.set({ ...pagination });
   }
 
   create(body: SchoolGradeCreate) {

@@ -5,11 +5,10 @@ export interface PensumResponse {
 }
 
 export interface Pensum {
-  id: number;
+  id: string | number;
+  idPensumExternal?: number;
   description: string;
-  startYear: string;
-  startPeriod: string;
+  startYear: number;
   status: string;
-  idStatus: number;
-  credits: null | string;
+  credits: number | null;
 }

@@ -30,11 +30,10 @@ export class SmmlvService {
     this._pagination.set({ ...pagination });
   }
 
-  fetch(pagination?: PaginationOptions) {
-    const paginationToUse = pagination ?? this.pagination();
-    return this.queryClient.fetchQuery({
-      queryKey: [LIST_KEY, paginationToUse],
-      queryFn: () => firstValueFrom(this.getAll(paginationToUse!)),
+  getSmmlvs(pagination: PaginationOptions) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [LIST_KEY, pagination],
+      queryFn: () => firstValueFrom(this.getAll(pagination)),
     });
   }
 

@@ -1,18 +1,37 @@
 import { Program } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { Column, Entity } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import { NormalizedUtil } from '@utils/normalized';
+import { PensumEntity } from './pensum';
+import { ProgramPlacementEntity } from './program-placement';
 
 @Entity('programs')
 export class ProgramEntity extends BaseEntity implements Program {
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'int', nullable: true })
+  idProgramExternal?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  codeCDP?: string | undefined;
+
+  @Column({ type: 'varchar', unique: true })
   name: string;
 
-  @Column({ type: 'int' })
-  cohort: number;
+  @OneToMany(() => PensumEntity, (p) => p.program)
+  pensums: PensumEntity[];
 
-  @Column({ type: 'int' })
-  semester: number;
+  @OneToMany(() => ProgramPlacementEntity, (pp) => pp.program)
+  placements: ProgramPlacementEntity[];
 
-  @Column({ type: 'varchar', length: 100 })
-  city: string;
+  @BeforeInsert()
+  beforeInsert() {
+    this.name = NormalizedUtil.normalizeNameWithoutTilde(this.name);
+    if (this.codeCDP) {
+      this.codeCDP = NormalizedUtil.normalizeNameWithoutTilde(this.codeCDP);
+    }
+  }
+
+  @BeforeUpdate()
+  beforeUpdate() {
+    this.beforeInsert();
+  }
 }

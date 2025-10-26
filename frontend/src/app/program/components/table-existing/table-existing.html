@@ -44,7 +44,7 @@
       @for (program of programs(); track $index; let last = $last) {
       <tr
         (click)="onSelect(program)"
-        class="h-10"
+        class="h-10 cursor-pointer"
         [class.hover:bg-gray-50]="selectProgram()?.idUnityProgram !== program.idUnityProgram"
         [class.bg-gray-200]="selectProgram()?.idUnityProgram === program.idUnityProgram"
       >

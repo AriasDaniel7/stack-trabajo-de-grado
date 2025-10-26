@@ -23,10 +23,8 @@ export class ModalityService {
   private http = inject(HttpClient);
   private queryClient = inject(QueryClient);
   private _pagination = signal<PaginationOptions | null>(null);
-  private _paginationExisting = signal<ParamModalityExisting | null>(null);
 
   pagination = computed(this._pagination);
-  paginationExisting = computed(this._paginationExisting);
 
   modalityQuery = injectQuery(() => ({
     queryKey: [LIST_KEY, this.pagination()],
@@ -34,18 +32,15 @@ export class ModalityService {
     enabled: !!this.pagination(),
   }));
 
-  modalityExistingQuery = injectQuery(() => ({
-    queryKey: [LIST_KEY, 'existing', this.paginationExisting()],
-    queryFn: () => firstValueFrom(this.getAllExisting(this.paginationExisting()!)),
-    enabled: !!this.paginationExisting(),
-  }));
+  getModalitiesExisting(params: ParamModalityExisting) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [LIST_KEY, 'existing', params],
+      queryFn: () => firstValueFrom(this.getAllExisting(params)),
+    });
+  }
 
   setPagination(pagination: PaginationOptions) {
     this._pagination.set({ ...pagination });
-  }
-
-  setPaginationExisting(pagination: ParamModalityExisting) {
-    this._paginationExisting.set({ ...pagination });
   }
 
   create(body: ModalityCreate) {
