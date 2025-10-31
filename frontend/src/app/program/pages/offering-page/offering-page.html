@@ -1,0 +1,11 @@
+<div class="p-6 grid grid-cols-1 xl:grid-cols-4 gap-6">
+  <div class="flex flex-col gap-6">
+    <program-card [program]="offering()?.program" />
+
+    <program-card-pensum [pensum]="offering()?.pensum" />
+  </div>
+
+  <div class="p-4 border border-gray-300 shadow-xs rounded-md xl:col-span-3">
+    <program-form-offering [offering]="offering()" [smmlvs]="smmlvs()" [fees]="fees()" />
+  </div>
+</div>

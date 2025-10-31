@@ -8,6 +8,7 @@ import { ProgramOfferingEntity } from '@database/entities/program-offering';
 import { PensumEntity } from '@database/entities/pensum';
 import { ProgramPlacementEntity } from '@database/entities/program-placement';
 import { CacheModule } from '@nestjs/cache-manager';
+import { DiscountEntity } from '@database/entities/discount';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CacheModule } from '@nestjs/cache-manager';
       ProgramOfferingEntity,
       PensumEntity,
       ProgramPlacementEntity,
+      DiscountEntity,
     ]),
   ],
   controllers: [ProgramController],

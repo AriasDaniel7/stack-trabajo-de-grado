@@ -1,9 +1,20 @@
 import { ProgramOffering } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  Unique,
+} from 'typeorm';
 import { SmmlvEntity } from './smmlv';
 import { PensumEntity } from './pensum';
 import { ProgramPlacementEntity } from './program-placement';
+import { FeeEntity } from './rates';
+import { DiscountEntity } from './discount';
 
 @Entity('program_offerings')
 @Unique('UQ_PROGRAM_COHORT_SEMESTER_PENSUM', [
@@ -27,6 +38,9 @@ export class ProgramOfferingEntity
   idSmmlv: string;
 
   @Column({ type: 'uuid', nullable: true })
+  idFee: string;
+
+  @Column({ type: 'uuid', nullable: true })
   idProgram: string;
 
   @Column({ type: 'int' })
@@ -35,11 +49,16 @@ export class ProgramOfferingEntity
   @Column({ type: 'int' })
   semester: number;
 
+  @Column({ type: 'varchar', nullable: true })
+  codeCDP?: string | undefined;
+
   @ManyToOne(() => SmmlvEntity, (smmlv) => smmlv.offerings)
   @JoinColumn({ name: 'idSmmlv' })
   smmlv: SmmlvEntity;
 
-  @ManyToOne(() => ProgramPlacementEntity, (pp) => pp.offerings)
+  @ManyToOne(() => ProgramPlacementEntity, (pp) => pp.offerings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn([
     {
       name: 'idProgramPlacement',
@@ -61,4 +80,23 @@ export class ProgramOfferingEntity
     },
   ])
   pensum: PensumEntity;
+
+  @ManyToOne(() => FeeEntity, (fee) => fee.offerings)
+  @JoinColumn({ name: 'idFee' })
+  fee: FeeEntity;
+
+  @OneToMany(() => DiscountEntity, (discount) => discount.programOffering)
+  discounts: DiscountEntity[];
+
+  @BeforeInsert()
+  beforeInsert() {
+    if (this.codeCDP) {
+      this.codeCDP = this.codeCDP.trim();
+    }
+  }
+
+  @BeforeUpdate()
+  beforeUpdate() {
+    this.beforeInsert();
+  }
 }

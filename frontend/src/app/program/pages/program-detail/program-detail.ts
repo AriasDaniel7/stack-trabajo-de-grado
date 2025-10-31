@@ -1,93 +1,79 @@
+import { JsonPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   OnInit,
-  signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
-import { MethodologyExistingResponse } from '@core/interfaces/methodology';
-import { SchoolGradeExistingResponse } from '@core/interfaces/school-grade';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PaginationService } from '@core/shared/components/pagination/pagination.service';
 import { HeaderService } from '@dashboard/components/header/header.service';
-import { Form } from '@program/components/form/form';
-import { SchoolGradeService } from '@school-grade/services/school-grade.service';
-import { map } from 'rxjs';
-import { LoadingComponent } from '@core/shared/components/loading/loading.component';
-import { ModalityExistingResponse } from '@core/interfaces/modality';
 import { ProgramService } from '@program/services/program.service';
-import { SmmlvService } from '@smmlv/services/smmlv.service';
-import { SmmlvResponse } from '@core/interfaces/smmlv';
-import { FeeService } from '@fee/services/fee.service';
-import { FeeResponse } from '@core/interfaces/fee';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-program-detail',
-  imports: [Form, LoadingComponent],
+  imports: [JsonPipe],
   templateUrl: './program-detail.html',
   styleUrl: './program-detail.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ProgramDetail implements OnInit {
-  private headerService = inject(HeaderService);
   private activatedRoute = inject(ActivatedRoute);
-  private schoolGradeService = inject(SchoolGradeService);
+  private headerService = inject(HeaderService);
   private programService = inject(ProgramService);
-  private smmlvService = inject(SmmlvService);
-  private feeService = inject(FeeService);
+  private paginationService = inject(PaginationService);
+  private router = inject(Router);
 
-  educationLevels = signal<SchoolGradeExistingResponse | null>(null);
-  smmlvs = signal<SmmlvResponse | null>(null);
-  fees = signal<FeeResponse | null>(null);
-  isLoading = signal(true);
+  idProgramPlacement = toSignal<string>(
+    this.activatedRoute.params.pipe(map((params) => params['idProgramPlacement']))
+  );
 
-  educationLevelPostgrado = computed(() => {
-    const levels = this.educationLevels();
+  offeringsQuery = this.programService.offeringsQuery;
+  currentPage = this.paginationService.currentPage;
 
-    if (levels) {
-      return levels.data.find((level) => level.description.toLowerCase() === 'postgrado') || null;
-    }
+  changeData = effect(() => {
+    const page = this.currentPage();
+    const limit = 10;
+    const expectedOffset = (page - 1) * limit;
+    const idProgramPlacement = this.idProgramPlacement();
 
-    return null;
-  });
+    if (idProgramPlacement) {
+      untracked(() => {
+        this.programService.setPaginationOfferings({
+          idProgramPlacement,
+          limit,
+          offset: expectedOffset,
+        });
 
-  programId = toSignal(this.activatedRoute.params.pipe(map((params) => params['id'])));
+        const data = this.offeringsQuery.data();
+        const isLoading = this.offeringsQuery.isLoading();
 
-  async ngOnInit() {
-    this.headerService.setOptions({
-      title: this.programId() === 'new' ? 'Registrar Programa' : 'Detalle del Programa',
-      subTitle: 'Administrar la información del programa seleccionado',
-      showSearch: false,
-    });
-
-    const [educationalLevels, smmlvs, fees] = await Promise.all([
-      this.schoolGradeService.getEducationalLevels({
-        limit: 100,
-        offset: 0,
-      }),
-      this.smmlvService.getSmmlvs({
-        limit: 100,
-        offset: 0,
-      }),
-      this.feeService.getFees({
-        limit: 100,
-        offset: 0,
-      }),
-    ]);
-
-    this.educationLevels.set(educationalLevels);
-    this.smmlvs.set(smmlvs);
-    this.fees.set(fees);
-
-    if (this.educationLevelPostgrado()) {
-      await this.programService.prefetchProgramExisting({
-        idEducationalLevel: this.educationLevelPostgrado()!.id,
-        limit: 10,
-        offset: 0,
+        if (!isLoading && data) {
+          if (data.data.length === 0 && data.pages > 0) {
+            // Redirigir a la última página válida
+            const targetPage = Math.min(page, data.pages);
+            if (targetPage !== page) {
+              this.router.navigate([], {
+                queryParams: { page: targetPage },
+                queryParamsHandling: 'merge',
+              });
+            }
+          }
+        }
       });
     }
+  });
 
-    this.isLoading.set(false);
+  ngOnInit() {
+    this.headerService.setOptions({
+      title: 'Gestionar Ofertas del Programa',
+      subTitle: 'Administrar las ofertas académicas del programa seleccionado',
+      placeholder: 'Buscar por cohorte o semestre...',
+    });
   }
 }

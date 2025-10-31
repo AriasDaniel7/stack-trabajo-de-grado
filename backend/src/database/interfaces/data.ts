@@ -89,7 +89,6 @@ export interface Faculty {
 export interface Program {
   name: string; // Nombre del programa
   idProgramExternal?: number; // ID externo del programa
-  codeCDP?: string; // Código CDP
 }
 
 export interface ProgramPlacement {
@@ -105,9 +104,11 @@ export interface ProgramOffering {
   idProgramPlacement: string; // ID de la ubicación del programa
   idSmmlv: string; // ID del SMMLV
   idPensum: string; // ID del pensum
+  idFee: string; // ID de la tarifa
   idProgram: string; // ID del programa
   cohort: number; // Cohorte
   semester: number; // Semestre
+  codeCDP?: string; // Código CDP
 }
 
 export interface Pensum {
@@ -122,4 +123,5 @@ export interface Pensum {
 export interface Discount {
   percentage: number; // Porcentaje de descuento
   numberOfApplicants: number; // Número de aplicantes
+  idProgramOffering: string; // ID de la oferta del programa
 }

@@ -6,8 +6,8 @@ export interface ProgramCreate {
   methodology: string;
   unity: string;
   workday: string;
-  codeCDP?: string;
   idSmmlv: string;
+  idFee: string;
   pensum: PensumCreate;
   discounts: DiscountCreate[];
   programOffering: ProgramOfferingCreate;
@@ -16,6 +16,7 @@ export interface ProgramCreate {
 export interface ProgramOfferingCreate {
   cohort: number;
   semester: number;
+  codeCDP?: string;
 }
 
 export interface PensumCreate {

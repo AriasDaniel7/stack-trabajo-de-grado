@@ -30,6 +30,7 @@ export class ModalityService {
     queryKey: [LIST_KEY, this.pagination()],
     queryFn: () => firstValueFrom(this.getAll(this.pagination()!)),
     enabled: !!this.pagination(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   }));
 
   getModalitiesExisting(params: ParamModalityExisting) {

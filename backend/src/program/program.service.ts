@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  CreateDiscountDto,
   CreatePensumDto,
   CreateProgramDto,
   CreateProgramOfferingDto,
@@ -33,6 +34,10 @@ import { isUUID } from 'class-validator';
 import { PensumMap } from './maps/pensum.map';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { FeeEntity } from '@database/entities/rates';
+import { ParamProgramAllInternalDto } from './dto/param-program-all-internal.dto';
+import { ParamOfferingDto } from './dto/param-offering.dto';
+import { DiscountEntity } from '@database/entities/discount';
 
 @Injectable()
 export class ProgramService {
@@ -53,25 +58,32 @@ export class ProgramService {
     await queryRunner.startTransaction();
     try {
       const {
-        faculty, // Listo
-        modality, // Listo
-        methodology, // Listo
-        idSmmlv, // Listo
-        pensum, // Listo
-        unity, // Listo
-        workday, // Listo
-        discounts, // TODO: Falta por implementar
-        programOffering, // Listo
-        ...programData // Listo
+        faculty,
+        modality,
+        methodology,
+        idSmmlv,
+        idFee,
+        pensum,
+        unity,
+        workday,
+        discounts,
+        programOffering,
+        ...programData
       } = createProgramDto;
 
-      const [modalityEntity, methodologyEntity, facultyEntity, smmlvEntity] =
-        await Promise.all([
-          this.createProgramModality(queryRunner, modality),
-          this.createMethodology(queryRunner, methodology),
-          this.createProgramFaculty(queryRunner, faculty),
-          this.createSmmlv(queryRunner, idSmmlv),
-        ]);
+      const [
+        modalityEntity,
+        methodologyEntity,
+        facultyEntity,
+        smmlvEntity,
+        feeEntity,
+      ] = await Promise.all([
+        this.createProgramModality(queryRunner, modality),
+        this.createMethodology(queryRunner, methodology),
+        this.createProgramFaculty(queryRunner, faculty),
+        this.createSmmlv(queryRunner, idSmmlv),
+        this.createFee(queryRunner, idFee),
+      ]);
 
       let program = await queryRunner.manager.findOne(ProgramEntity, {
         where: {
@@ -109,7 +121,14 @@ export class ProgramService {
         programPlacementEntity.id,
         pensumEntity.id,
         program.id,
+        feeEntity.id,
         programOffering,
+      );
+
+      programOfferingEntity.discounts = await this.createDiscounts(
+        queryRunner,
+        discounts,
+        programOfferingEntity.id,
       );
 
       programPlacementEntity.offerings = [programOfferingEntity];
@@ -127,12 +146,28 @@ export class ProgramService {
     }
   }
 
+  private async createDiscounts(
+    queryRunner: QueryRunner,
+    discounts: CreateDiscountDto[],
+    idProgramOffering: string,
+  ) {
+    const discountEntities = discounts.map((discount) => {
+      return queryRunner.manager.create(DiscountEntity, {
+        ...discount,
+        idProgramOffering,
+      });
+    });
+
+    return await queryRunner.manager.save(discountEntities);
+  }
+
   private async createProgramOfferings(
     queryRunner: QueryRunner,
     idSmmlv: string,
     idProgramPlacement: string,
     idPensum: string,
     idProgram: string,
+    idFee: string,
     programOffering: CreateProgramOfferingDto,
   ) {
     const offering = queryRunner.manager.create(ProgramOfferingEntity, {
@@ -141,6 +176,7 @@ export class ProgramService {
       idSmmlv,
       idPensum,
       idProgram,
+      idFee,
     });
 
     return await queryRunner.manager.save(offering);
@@ -304,6 +340,23 @@ export class ProgramService {
     return smmlvEntity;
   }
 
+  private async createFee(queryRunner: QueryRunner, idFee: string) {
+    let feeEntity = await queryRunner.manager.findOne(FeeEntity, {
+      where: {
+        id: idFee,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!feeEntity) {
+      throw new NotFoundException('Fee not found');
+    }
+
+    return feeEntity;
+  }
+
   private generateCacheKey(
     prefix: string,
     params: ParamProgramAllDto,
@@ -357,7 +410,7 @@ export class ProgramService {
 
       const [internalResults, externalResults] = await Promise.all([
         this.getAllInternal(internalParams),
-        this.getAllExternalUrl(externalParams),
+        this.getAllExternal(externalParams),
       ]);
 
       const programsMap = new Map<string, ProgramMapResponse>();
@@ -402,6 +455,237 @@ export class ProgramService {
     };
   }
 
+  async findAllInternal(params: ParamProgramAllInternalDto) {
+    const {
+      idMethodology,
+      idModality,
+      idFaculty,
+      name,
+      workday,
+      unity,
+      limit = 10,
+      offset = 0,
+      order = OrderType.ASC,
+    } = params;
+
+    const queryBuilder = this.dataSource
+      .getRepository(ProgramPlacementEntity)
+      .createQueryBuilder('placement')
+      .leftJoin('placement.program', 'program')
+      .leftJoin('placement.modality', 'modality')
+      .leftJoin('placement.faculty', 'faculty')
+      .leftJoin('placement.methodology', 'methodology')
+      .select([
+        'placement.id',
+        'placement.unity',
+        'placement.workday',
+        // Program info
+        'program.id',
+        'program.idProgramExternal',
+        'program.name',
+        // Modality info
+        'modality.id',
+        'modality.name',
+        // Faculty info
+        'faculty.id',
+        'faculty.name',
+        // Methodology info
+        'methodology.id',
+        'methodology.name',
+      ])
+      .orderBy('program.name', order)
+      .take(limit)
+      .skip(offset);
+
+    if (idMethodology) {
+      queryBuilder.andWhere('methodology.id = :idMethodology', {
+        idMethodology,
+      });
+    }
+
+    if (idModality) {
+      queryBuilder.andWhere('modality.id = :idModality', { idModality });
+    }
+
+    if (idFaculty) {
+      queryBuilder.andWhere('faculty.id = :idFaculty', { idFaculty });
+    }
+
+    if (name) {
+      queryBuilder.andWhere('program.name ILIKE :name', { name: `%${name}%` });
+    }
+
+    if (unity) {
+      queryBuilder.andWhere('placement.unity ILIKE :unity', {
+        unity: `%${unity}%`,
+      });
+    }
+
+    if (workday) {
+      queryBuilder.andWhere('placement.workday ILIKE :workday', {
+        workday: `%${workday}%`,
+      });
+    }
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    const programs = ProgramMap.toProgramResponseAll(data);
+
+    return {
+      count: total,
+      pages: Math.ceil(total / limit),
+      data: programs,
+    };
+  }
+
+  async findOneByIdProgramPlacement(idProgramPlacement: string) {
+    const queryBuilder = this.dataSource
+      .getRepository(ProgramEntity)
+      .createQueryBuilder('program')
+      .leftJoin('program.placements', 'placement')
+      .where('placement.id = :idProgramPlacement', { idProgramPlacement })
+      .leftJoin('placement.modality', 'modality')
+      .leftJoin('placement.faculty', 'faculty')
+      .leftJoin('placement.methodology', 'methodology')
+      .select([
+        'placement.id',
+        'placement.unity',
+        'placement.workday',
+        // Program info
+        'program.id',
+        'program.idProgramExternal',
+        'program.name',
+        // Modality info
+        'modality.name',
+        // Faculty info
+        'faculty.name',
+        // Methodology info
+        'methodology.name',
+      ]);
+
+    const program = await queryBuilder.getOne();
+
+    if (!program) {
+      throw new NotFoundException('Program not found');
+    }
+
+    return ProgramMap.toProgramResponseByIdProgramPlacement(program);
+  }
+
+  async findOneByIdOffering(idOffering: string) {
+    const queryBuilder = this.dataSource
+      .createQueryBuilder(ProgramOfferingEntity, 'offering')
+      .where('offering.id = :idOffering', { idOffering })
+      .leftJoin('offering.programPlacement', 'programPlacement')
+      .leftJoin('offering.smmlv', 'smmlv')
+      .leftJoin('offering.discounts', 'discounts')
+      .leftJoin('offering.fee', 'fee')
+      .leftJoin('programPlacement.program', 'program')
+      .leftJoin('programPlacement.modality', 'modality')
+      .leftJoin('programPlacement.faculty', 'faculty')
+      .leftJoin('programPlacement.methodology', 'methodology')
+      .leftJoin('offering.pensum', 'pensum')
+      .select([
+        'offering.id',
+        'offering.cohort',
+        'offering.semester',
+        'offering.codeCDP',
+        'offering.createdAt',
+        'offering.updatedAt',
+        // Program Placement info
+        'programPlacement.id',
+        'programPlacement.unity',
+        'programPlacement.workday',
+        // Program info
+        'program.id',
+        'program.idProgramExternal',
+        'program.name',
+        // Modality info
+        'modality.id',
+        'modality.name',
+        // Faculty info
+        'faculty.id',
+        'faculty.name',
+        // Methodology info
+        'methodology.id',
+        'methodology.name',
+        // SMMLV info
+        'smmlv.id',
+        'smmlv.year',
+        'smmlv.value',
+        // Fee info
+        'fee.id',
+        'fee.factor_smmlv',
+        'fee.credit_value_smmlv',
+        // Discounts info
+        'discounts.id',
+        'discounts.percentage',
+        'discounts.numberOfApplicants',
+        // Pensum info
+        'pensum.id',
+        'pensum.name',
+        'pensum.idPensumExternal',
+        'pensum.startYear',
+        'pensum.status',
+        'pensum.credits',
+      ]);
+
+    const offering = await queryBuilder.getOne();
+
+    if (!offering) {
+      throw new NotFoundException('Program offering not found');
+    }
+
+    return ProgramMap.toProgramResponseByIdOffering(offering);
+  }
+
+  async findOfferingsByIdProgramPlacement(
+    idProgramPlacement: string,
+    params: ParamOfferingDto,
+  ) {
+    const {
+      limit = 10,
+      offset = 0,
+      order = OrderType.ASC,
+      cohort,
+      semester,
+    } = params;
+
+    const queryBuilder = this.dataSource
+      .getRepository(ProgramOfferingEntity)
+      .createQueryBuilder('offering')
+      .where('offering.idProgramPlacement = :idProgramPlacement', {
+        idProgramPlacement,
+      })
+      .select([
+        'offering.id',
+        'offering.createdAt',
+        'offering.updatedAt',
+        'offering.cohort',
+        'offering.semester',
+        'offering.codeCDP',
+      ])
+      .orderBy('offering.cohort', order)
+      .take(limit)
+      .skip(offset);
+
+    if (cohort) {
+      queryBuilder.andWhere('offering.cohort = :cohort', { cohort });
+    }
+
+    if (semester) {
+      queryBuilder.andWhere('offering.semester = :semester', { semester });
+    }
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      count: total,
+      pages: Math.ceil(total / limit),
+      data: data,
+    };
+  }
+
   private async getAllInternal(params: ParamProgramAllDto) {
     const {
       idMethodology,
@@ -428,7 +712,6 @@ export class ProgramService {
         'program.id',
         'program.idProgramExternal',
         'program.name',
-        'program.codeCDP',
         // Modality info
         'modality.id',
         'modality.name',
@@ -470,7 +753,7 @@ export class ProgramService {
     };
   }
 
-  private async getAllExternalUrl(params: ParamProgramAllDto) {
+  private async getAllExternal(params: ParamProgramAllDto) {
     const {
       idEducationalLevel,
       idMethodology,
@@ -542,8 +825,8 @@ export class ProgramService {
     }
   }
 
-  async findAllExisting(params: ParamProgramAllDto) {
-    return await this.getAllExternalUrl(params);
+  async findAllExternal(params: ParamProgramAllDto) {
+    return await this.getAllExternal(params);
   }
 
   async findPensumByIdProgramExternal(id: number, pagination: PaginationDto) {
@@ -583,8 +866,8 @@ export class ProgramService {
           data.content.slice(skipInPage),
         ).sort((a, b) =>
           order === OrderType.ASC
-            ? a.description.localeCompare(b.description)
-            : b.description.localeCompare(a.description),
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name),
         ),
       };
     } catch (error) {
@@ -635,16 +918,45 @@ export class ProgramService {
     );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} program`;
-  }
-
   update(id: number, updateProgramDto: UpdateProgramDto) {
     return `This action updates a #${id} program`;
   }
 
   remove(id: number) {
     return `This action removes a #${id} program`;
+  }
+
+  async removePlacement(id: string) {
+    const placement = await this.dataSource
+      .getRepository(ProgramPlacementEntity)
+      .findOne({
+        where: { id },
+      });
+
+    if (!placement) {
+      throw new NotFoundException('Program placement not found');
+    }
+
+    await this.dataSource
+      .getRepository(ProgramPlacementEntity)
+      .remove(placement);
+
+    return { message: 'Program placement removed successfully' };
+  }
+
+  async removeOffering(id: string) {
+    const offering = await this.dataSource
+      .getRepository(ProgramOfferingEntity)
+      .findOne({
+        where: { id },
+      });
+
+    if (!offering) {
+      throw new NotFoundException('Program offering not found');
+    }
+
+    await this.dataSource.getRepository(ProgramOfferingEntity).remove(offering);
+    return { message: 'Program offering removed successfully' };
   }
 
   private handleError(error: any) {

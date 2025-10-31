@@ -4,7 +4,7 @@ import { PensumExternal } from '../interfaces/pensum-external';
 export interface PensumMapResponse {
   id: string | number;
   idPensumExternal?: number;
-  description: string;
+  name: string;
   startYear: number;
   status: string;
   credits: number;
@@ -17,7 +17,7 @@ export class PensumMap {
     return pensums.map((p) => ({
       id: p.id,
       idPensumExternal: p.idPensumExternal,
-      description: p.name,
+      name: p.name,
       startYear: p.startYear,
       status: p.status,
       credits: p.credits,
@@ -29,7 +29,7 @@ export class PensumMap {
   ): PensumMapResponse[] {
     return pensums.map((p) => ({
       id: p.id,
-      description: p.descripcion,
+      name: p.descripcion,
       startYear: +p.anoInicio,
       status: p.estadoPensum,
       credits: +p.creditos,

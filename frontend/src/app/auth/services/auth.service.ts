@@ -74,7 +74,7 @@ export class AuthService {
       updatedAt: Date.now(), // immediate update
     });
     this._token.set(null);
-    this.localStorage.removeItem(TOKEN_KEY);
+    this.localStorage.clear();
     return true;
   }
 

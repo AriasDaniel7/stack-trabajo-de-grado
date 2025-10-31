@@ -10,9 +10,6 @@ export class ProgramEntity extends BaseEntity implements Program {
   @Column({ type: 'int', nullable: true })
   idProgramExternal?: number;
 
-  @Column({ type: 'varchar', nullable: true })
-  codeCDP?: string | undefined;
-
   @Column({ type: 'varchar', unique: true })
   name: string;
 
@@ -25,9 +22,6 @@ export class ProgramEntity extends BaseEntity implements Program {
   @BeforeInsert()
   beforeInsert() {
     this.name = NormalizedUtil.normalizeNameWithoutTilde(this.name);
-    if (this.codeCDP) {
-      this.codeCDP = NormalizedUtil.normalizeNameWithoutTilde(this.codeCDP);
-    }
   }
 
   @BeforeUpdate()

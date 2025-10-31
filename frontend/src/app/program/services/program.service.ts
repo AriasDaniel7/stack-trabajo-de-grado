@@ -2,15 +2,33 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { PaginationOptions } from '@core/interfaces/pagination';
 import { PensumResponse } from '@core/interfaces/pensum';
-import { ProgramCreate, ProgramResponse } from '@core/interfaces/program';
+import {
+  Offering,
+  OfferingResponse,
+  Program,
+  ProgramCreate,
+  ProgramResponse,
+} from '@core/interfaces/program';
 import { programKeys } from '@core/utils/keys';
 import { environment } from '@env/environment';
-import { ParamProgramExisting, ParamProgramPensum } from '@program/interfaces/param-program';
+import {
+  ParamOfferings,
+  ParamPensum,
+  ParamProgramAll,
+  ParamProgramAllInternal,
+} from '@program/interfaces/param-program';
 import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { map, firstValueFrom, tap, catchError, throwError } from 'rxjs';
+import { map, firstValueFrom, tap, catchError, throwError, delay, of } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/program';
-const { EXISTING_KEY, PENSUM_KEY } = programKeys;
+const {
+  LIST_KEY,
+  BY_ID_PROGRAM_OFFERING_KEY,
+  PENSUM_KEY,
+  LIST_INTERNAL_KEY,
+  OFFERINGS_KEY,
+  BY_ID_PROGRAM_PLACEMENT_KEY,
+} = programKeys;
 
 @Injectable({
   providedIn: 'root',
@@ -18,14 +36,30 @@ const { EXISTING_KEY, PENSUM_KEY } = programKeys;
 export class ProgramService {
   private http = inject(HttpClient);
   private queryClient = inject(QueryClient);
-  private _paginationExisting = signal<ParamProgramExisting | null>(null);
-  private _paginationPensum = signal<ParamProgramPensum | null>(null);
+  private _paginationAll = signal<ParamProgramAll | null>(null);
+  private _pagintaionAllInternal = signal<ParamProgramAllInternal | null>(null);
+  private _paginationPensum = signal<ParamPensum | null>(null);
+  private _paginationOfferings = signal<ParamOfferings | null>(null);
 
-  programExistingQuery = injectQuery(() => ({
-    queryKey: [EXISTING_KEY, this.filterParams(this._paginationExisting())],
+  programAllQuery = injectQuery(() => ({
+    queryKey: [LIST_KEY, this.filterParams(this._paginationAll())],
+    queryFn: () => firstValueFrom(this.getAll(this.filterParams(this._paginationAll())!)),
+    enabled: !!this._paginationAll(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }));
+
+  offeringsQuery = injectQuery(() => ({
+    queryKey: [OFFERINGS_KEY, this._paginationOfferings()],
     queryFn: () =>
-      firstValueFrom(this.getAllExisting(this.filterParams(this._paginationExisting())!)),
-    enabled: !!this._paginationExisting(),
+      firstValueFrom(this.getOfferingsByIdProgramPlacement(this._paginationOfferings()!)!),
+    enabled: !!this._paginationOfferings(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }));
+
+  programAllInternalQuery = injectQuery(() => ({
+    queryKey: [LIST_INTERNAL_KEY, this._pagintaionAllInternal()],
+    queryFn: () => firstValueFrom(this.getAllInternal(this._pagintaionAllInternal()!)),
+    enabled: !!this._pagintaionAllInternal(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   }));
 
@@ -36,31 +70,82 @@ export class ProgramService {
     staleTime: 5 * 60 * 1000, // 5 minutes
   }));
 
-  setPaginationProgramExisting(params: ParamProgramExisting) {
-    this._paginationExisting.set({ ...params });
+  programByIdPlacemenet(id: string) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [BY_ID_PROGRAM_PLACEMENT_KEY, id],
+      queryFn: () => firstValueFrom(this.findOneByIdProgramPlacement(id)),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
+  offeringById(id: string) {
+    return this.queryClient.ensureQueryData({
+      queryKey: [BY_ID_PROGRAM_OFFERING_KEY, id],
+      queryFn: () => firstValueFrom(this.findOneByIdOffering(id)),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
+  setPaginationProgramAll(params: ParamProgramAll) {
+    this._paginationAll.set({ ...params });
+  }
+
+  setPaginationProgramAllInternal(params: ParamProgramAllInternal) {
+    this._pagintaionAllInternal.set({ ...params });
+  }
+
+  setPaginationOfferings(params: ParamOfferings) {
+    this._paginationOfferings.set({ ...params });
   }
 
   create(body: ProgramCreate) {
     return this.http.post(`${BASE_URL}`, body, { withCredentials: true }).pipe(
       tap(() => {
-        this.queryClient.invalidateQueries({ queryKey: [EXISTING_KEY], exact: false });
-        this.queryClient.refetchQueries({ queryKey: [EXISTING_KEY], exact: false });
+        this.queryClient.invalidateQueries({ queryKey: [LIST_KEY], exact: false });
+        this.queryClient.invalidateQueries({ queryKey: [LIST_INTERNAL_KEY], exact: false });
+        this.queryClient.invalidateQueries({ queryKey: [OFFERINGS_KEY], exact: false });
+        this.queryClient.refetchQueries({ queryKey: [LIST_KEY], exact: false });
+        this.queryClient.refetchQueries({ queryKey: [LIST_INTERNAL_KEY], exact: false });
       }),
       catchError((err) => this.handleError(err))
     );
   }
 
-  prefetchProgramExisting(params: ParamProgramExisting) {
+  deletePlacement(id: string) {
+    return this.http.delete(`${BASE_URL}/placement/${id}`, { withCredentials: true }).pipe(
+      tap(() => {
+        this.queryClient.invalidateQueries({ queryKey: [LIST_INTERNAL_KEY], exact: false });
+        this.queryClient.removeQueries({
+          queryKey: [BY_ID_PROGRAM_PLACEMENT_KEY, id],
+          exact: true,
+        });
+      }),
+      catchError((err) => this.handleError(err))
+    );
+  }
+
+  deleteOffering(idProgramOffering: string) {
+    return this.http
+      .delete(`${BASE_URL}/offering/${idProgramOffering}`, { withCredentials: true })
+      .pipe(
+        tap(() => {
+          this.queryClient.invalidateQueries({ queryKey: [OFFERINGS_KEY], exact: false });
+        }),
+        catchError((err) => this.handleError(err))
+      );
+  }
+
+  prefetchProgramAll(params: ParamProgramAll) {
     const filteredParams = this.filterParams(params);
 
     return this.queryClient.prefetchQuery({
-      queryKey: [EXISTING_KEY, filteredParams],
-      queryFn: () => firstValueFrom(this.getAllExisting(filteredParams!)),
+      queryKey: [LIST_KEY, filteredParams],
+      queryFn: () => firstValueFrom(this.getAll(filteredParams!)),
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
   }
 
-  setPaginationPensumByProgramId(params?: ParamProgramPensum) {
+  setPaginationPensumByProgramId(params?: ParamPensum) {
     if (!params) {
       this._paginationPensum.set(null);
       return;
@@ -68,7 +153,7 @@ export class ProgramService {
     this._paginationPensum.set({ ...params });
   }
 
-  private getAllExisting(params: ParamProgramExisting) {
+  private getAll(params: ParamProgramAll) {
     return this.http.get<ProgramResponse>(`${BASE_URL}/all`, {
       withCredentials: true,
       params: {
@@ -77,22 +162,50 @@ export class ProgramService {
     });
   }
 
-  private getPensumByProgramId(params: ParamProgramPensum) {
+  private getAllInternal(params: ParamProgramAllInternal) {
+    const filteredParams = this.filterParams(params);
+    return this.http.get<ProgramResponse>(`${BASE_URL}/all/internal`, {
+      withCredentials: true,
+      params: {
+        ...filteredParams,
+      },
+    });
+  }
+
+  private findOneByIdOffering(idProgramOffering: string) {
+    return this.http
+      .get<Offering>(`${BASE_URL}/offering/${idProgramOffering}`)
+      .pipe(catchError(() => of(null)));
+  }
+
+  private findOneByIdProgramPlacement(idProgramPlacement: string) {
+    return this.http
+      .get<Program>(`${BASE_URL}/placement/${idProgramPlacement}`, {
+        withCredentials: true,
+      })
+      .pipe(catchError(() => of(null)));
+  }
+
+  private getOfferingsByIdProgramPlacement(params: ParamOfferings) {
+    const { idProgramPlacement, ...paramRest } = params;
+    return this.http.get<OfferingResponse>(
+      `${BASE_URL}/placement/${idProgramPlacement}/offerings`,
+      {
+        withCredentials: true,
+        params: {
+          ...paramRest,
+        },
+      }
+    );
+  }
+
+  private getPensumByProgramId(params: ParamPensum) {
     const { idProgram, ...paramRest } = params;
 
-    return this.http
-      .get<PensumResponse>(`${BASE_URL}/${idProgram}/pensum`, {
-        withCredentials: true,
-        params: { ...paramRest },
-      })
-      .pipe(
-        map((response) => {
-          return {
-            ...response,
-            data: response.data.filter((pensum) => pensum.status.toLowerCase() === 'en oferta'),
-          };
-        })
-      );
+    return this.http.get<PensumResponse>(`${BASE_URL}/${idProgram}/pensum`, {
+      withCredentials: true,
+      params: { ...paramRest },
+    });
   }
 
   private filterParams(params: PaginationOptions | null) {

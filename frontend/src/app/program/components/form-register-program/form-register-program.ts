@@ -1,4 +1,3 @@
-import { CurrencyPipe, JsonPipe, TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,71 +5,140 @@ import {
   effect,
   inject,
   input,
-  OnInit,
   signal,
   untracked,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
-import { FormUtil } from '@core/utils/form';
-import { ProgramService } from '@program/services/program.service';
-import { PaginationService } from '@core/shared/components/pagination/pagination.service';
-import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TableExisting } from '../table-existing/table-existing';
-import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
-import { LoadingComponent } from '@core/shared/components/loading/loading.component';
-import { PensumList } from '../pensum-list/pensum-list';
-import { Pensum } from '@core/interfaces/pensum';
-import { CardProgram } from '../card-program/card-program';
-import { IconComponent } from '@core/shared/components/icon/icon.component';
-import { SchoolGradeExisting, SchoolGradeExistingResponse } from '@core/interfaces/school-grade';
-import { MethodologyExistingResponse } from '@core/interfaces/methodology';
-import { ModalityExistingResponse } from '@core/interfaces/modality';
-import { FeeService } from '@fee/services/fee.service';
-import { SmmlvResponse } from '@core/interfaces/smmlv';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FeeResponse } from '@core/interfaces/fee';
-import { Program, ProgramCreate } from '@core/interfaces/program';
-import { NormalizedUtil } from '@core/utils/normalized';
 import { OrderType } from '@core/interfaces/pagination';
+import { Pensum } from '@core/interfaces/pensum';
+import { Program, ProgramCreate } from '@core/interfaces/program';
+import { SchoolGradeExisting } from '@core/interfaces/school-grade';
+import { SmmlvResponse } from '@core/interfaces/smmlv';
 import { AlertService } from '@core/shared/components/alert/alert.service';
+import { PaginationService } from '@core/shared/components/pagination/pagination.service';
+import { FormUtil } from '@core/utils/form';
+import { NormalizedUtil } from '@core/utils/normalized';
+import { ProgramService } from '@program/services/program.service';
+import { IconComponent } from '@core/shared/components/icon/icon.component';
+import { CurrencyPipe } from '@angular/common';
+import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
+import { PensumList } from '../pensum-list/pensum-list';
+import { CardProgram } from '../card-program/card-program';
+import { TableProgram } from '../table-program/table-program';
 
 @Component({
-  selector: 'program-form',
+  selector: 'program-form-register',
   imports: [
     ReactiveFormsModule,
-    TitleCasePipe,
-    TableExisting,
     PaginationComponent,
-    LoadingComponent,
     PensumList,
     CardProgram,
     CurrencyPipe,
     IconComponent,
-    JsonPipe,
+    TableProgram,
   ],
-  templateUrl: './form.html',
-  styleUrl: './form.css',
+  templateUrl: './form-register-program.html',
+  styleUrl: './form-register-program.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Form implements OnInit {
+export class FormRegisterProgram {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private programService = inject(ProgramService);
   private paginationService = inject(PaginationService);
   private alertService = inject(AlertService);
 
-  educationLevels = input<SchoolGradeExistingResponse | null>(null);
   educationLevelPostgrado = input<SchoolGradeExisting | null>(null);
   smmlvs = input<SmmlvResponse | null>(null);
   fees = input<FeeResponse | null>(null);
 
-  programQuery = this.programService.programExistingQuery;
+  programQuery = this.programService.programAllQuery;
   currentPage = this.paginationService.currentPage;
   pensumQuery = this.programService.pensumQuery;
 
   searchTerm = signal('');
   programSelected = signal<Program | null>(null);
   pensumSelected = signal<Pensum | null>(null);
+
+  formUtil = FormUtil;
+
+  myForm = this.fb.group({
+    idSmmlv: [null, [Validators.required]],
+    programOffering: this.fb.group({
+      cohort: [null, [Validators.required, Validators.min(1)]],
+      semester: [null, [Validators.required, Validators.min(1)]],
+      codeCDP: [null],
+    }),
+    discounts: this.fb.array<FormGroup>([]),
+  });
+
+  private idSmmlv = toSignal(this.myForm.controls.idSmmlv.valueChanges);
+  private discountsChanges = toSignal(this.myForm.controls.discounts.valueChanges, {
+    initialValue: [],
+  });
+
+  get discounts() {
+    return this.myForm.controls.discounts;
+  }
+
+  onFormChanges = effect(() => {
+    const idEducationalLevel = this.educationLevelPostgrado()?.id;
+    const page = this.currentPage();
+    const expectedOffset = (page - 1) * 10;
+    const search = this.searchTerm();
+
+    untracked(() => {
+      this.programService.setPaginationProgramAll({
+        limit: 10,
+        offset: expectedOffset,
+        idEducationalLevel: idEducationalLevel,
+        filter: search || undefined,
+        order: OrderType.ASC,
+      });
+    });
+
+    const data = this.programQuery.data();
+    const isLoading = this.programQuery.isLoading();
+
+    if (!isLoading && data) {
+      if (data.data.length === 0 && data.pages > 0) {
+        // Redirigir a la última página válida
+        const targetPage = Math.min(page, data.pages);
+        if (targetPage !== page) {
+          untracked(() => {
+            this.router.navigate([], {
+              queryParams: { page: targetPage },
+              queryParamsHandling: 'merge',
+            });
+          });
+        }
+      }
+    }
+  });
+
+  onSelectProgram = effect(() => {
+    const program = this.programSelected();
+
+    if (program) {
+      untracked(() => {
+        this.pensumSelected.set(null);
+
+        this.programService.setPaginationPensumByProgramId({
+          idProgram: program.id,
+          limit: 100,
+          offset: 0,
+        });
+      });
+    }
+
+    if (program === null) {
+      this.pensumSelected.set(null);
+      this.programService.setPaginationPensumByProgramId();
+    }
+  });
 
   smmlvSelected = computed(() => {
     const idSmmlv = this.idSmmlv();
@@ -121,45 +189,11 @@ export class Form implements OnInit {
     return 0;
   });
 
-  formUtil = FormUtil;
+  discountedIncomeValue(index: number) {
+    const control = this.discounts.controls.at(index);
 
-  myForm = this.fb.group({
-    idSmmlv: [null, [Validators.required]],
-    codeCDP: [null],
-    programOffering: this.fb.group({
-      cohort: [null, [Validators.required, Validators.min(1)]],
-      semester: [null, [Validators.required, Validators.min(1)]],
-    }),
-    discounts: this.fb.array<FormGroup>([]),
-  });
-
-  totalApplicants = computed(() => {
-    this.discountsChanges();
-
-    const controls = this.discountsFormArray.controls;
-    return controls.reduce((total, control) => {
-      const numberOfApplicants = control.get('numberOfApplicants')?.value || 0;
-      return total + Number(numberOfApplicants);
-    }, 0);
-  });
-
-  totalDiscountedIncome = computed(() => {
-    this.discountsChanges();
-    const controls = this.discountsFormArray.controls;
-    return controls.reduce((total, _, index) => {
-      return total + this.discounntedIncomeValue(index);
-    }, 0);
-  });
-
-  get discountsFormArray() {
-    return this.myForm.controls.discounts;
-  }
-
-  discounntedIncomeValue(index: number) {
-    const discountControl = this.myForm.controls.discounts.at(index);
-
-    const percentage = discountControl.get('percentage')?.value || 0;
-    const numberOfApplicants = discountControl.get('numberOfApplicants')?.value || 0;
+    const percentage = control?.get('percentage')?.value || 0;
+    const numberOfApplicants = control?.get('numberOfApplicants')?.value || 0;
 
     const tuitionValue = this.tuitionValue();
 
@@ -172,84 +206,37 @@ export class Form implements OnInit {
     return 0;
   }
 
+  totals = computed(() => {
+    this.discountsChanges();
+
+    const controls = this.discounts.controls;
+
+    return controls.reduce(
+      (totals, control, index) => {
+        const numberOfApplicants = control.get('numberOfApplicants')?.value || 0;
+        const discountedIncome = this.discountedIncomeValue(index);
+
+        return {
+          totalApplicants: totals.totalApplicants + Number(numberOfApplicants),
+          totalDiscountedIncome: totals.totalDiscountedIncome + discountedIncome,
+        };
+      },
+      { totalApplicants: 0, totalDiscountedIncome: 0 }
+    );
+  });
+
   addDiscount() {
-    if (this.discountsFormArray.length < 8) {
-      this.discountsFormArray.push(
-        this.fb.group({
-          percentage: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-          numberOfApplicants: [null, [Validators.required, Validators.min(0)]],
-        })
-      );
-    }
-  }
-
-  deleteDiscount(index: number) {
-    this.discountsFormArray.removeAt(index);
-  }
-
-  onFormChanges = effect(() => {
-    const idEducationalLevel = this.educationLevelPostgrado()?.id;
-    const page = this.currentPage();
-    const expectedOffset = (page - 1) * 10;
-    const search = this.searchTerm();
-
-    untracked(() => {
-      this.programService.setPaginationProgramExisting({
-        limit: 10,
-        offset: expectedOffset,
-        idEducationalLevel: idEducationalLevel,
-        filter: search || undefined,
-        order: OrderType.ASC,
-      });
+    const discountGroup = this.fb.group({
+      percentage: [null, [Validators.required, Validators.min(1), Validators.max(100)]],
+      numberOfApplicants: [null, [Validators.required, Validators.min(1)]],
     });
 
-    const data = this.programQuery.data();
-    const isLoading = this.programQuery.isLoading();
+    this.discounts.push(discountGroup);
+  }
 
-    if (!isLoading && data) {
-      if (data.data.length === 0 && data.pages > 0) {
-        // Redirigir a la última página válida
-        const targetPage = Math.min(page, data.pages);
-        if (targetPage !== page) {
-          untracked(() => {
-            this.router.navigate([], {
-              queryParams: { page: targetPage },
-              queryParamsHandling: 'merge',
-            });
-          });
-        }
-      }
-    }
-  });
-
-  onSelectProgram = effect(() => {
-    const program = this.programSelected();
-
-    if (program) {
-      untracked(() => {
-        this.pensumSelected.set(null);
-
-        this.programService.setPaginationPensumByProgramId({
-          idProgram: program.id,
-          limit: 100,
-          offset: 0,
-        });
-      });
-    }
-
-    if (program === null) {
-      this.pensumSelected.set(null);
-      this.programService.setPaginationPensumByProgramId();
-    }
-  });
-
-  idSmmlv = toSignal(this.myForm.controls.idSmmlv.valueChanges);
-
-  private discountsChanges = toSignal(this.myForm.controls.discounts.valueChanges, {
-    initialValue: [],
-  });
-
-  ngOnInit() {}
+  removeDiscount(index: number) {
+    this.discounts.removeAt(index);
+  }
 
   deleteSelection() {
     this.programSelected.set(null);
@@ -262,7 +249,7 @@ export class Form implements OnInit {
     if (this.myForm.invalid) return;
     this.alertService.close();
 
-    if (this.programSelected() && this.pensumSelected()) {
+    if (this.programSelected() && this.pensumSelected() && this.feeSelected()) {
       const programCreate: ProgramCreate = {
         idProgramExternal: this.programSelected()!.idProgramExternal
           ? this.programSelected()!.idProgramExternal
@@ -272,22 +259,25 @@ export class Form implements OnInit {
         workday: this.programSelected()!.workday,
         modality: this.programSelected()!.modality,
         methodology: this.programSelected()!.methodology,
-        codeCDP: this.myForm.value.codeCDP! ? this.myForm.value.codeCDP! : undefined,
         faculty: this.programSelected()!.faculty ? this.programSelected()!.faculty! : undefined,
         programOffering: {
           cohort: Number(this.myForm.value.programOffering!.cohort),
           semester: Number(this.myForm.value.programOffering!.semester),
+          codeCDP: this.myForm.value.programOffering!.codeCDP
+            ? this.myForm.value.programOffering!.codeCDP!
+            : undefined,
         },
         pensum: {
           idPensumExternal: this.pensumSelected()!.idPensumExternal
             ? this.pensumSelected()!.idPensumExternal
             : (this.pensumSelected()!.id as number),
-          name: this.pensumSelected()!.description,
+          name: this.pensumSelected()!.name,
           startYear: Number(this.pensumSelected()!.startYear),
           status: this.pensumSelected()!.status,
           credits: this.pensumSelected()!.credits ? this.pensumSelected()!.credits! : 0,
         },
         idSmmlv: this.myForm.value.idSmmlv!,
+        idFee: this.feeSelected()!.id,
         discounts: this.myForm.value.discounts!.map((discount) => ({
           percentage: Number(discount.percentage),
           numberOfApplicants: Number(discount.numberOfApplicants),
@@ -297,12 +287,12 @@ export class Form implements OnInit {
       this.programService.create(programCreate).subscribe({
         next: () => {
           this.alertService.open({
-            message: 'Credo con exito',
+            message: 'Oferta académica creada exitosamente.',
             type: 'success',
           });
           this.myForm.reset();
-          this.programSelected.set(null);
-          this.pensumSelected.set(null);
+          this.deleteSelection();
+          this.myForm.controls.discounts.clear();
         },
         error: (err) => {
           this.alertService.open({

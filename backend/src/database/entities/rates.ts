@@ -1,7 +1,8 @@
 import { Fee } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { ModalityEntity } from './modality';
+import { ProgramOfferingEntity } from './program-offering';
 
 @Entity('rates')
 export class FeeEntity extends BaseEntity implements Fee {
@@ -30,4 +31,7 @@ export class FeeEntity extends BaseEntity implements Fee {
   @OneToOne(() => ModalityEntity, (modality) => modality.fee)
   @JoinColumn()
   modality: ModalityEntity;
+
+  @OneToMany(() => ProgramOfferingEntity, (offering) => offering.fee)
+  offerings: ProgramOfferingEntity[];
 }

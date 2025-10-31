@@ -11,5 +11,6 @@ import { IconComponent } from '@core/shared/components/icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardProgram {
-  program = input.required<Program | null>();
+  program = input<Program | null>();
+  
 }

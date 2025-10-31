@@ -1,45 +1,67 @@
-<div class="flex justify-start items-start gap-4 border border-gray-200 p-4 rounded-md shadow-xs">
-  <div class="min-w-16 min-h-16 bg-emerald-100 rounded-lg flex justify-center items-center">
-    <shared-icon icon="program" classList="min-w-8 min-h-8 text-emerald-600" />
+<div class="p-4 border border-gray-300 shadow-xs rounded-md">
+  <div class="flex items-center gap-2 mb-4">
+    <shared-icon icon="program" classList="w-6 h-6 text-emerald-600" />
+    <h2 class="text-base font-semibold">Información del Programa</h2>
   </div>
   @if(program()){
-  <div>
-    <p class="text-sm font-semibold">
-      id: <span class="font-normal">{{ program()?.id }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      idUnity: <span class="font-normal">{{ program()?.idUnityProgram }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      idProgramExternal: <span class="font-normal">{{ program()?.idProgramExternal }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Programa: <span class="font-normal">{{ program()?.name | titlecase }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Facultad:
-      <span class="font-normal">{{ (program()?.faculty | titlecase) || 'Sin Facultad' }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Unidad: <span class="font-normal">{{ program()?.unity | titlecase }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Jornada: <span class="font-normal">{{ program()?.workday | titlecase }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Nivel Educativo:
-      <span class="font-normal">{{ program()?.educationalLevel | titlecase }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Metodologia:
-      <span class="font-normal">{{ program()?.methodology | titlecase }}</span>
-    </p>
-    <p class="text-sm font-semibold">
-      Modalidad:
-      <span class="font-normal">{{ program()?.modality | titlecase }}</span>
-    </p>
+  <div class="flex flex-col gap-4">
+    <div>
+      <p class="text-sm font-medium text-gray-500">Nombre:</p>
+      <p class="text-sm font-semibold text-gray-900">
+        {{ program()?.name | titlecase }}
+      </p>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium text-gray-500">Facultad:</p>
+      <div class="flex items-center gap-2">
+        <shared-icon icon="faculty" classList="w-3.5 h-3.5 text-gray-700" />
+        <p class="text-sm font-semibold text-gray-700">
+          {{ (program()?.faculty | titlecase) || 'Sin Facultad' }}
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium text-gray-500">Unidad:</p>
+      <div class="flex items-center gap-2">
+        <shared-icon icon="ubication" classList="w-3.5 h-3.5 text-gray-700" />
+        <p class="text-sm font-semibold text-gray-700">
+          {{ program()?.unity | titlecase }}
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="text-sm font-medium text-gray-500">Modalidad:</p>
+        <p class="text-xs font-semibold text-gray-700 mt-1">
+          <span class="border px-2 rounded-full border-gray-300 bg-gray-300">
+            {{ program()?.modality | titlecase }}
+          </span>
+        </p>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-gray-500">Metodología:</p>
+        <p class="text-xs font-semibold text-gray-700 mt-1">
+          <span class="border px-2 rounded-full border-gray-300">
+            {{ program()?.methodology | titlecase }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-sm font-medium text-gray-500">Jornada:</p>
+      <div class="flex items-center gap-2">
+        <shared-icon icon="clock" classList="w-3.5 h-3.5 text-gray-700" />
+        <p class="text-sm font-semibold text-gray-700">
+          {{ program()?.workday | titlecase }}
+        </p>
+      </div>
+    </div>
   </div>
   }@else {
-  <div class="text-sm text-red-400">No hay programa seleccionado</div>
+  <p class="text-sm text-red-400">Seleccione un programa para ver su información.</p>
   }
 </div>

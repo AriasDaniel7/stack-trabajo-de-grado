@@ -37,6 +37,9 @@ export const facultyKeys = {
 
 export const programKeys = {
   LIST_KEY: 'program-list',
-  EXISTING_KEY: 'program-existing',
+  LIST_INTERNAL_KEY: 'program-list-internal',
+  OFFERINGS_KEY: 'program-offerings',
   PENSUM_KEY: 'program-pensum',
+  BY_ID_PROGRAM_PLACEMENT_KEY: 'program-by-idProgramPlacement',
+  BY_ID_PROGRAM_OFFERING_KEY: 'program-by-idProgramOffering',
 };

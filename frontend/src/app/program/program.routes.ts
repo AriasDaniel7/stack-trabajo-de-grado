@@ -19,8 +19,16 @@ export const programRoutes: Routes = [
         loadComponent: () => import('./pages/home-page/home-page'),
       },
       {
-        path: 'program-management/:id',
-        loadComponent: () => import('./pages/program-detail/program-detail'),
+        path: 'program-management/register',
+        loadComponent: () => import('./pages/register-program/register-program'),
+      },
+      {
+        path: 'program-management/:idProgramPlacement/offerings',
+        loadComponent: () => import('./pages/offerings/offerings'),
+      },
+      {
+        path: 'program-management/:idProgramPlacement/offerings/:idProgramOffering',
+        loadComponent: () => import('./pages/offering-page/offering-page'),
       },
     ],
   },

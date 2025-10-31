@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProgramService } from './program.service';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -14,6 +15,8 @@ import { UpdateProgramDto } from './dto/update-program.dto';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 import { ParamProgramAllDto } from './dto/param-program-all.dto';
+import { ParamProgramAllInternalDto } from './dto/param-program-all-internal.dto';
+import { ParamOfferingDto } from './dto/param-offering.dto';
 
 @ApiTags('Programas')
 @Controller('program')
@@ -30,23 +33,40 @@ export class ProgramController {
     return this.programService.findAll(params);
   }
 
-  @Get('all-existing')
-  findAllExisting(@Query() params: ParamProgramAllDto) {
-    return this.programService.findAllExisting(params);
+  @Get('all/internal')
+  findAllInternal(@Query() params: ParamProgramAllInternalDto) {
+    return this.programService.findAllInternal(params);
   }
 
-  @ApiParam({ name: 'idProgram', description: 'Program ID', type: String })
-  @Get(':idProgram/pensum')
+  @Get('placement/:id')
+  findOneByIdProgramPlacement(@Param('id', ParseUUIDPipe) id: string) {
+    return this.programService.findOneByIdProgramPlacement(id);
+  }
+
+  @Get('offering/:id')
+  findOneByIdOffering(@Param('id', ParseUUIDPipe) id: string) {
+    return this.programService.findOneByIdOffering(id);
+  }
+
+  @Get('placement/:id/offerings')
+  findOfferingsByIdProgramPlacement(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() params: ParamOfferingDto,
+  ) {
+    return this.programService.findOfferingsByIdProgramPlacement(id, params);
+  }
+
+  @Get('all/external')
+  findAllExternal(@Query() params: ParamProgramAllDto) {
+    return this.programService.findAllExternal(params);
+  }
+
+  @Get(':id/pensum')
   findPensumByIdProgram(
     @Query() pagination: PaginationDto,
-    @Param('idProgram') id: string,
+    @Param('id') id: string,
   ) {
     return this.programService.findPensumByIdProgram(id, pagination);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.programService.findOne(+id);
   }
 
   @Patch(':id')
@@ -57,5 +77,15 @@ export class ProgramController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.programService.remove(+id);
+  }
+
+  @Delete('placement/:id')
+  removePlacement(@Param('id', ParseUUIDPipe) id: string) {
+    return this.programService.removePlacement(id);
+  }
+
+  @Delete('offering/:id')
+  removeOffering(@Param('id', ParseUUIDPipe) id: string) {
+    return this.programService.removeOffering(id);
   }
 }

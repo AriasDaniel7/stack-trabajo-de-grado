@@ -1,52 +1,52 @@
-<div class="space-y-4">
-  @for (pensum of pensumList(); track pensum.id) {
-  <div
-    (click)="onSelect(pensum)"
-    [class.bg-gray-100]="selectPensum()?.id === pensum.id"
-    [class.hover:bg-gray-50]="selectPensum()?.id !== pensum.id"
-    class="flex gap-4 justify-center items-center border border-gray-200 p-4 rounded-md shadow-xs cursor-pointer max-h-[200px] overflow-y-auto"
-  >
+<div class="p-4 border border-gray-300 shadow-xs rounded-md">
+  <div class="mb-4">
+    <div class="flex items-center gap-2">
+      <shared-icon icon="book-open" classList="w-6 h-6 text-emerald-600" />
+      <h2 class="text-base font-semibold">Seleccionar Pensum*</h2>
+    </div>
+    <p class="text-sm text-gray-500">Por favor, selecciona un pensum de la lista.</p>
+  </div>
+  <div class="space-y-4">
+    @if(isLoading()){
+    <div class="flex justify-center items-center h-[206px]">
+      <shared-loading classList="border-4 border-gray-500 w-10 h-10" />
+    </div>
+    }@else {
+    <!--  -->
+    @for (pensum of pensums(); track pensum.id; let last = $last) {
+    <!--  -->
+    @let isSelected = selectPensum() && selectPensum()?.id === pensum.id;
+    <!--  -->
     <div
-      class="min-w-16 min-h-16 bg-blue-100 rounded-lg flex justify-center items-center border border-blue-300"
+      (click)="onSelect(pensum)"
+      [class.bg-gray-200]="isSelected"
+      class="flex gap-4 items-start justify-start border border-gray-200 hover:bg-gray-200 p-4 cursor-pointer rounded"
     >
-      <shared-icon icon="document" classList="min-w-8 min-h-8 text-blue-600" />
-    </div>
-    <div class="w-full">
-      <p class="text-sm font-semibold">
-        Id: <span class="font-normal">{{ pensum.id }}</span>
-      </p>
-      <p class="text-sm font-semibold">
-        IdExternal: <span class="font-normal">{{ pensum.idPensumExternal }}</span>
-      </p>
-      <p class="text-sm font-semibold">
-        Nombre: <span class="font-normal">{{ pensum.description | titlecase }}</span>
-      </p>
-      <p class="text-sm font-semibold">
-        Año de Inicio: <span class="font-normal">{{ pensum.startYear }}</span>
-      </p>
-      <p class="text-sm font-semibold">
-        Estado:
-        <span class="font-normal border border-gray-300 rounded-full px-1 py-0.5 text-xs">{{
-          pensum.status | titlecase
-        }}</span>
-      </p>
-      <p class="text-sm font-semibold">
-        Creditos: <span class="font-normal">{{ pensum.credits }}</span>
-      </p>
-    </div>
-    @if(selectPensum()?.id === pensum.id){
-    <div class="flex justify-center items-center">
-      <div
-        class="flex justify-center items-center w-6 h-6 text-xs text-green-500 bg-white border border-gray-300 rounded-md"
-      >
-        <span class="text-base">✓</span>
+      @if(isSelected){
+      <div>
+        <div class="flex justify-center items-center">
+          <button
+            class="border rounded-md h-full p-1 flex justify-center items-center border-emerald-300 bg-emerald-100"
+          >
+            <span class="text-xs text-emerald-600 w-2 h-2 flex justify-center items-center">
+              <span>✓</span>
+            </span>
+          </button>
+        </div>
       </div>
+      }
+      <program-card-pensum [isSelected]="true" [pensum]="pensum" />
+    </div>
+    }@empty {
+    <div>
+      <p class="text-sm text-red-400">No hay pensums disponibles</p>
+    </div>
+    } @if(!selectPensum()){
+    <div class="text-sm text-red-400">
+      <p>Por favor, selecciona un pensum para continuar.</p>
     </div>
     }
+    <!--  -->
+    }
   </div>
-  }@empty {
-  <div class="text-sm text-gray-500">No hay pensum disponible</div>
-  } @if(!selectPensum()){
-  <div class="text-sm rounded-md text-red-400">Seleccione un pensum</div>
-  }
 </div>

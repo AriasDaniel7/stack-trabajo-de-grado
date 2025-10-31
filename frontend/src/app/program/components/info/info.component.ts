@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ProgramResponse } from '@core/interfaces/program';
 import { SchoolGradeResponse } from '@core/interfaces/school-grade';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
 
@@ -10,29 +11,10 @@ import { IconComponent } from '@core/shared/components/icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InfoComponent {
-  schoolGradeResponse = input<SchoolGradeResponse>();
+  programResponse = input<ProgramResponse>();
 
-  levelMax = computed(() => {
-    const response = this.schoolGradeResponse();
-    if (response) {
-      const data = response.data;
-      if (data.length > 0) {
-        return Math.max(...data.map((item) => item.level));
-      }
-      return 0;
-    }
-    return 0;
-  });
-
-  levelMin = computed(() => {
-    const response = this.schoolGradeResponse();
-    if (response) {
-      const data = response.data;
-      if (data.length > 0) {
-        return Math.min(...data.map((item) => item.level));
-      }
-      return 0;
-    }
-    return 0;
-  });
+  countWithFaculty(): number {
+    const programs = this.programResponse()?.data || [];
+    return programs.filter((program) => program.faculty).length;
+  }
 }

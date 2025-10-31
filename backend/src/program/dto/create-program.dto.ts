@@ -58,6 +58,11 @@ export class CreateProgramOfferingDto implements ProgramOfferingCreate {
   @IsNumber()
   @IsNotEmpty()
   semester: number;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  codeCDP?: string;
 }
 
 export class CreateProgramDto implements ProgramCreate {
@@ -97,9 +102,9 @@ export class CreateProgramDto implements ProgramCreate {
   idSmmlv: string;
 
   @IsString()
-  @IsOptional()
+  @IsUUID()
   @IsNotEmpty()
-  codeCDP?: string;
+  idFee: string;
 
   @IsObject()
   @ValidateNested()

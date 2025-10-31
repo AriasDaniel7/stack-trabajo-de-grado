@@ -7,7 +7,7 @@ export interface PensumResponse {
 export interface Pensum {
   id: string | number;
   idPensumExternal?: number;
-  description: string;
+  name: string;
   startYear: number;
   status: string;
   credits: number | null;
