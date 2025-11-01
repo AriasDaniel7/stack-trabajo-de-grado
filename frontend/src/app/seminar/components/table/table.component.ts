@@ -11,9 +11,10 @@ import { IconComponent } from '@core/shared/components/icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent {
-  seminaries = input.required<Seminar[]>();
+  seminaries = input<Seminar[] | null>();
   onEdit = output<Seminar>();
   onDelete = output<Seminar>();
+  showEdit = input<boolean>(true);
 
   paymentTypeMapping = {
     BONIFICACIONES_PLANTA_ADMIN: 'Bonificaciones Planta Admin',

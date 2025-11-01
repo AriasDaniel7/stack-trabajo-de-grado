@@ -5,7 +5,7 @@ import { PaginationOptions } from '@core/interfaces/pagination';
 import { docentKeys } from '@core/utils/keys';
 import { environment } from '@env/environment';
 import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { catchError, firstValueFrom, tap, throwError } from 'rxjs';
+import { catchError, delay, firstValueFrom, tap, throwError } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/docent';
 const { LIST_KEY } = docentKeys;

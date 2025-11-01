@@ -1,13 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeeResponse } from '@core/interfaces/fee';
@@ -15,13 +7,15 @@ import { Offering } from '@core/interfaces/program';
 import { SmmlvResponse } from '@core/interfaces/smmlv';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
 import { FormUtil } from '@core/utils/form';
+import { CardProgram } from '../card-program/card-program';
+import { CardPensum } from '../card-pensum/card-pensum';
 
 @Component({
   selector: 'program-form-offering',
-  imports: [IconComponent, ReactiveFormsModule, CurrencyPipe],
+  imports: [IconComponent, ReactiveFormsModule, CurrencyPipe, CardProgram, CardPensum],
   templateUrl: './form-offering.html',
   styleUrl: './form-offering.css',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormOffering {
   private fb = inject(FormBuilder);
@@ -161,12 +155,14 @@ export class FormOffering {
   }
 
   addDiscount() {
-    const discountGroup = this.fb.group({
-      percentage: [null, [Validators.required, Validators.min(1), Validators.max(100)]],
-      numberOfApplicants: [null, [Validators.required, Validators.min(1)]],
-    });
+    if (this.discounts.length < 8) {
+      const discountGroup = this.fb.group({
+        percentage: [null, [Validators.required, Validators.min(1), Validators.max(100)]],
+        numberOfApplicants: [null, [Validators.required, Validators.min(1)]],
+      });
 
-    this.discounts.push(discountGroup);
+      this.discounts.push(discountGroup);
+    }
   }
 
   removeDiscount(index: number) {

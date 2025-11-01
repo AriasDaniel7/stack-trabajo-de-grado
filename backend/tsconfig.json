@@ -25,7 +25,10 @@
       "@fee/*": ["src/fee/*"],
       "@modality/*": ["src/modality/*"],
       "@program/*": ["src/program/*"],
-      "@utils/*": ["src/core/utils/*"]
+      "@utils/*": ["src/core/utils/*"],
+      "@seminar/*": ["src/seminar/*"],
+      "@methodology/*": ["src/methodology/*"],
+      "@faculty/*": ["src/faculty/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

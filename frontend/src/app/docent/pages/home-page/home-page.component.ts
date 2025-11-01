@@ -21,10 +21,9 @@ import { ModalConfirmationService } from '@core/shared/components/modal-confirma
 import { ModalConfirmationComponent } from '@core/shared/components/modal-confirmation/modal-confirmation.component';
 import { ModalComponent } from '@core/shared/components/modal/modal.component';
 import { Router } from '@angular/router';
-import { LoadingComponent } from '@core/shared/components/loading/loading.component';
-import { ListComponent } from '@docent/components/list/list.component';
 import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
 import { FormComponent } from '@docent/components/form/form.component';
+import { Table } from '@docent/components/table/table';
 
 @Component({
   selector: 'docent-home-page',
@@ -33,10 +32,9 @@ import { FormComponent } from '@docent/components/form/form.component';
     IconComponent,
     ModalConfirmationComponent,
     ModalComponent,
-    LoadingComponent,
-    ListComponent,
     PaginationComponent,
     FormComponent,
+    Table,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',

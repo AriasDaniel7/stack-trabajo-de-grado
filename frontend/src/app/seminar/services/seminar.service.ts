@@ -24,6 +24,7 @@ export class SeminarService {
     queryKey: [LIST_KEY, this.pagination()],
     queryFn: () => firstValueFrom(this.getAll(this.pagination()!)),
     enabled: !!this.pagination(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   }));
 
   setPagination(params: ParamSeminar) {

@@ -8,6 +8,7 @@ import { SeminarDocentEntity } from '@database/entities/seminar-docent';
 import { DocentSeminarEntity } from '@database/entities/docent-seminar';
 import { SchoolGradeSeminarEntity } from '@database/entities/school-grade-seminar';
 import { DocentModule } from '@docent/docent.module';
+import { SeminarProgramOfferingEntity } from '@database/entities/seminar-program-offering';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DocentModule } from '@docent/docent.module';
       SeminarDocentEntity,
       DocentSeminarEntity,
       SchoolGradeSeminarEntity,
+      SeminarProgramOfferingEntity,
     ]),
     DocentModule,
   ],

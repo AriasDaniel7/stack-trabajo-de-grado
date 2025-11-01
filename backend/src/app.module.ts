@@ -7,10 +7,11 @@ import { SchoolGradeModule } from '@school-grade/school-grade.module';
 import { DocentModule } from '@docent/docent.module';
 import { SmmlvModule } from '@smmlv/smmlv.module';
 import { FeeModule } from '@fee/fee.module';
-import { ModalityModule } from './modality/modality.module';
-import { MethodologyModule } from './methodology/methodology.module';
-import { FacultyModule } from './faculty/faculty.module';
-import { ProgramModule } from './program/program.module';
+import { SeminarModule } from '@seminar/seminar.module';
+import { ModalityModule } from '@modality/modality.module';
+import { MethodologyModule } from '@methodology/methodology.module';
+import { FacultyModule } from '@faculty/faculty.module';
+import { ProgramModule } from '@program/program.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProgramModule } from './program/program.module';
     MethodologyModule,
     FacultyModule,
     ProgramModule,
+    SeminarModule,
   ],
 })
 export class AppModule {}

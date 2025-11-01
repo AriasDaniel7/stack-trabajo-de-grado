@@ -20,21 +20,17 @@
 </div>
 
 <div class="p-6">
-  @if(docentQuery.isLoading()){
-  <div class="w-full h-[442px] flex justify-center items-center">
-    <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
-  </div>
-  }@else if (docentQuery.isSuccess()) {
-  <docent-list
+  <docent-table
+    [docents]="docentQuery.data()?.data"
+    [isLoading]="docentQuery.isLoading()"
     (onEdit)="openModal($event)"
     (onDelete)="onDelete($event)"
-    [docents]="docentQuery.data().data"
   />
-
-  <div class="mt-4">
+  <div class="mt-4 h-[30px]">
+    @if(docentQuery.isSuccess()){
     <shared-pagination [currentPage]="currentPage()" [pages]="docentQuery.data().pages" />
+    }
   </div>
-  }
 </div>
 
 @if(isOpenModal()){

@@ -32,7 +32,7 @@
           Estado
         </th>
         <th
-          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300 w-10"
         >
           Acciones
         </th>
@@ -129,25 +129,23 @@
             >
           </div>
         </td>
-        <td
-          [class.border-b]="!last"
-          class="px-2 text-right text-sm whitespace-nowrap border-gray-300"
-        >
-          <div class="flex justify-end items-center">
+        <td [class.border-b]="!last" class="p-2 border-gray-300">
+          <div class="flex justify-center items-center gap-2">
+            @if(showEdit()){
             <button
-              (click)="onEdit.emit(seminar)"
-              class="p-2 transition-colors hover:bg-blue-100"
               type="button"
+              (click)="onEdit.emit(seminar)"
+              class="border rounded-md h-full p-1.5 flex justify-center items-center border-blue-300 bg-blue-100 hover:bg-blue-200"
             >
-              <shared-icon classList="w-4 h-4 text-blue-600" icon="edit" />
+              <shared-icon icon="edit" classList="text-blue-600 w-3 h-3" />
             </button>
-
+            }
             <button
               (click)="onDelete.emit(seminar)"
-              class="p-2 transition-colors hover:bg-red-100"
               type="button"
+              class="border rounded-md h-full p-1.5 flex justify-center items-center border-red-300 bg-red-100 hover:bg-red-200"
             >
-              <shared-icon classList="w-4 h-4 text-red-600" icon="delete" />
+              <shared-icon icon="delete" classList="text-red-600 w-3 h-3" />
             </button>
           </div>
         </td>

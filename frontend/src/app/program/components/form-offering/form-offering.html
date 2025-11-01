@@ -1,204 +1,217 @@
 <form [formGroup]="myForm">
-  <div>
-    <h2 class="text-base font-semibold">Datos Editables</h2>
-    <p class="text-sm text-gray-500">
-      Completa la información de cohorte, semestre, tarifas y descuentos
-    </p>
-  </div>
-
-  <div class="flex flex-col gap-6">
-    <div>
-      <div class="flex items-center gap-2 my-4 border-b border-gray-300 pb-2">
-        <shared-icon icon="calendar" classList="w-3.5 h-3.5" />
-        <h3 class="text-sm font-semibold">Datos Basicos:</h3>
-      </div>
-
-      <div formGroupName="programOffering" class="grid xl:grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="cohort">Cohorte:</label>
-          <input type="number" min="1" formControlName="cohort" />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="semester">Semestre:</label>
-          <input type="number" formControlName="semester" />
-        </div>
-
-        <div class="flex flex-col gap-1 xl:col-span-2">
-          <label class="text-sm font-semibold text-gray-800" for="codeCDP">Código CDP:</label>
-          <input type="text" formControlName="codeCDP" />
-        </div>
-      </div>
+  <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+    <div class="flex flex-col gap-6">
+      <program-card [program]="offering()?.program" />
+      <program-card-pensum [pensum]="offering()?.pensum" />
     </div>
 
-    <div>
-      <div class="flex items-center gap-2 my-4 border-b border-gray-300 pb-2">
-        <shared-icon icon="economic" classList="w-3.5 h-3.5" />
-        <h3 class="text-sm font-semibold">Datos Matrícula:</h3>
-      </div>
-
-      <div class="grid xl:grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idSmmlv">S.M.M.L.V.:</label>
-          <select formControlName="idSmmlv" id="idSmmlv">
-            <option selected disabled [value]="null">Seleccionar S.M.M.L.V.</option>
-            @for (smmlv of smmlvs()?.data; track smmlv.id) {
-            <option [value]="smmlv.id">
-              {{ smmlv.year }}
-            </option>
-            }
-          </select>
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idSmmlv">Valor S.M.M.L.V.:</label>
-          <input
-            disabled
-            type="text"
-            [value]="smmlvSelected()?.value | currency : 'COP' : 'symbol' : '1.0-0'"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
-            >Número de créditos por semestre:</label
-          >
-          <input disabled type="text" [value]="offering()?.pensum?.credits" />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
-            >Valor de la Matrícula:</label
-          >
-          <input
-            disabled
-            type="text"
-            [value]="tuitionValue() | currency : 'COP' : 'symbol' : '1.0-0'"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
-            >Crédito S.M.M.L.V.:</label
-          >
-          <input
-            disabled
-            type="text"
-            [value]="creditSmmlvValue() | currency : 'COP' : 'symbol' : '1.0-0'"
-          />
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div
-        class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-300"
-      >
-        <div class="flex items-center gap-2">
-          <shared-icon icon="discount" classList="w-3.5 h-3.5" />
-          <h3 class="text-sm font-semibold">Descuentos:</h3>
-        </div>
-        <button
-          type="button"
-          (click)="addDiscount()"
-          class="mt-4 mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full md:w-fit flex items-center gap-2 justify-center"
-        >
-          <shared-icon icon="add" />
-          <span>Agregar Descuento</span>
-        </button>
-      </div>
+    <div class="p-4 border border-gray-300 shadow-xs rounded-md xl:col-span-3">
       <div>
-        <div class="my-4">
-          <h3 class="text-sm text-center font-semibold">
-            Aspirantes con Descuentos Institucionales (Opcional):
-          </h3>
-          <p class="text-sm text-gray-500 text-center">
-            (Egresado, Certificado Electoral, Convención Colectiva)
-          </p>
+        <h2 class="text-base font-semibold">Datos Editables</h2>
+        <p class="text-sm text-gray-500">
+          Completa la información de cohorte, semestre, tarifas y descuentos
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <div>
+          <div class="flex items-center gap-2 my-4 border-b border-gray-300 pb-2">
+            <shared-icon icon="calendar" classList="w-3.5 h-3.5" />
+            <h3 class="text-sm font-semibold">Datos Basicos:</h3>
+          </div>
+
+          <div formGroupName="programOffering" class="grid xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="cohort">Cohorte:</label>
+              <input type="number" min="1" formControlName="cohort" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="semester">Semestre:</label>
+              <input type="number" formControlName="semester" />
+            </div>
+
+            <div class="flex flex-col gap-1 xl:col-span-2">
+              <label class="text-sm font-semibold text-gray-800" for="codeCDP">Código CDP:</label>
+              <input type="text" formControlName="codeCDP" />
+            </div>
+          </div>
         </div>
-        <div class="overflow-x-auto">
-          <table
-            class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+
+        <div>
+          <div class="flex items-center gap-2 my-4 border-b border-gray-300 pb-2">
+            <shared-icon icon="economic" classList="w-3.5 h-3.5" />
+            <h3 class="text-sm font-semibold">Datos Matrícula:</h3>
+          </div>
+
+          <div class="grid xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="idSmmlv">S.M.M.L.V.:</label>
+              <select formControlName="idSmmlv" id="idSmmlv">
+                <option selected disabled [value]="null">Seleccionar S.M.M.L.V.</option>
+                @for (smmlv of smmlvs()?.data; track smmlv.id) {
+                <option [value]="smmlv.id">
+                  {{ smmlv.year }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+                >Valor S.M.M.L.V.:</label
+              >
+              <input
+                disabled
+                type="text"
+                [value]="smmlvSelected()?.value | currency : 'COP' : 'symbol' : '1.0-0'"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+                >Número de créditos por semestre:</label
+              >
+              <input disabled type="text" [value]="offering()?.pensum?.credits" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+                >Valor de la Matrícula:</label
+              >
+              <input
+                disabled
+                type="text"
+                [value]="tuitionValue() | currency : 'COP' : 'symbol' : '1.0-0'"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-gray-800" for="idSmmlv"
+                >Crédito S.M.M.L.V.:</label
+              >
+              <input
+                disabled
+                type="text"
+                [value]="creditSmmlvValue() | currency : 'COP' : 'symbol' : '1.0-0'"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border border-gray-300 shadow-xs rounded-md xl:col-span-4">
+      <div>
+        <div
+          class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-300"
+        >
+          <div class="flex items-center gap-2">
+            <shared-icon icon="discount" classList="w-3.5 h-3.5" />
+            <h3 class="text-sm font-semibold">Descuentos:</h3>
+          </div>
+          <button
+            type="button"
+            (click)="addDiscount()"
+            class="mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full md:w-fit flex items-center gap-2 justify-center"
           >
-            <thead>
-              <tr class="h-10 bg-gray-100">
-                <th
-                  class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                >
-                  Porcentaje del Descuento
-                </th>
-                <th
-                  class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                >
-                  Numero de Aspirantes
-                </th>
-                <th
-                  class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                >
-                  $ Ingresos con Descuento
-                </th>
-                <th
-                  class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                ></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (discount of discounts.controls; track $index; let last = $last) {
-              <tr class="h-10" [formGroup]="discount">
-                <td class="p-2 border-gray-200 border-b">
-                  <div class="flex flex-col">
-                    <input
-                      class="h-full w-full text-center"
-                      formControlName="percentage"
-                      type="number"
-                      min="0"
-                      max="100"
-                    />
-                    @if (formUtil.isValidField(discount, 'percentage')) {
-                    <span class="text-xs text-red-400">
-                      {{ formUtil.getFieldError(discount, 'percentage') }}
-                    </span>
-                    }
-                  </div>
-                </td>
-                <td class="p-2 border-gray-200 border-b">
-                  <div class="flex flex-col">
-                    <input
-                      class="h-full w-full text-center"
-                      type="number"
-                      min="0"
-                      formControlName="numberOfApplicants"
-                    />
-                    @if (formUtil.isValidField(discount, 'numberOfApplicants')) {
-                    <span class="text-xs text-red-400">
-                      {{ formUtil.getFieldError(discount, 'numberOfApplicants') }}
-                    </span>
-                    }
-                  </div>
-                </td>
-                <td class="text-right p-2 border-gray-200 border-b">
-                  {{ discountedIncomeValue($index) | currency : 'COP' : 'symbol' : '1.0-0' }}
-                </td>
-                <td class="p-2 border-gray-200 border-b">
-                  <button
-                    type="button"
-                    (click)="removeDiscount($index)"
-                    class="border border-red-300 bg-red-100 h-8 w-8 flex justify-center items-center"
+            <shared-icon icon="add" />
+            <span>Agregar Descuento</span>
+          </button>
+        </div>
+        <div>
+          <div class="my-4">
+            <h3 class="text-sm text-center font-semibold">
+              Aspirantes con Descuentos Institucionales (Opcional):
+            </h3>
+            <p class="text-sm text-gray-500 text-center">
+              (Egresado, Certificado Electoral, Convención Colectiva)
+            </p>
+          </div>
+          <div class="overflow-x-auto">
+            <table
+              class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+            >
+              <thead>
+                <tr class="h-10 bg-gray-100">
+                  <th
+                    class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
                   >
-                    <shared-icon icon="delete" classList="text-red-600 w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-              }
-              <tr>
-                <td class="p-2 text-sm font-semibold text-center">Total:</td>
-                <td class="p-2 text-center">{{ totals().totalApplicants }}</td>
-                <td class="text-right p-2">
-                  {{ totals().totalDiscountedIncome | currency : 'COP' : 'symbol' : '1.0-0' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                    Porcentaje del Descuento
+                  </th>
+                  <th
+                    class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  >
+                    Numero de Aspirantes
+                  </th>
+                  <th
+                    class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  >
+                    $ Ingresos con Descuento
+                  </th>
+                  <th
+                    class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  ></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (discount of discounts.controls; track $index; let last = $last) {
+                <tr class="h-10" [formGroup]="discount">
+                  <td class="p-2 border-gray-200 border-b">
+                    <div class="flex flex-col">
+                      <input
+                        class="h-full w-full text-center"
+                        formControlName="percentage"
+                        type="number"
+                        min="0"
+                        max="100"
+                      />
+                      @if (formUtil.isValidField(discount, 'percentage')) {
+                      <span class="text-xs text-red-400">
+                        {{ formUtil.getFieldError(discount, 'percentage') }}
+                      </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="p-2 border-gray-200 border-b">
+                    <div class="flex flex-col">
+                      <input
+                        class="h-full w-full text-center"
+                        type="number"
+                        min="0"
+                        formControlName="numberOfApplicants"
+                      />
+                      @if (formUtil.isValidField(discount, 'numberOfApplicants')) {
+                      <span class="text-xs text-red-400">
+                        {{ formUtil.getFieldError(discount, 'numberOfApplicants') }}
+                      </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="text-right p-2 border-gray-200 border-b">
+                    {{ discountedIncomeValue($index) | currency : 'COP' : 'symbol' : '1.0-0' }}
+                  </td>
+                  <td class="p-2 border-gray-200 border-b">
+                    <button
+                      type="button"
+                      (click)="removeDiscount($index)"
+                      class="border border-red-300 bg-red-100 h-8 w-8 flex justify-center items-center"
+                    >
+                      <shared-icon icon="delete" classList="text-red-600 w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+                }
+                <tr>
+                  <td class="p-2 text-sm font-semibold text-center">Total:</td>
+                  <td class="p-2 text-center">{{ totals().totalApplicants }}</td>
+                  <td class="text-right p-2">
+                    {{ totals().totalDiscountedIncome | currency : 'COP' : 'symbol' : '1.0-0' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

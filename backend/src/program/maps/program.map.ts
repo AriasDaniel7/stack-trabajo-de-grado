@@ -95,6 +95,7 @@ export class ProgramMap {
       discounts: offering.discounts,
       pensum: offering.pensum,
       smmlv: offering.smmlv,
+      seminars: offering.seminarProgramOfferings.map((spo) => spo.seminar),
     };
   }
 }

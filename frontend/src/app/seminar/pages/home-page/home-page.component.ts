@@ -116,7 +116,7 @@ export default class HomePageComponent implements OnInit, OnDestroy {
   onDelete(seminar: Seminar) {
     this.modalConfirmationService.open({
       title: 'Eliminar seminario',
-      message: `¿Estás seguro de eliminar el seminario "${seminar.name}"?`,
+      message: `¿Estás seguro de eliminar el seminario "${seminar.name.toUpperCase()}"?`,
       confirmAction: () => this.delete(seminar.id),
     });
   }

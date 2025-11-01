@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { SeminarDateEntity } from './seminar-date';
 import { SeminarDocentEntity } from './seminar-docent';
+import { SeminarProgramOfferingEntity } from './seminar-program-offering';
 
 @Entity('seminaries')
 export class SeminarEntity extends BaseEntity implements Seminar {
@@ -31,6 +32,9 @@ export class SeminarEntity extends BaseEntity implements Seminar {
 
   @OneToOne(() => SeminarDocentEntity, (seminarDocent) => seminarDocent.seminar)
   seminarDocent: SeminarDocentEntity;
+
+  @OneToMany(() => SeminarProgramOfferingEntity, (spo) => spo.seminar)
+  seminarProgramOfferings: SeminarProgramOfferingEntity[];
 
   @BeforeInsert()
   beforeInsert() {

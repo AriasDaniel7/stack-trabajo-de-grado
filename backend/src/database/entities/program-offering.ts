@@ -15,6 +15,7 @@ import { PensumEntity } from './pensum';
 import { ProgramPlacementEntity } from './program-placement';
 import { FeeEntity } from './rates';
 import { DiscountEntity } from './discount';
+import { SeminarProgramOfferingEntity } from './seminar-program-offering';
 
 @Entity('program_offerings')
 @Unique('UQ_PROGRAM_COHORT_SEMESTER_PENSUM', [
@@ -87,6 +88,9 @@ export class ProgramOfferingEntity
 
   @OneToMany(() => DiscountEntity, (discount) => discount.programOffering)
   discounts: DiscountEntity[];
+
+  @OneToMany(() => SeminarProgramOfferingEntity, (spo) => spo.programOffering)
+  seminarProgramOfferings: SeminarProgramOfferingEntity[];
 
   @BeforeInsert()
   beforeInsert() {

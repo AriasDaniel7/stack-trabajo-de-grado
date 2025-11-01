@@ -105,7 +105,6 @@ export interface ProgramOffering {
   idSmmlv: string; // ID del SMMLV
   idPensum: string; // ID del pensum
   idFee: string; // ID de la tarifa
-  idProgram: string; // ID del programa
   cohort: number; // Cohorte
   semester: number; // Semestre
   codeCDP?: string; // Código CDP
@@ -123,5 +122,10 @@ export interface Pensum {
 export interface Discount {
   percentage: number; // Porcentaje de descuento
   numberOfApplicants: number; // Número de aplicantes
+  idProgramOffering: string; // ID de la oferta del programa
+}
+
+export interface SeminarProgramOffering {
+  idSeminar: string; // ID del seminario
   idProgramOffering: string; // ID de la oferta del programa
 }

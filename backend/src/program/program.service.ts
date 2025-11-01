@@ -12,9 +12,10 @@ import {
   CreatePensumDto,
   CreateProgramDto,
   CreateProgramOfferingDto,
+  CreateSeminarProgramOfferingDto,
 } from './dto/create-program.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource, In, QueryRunner } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { OrderType, PaginationDto } from '@shared/dtos/pagination.dto';
 import { PensumResponse } from './interfaces/pensum-external';
@@ -38,6 +39,8 @@ import { FeeEntity } from '@database/entities/rates';
 import { ParamProgramAllInternalDto } from './dto/param-program-all-internal.dto';
 import { ParamOfferingDto } from './dto/param-offering.dto';
 import { DiscountEntity } from '@database/entities/discount';
+import { SeminarEntity } from '@database/entities/seminar';
+import { SeminarProgramOfferingEntity } from '@database/entities/seminar-program-offering';
 
 @Injectable()
 export class ProgramService {
@@ -68,6 +71,7 @@ export class ProgramService {
         workday,
         discounts,
         programOffering,
+        seminars, // TODO: Falta implementar la creación de seminarios
         ...programData
       } = createProgramDto;
 
@@ -131,6 +135,14 @@ export class ProgramService {
         programOfferingEntity.id,
       );
 
+      const seminarProgramOfferings = await this.assingSeminarProgramOfferings(
+        queryRunner,
+        seminars,
+        programOfferingEntity.id,
+      );
+
+      programOfferingEntity.seminarProgramOfferings = seminarProgramOfferings;
+
       programPlacementEntity.offerings = [programOfferingEntity];
       program.pensums = [pensumEntity];
       program.placements = [programPlacementEntity];
@@ -159,6 +171,40 @@ export class ProgramService {
     });
 
     return await queryRunner.manager.save(discountEntities);
+  }
+
+  private async assingSeminarProgramOfferings(
+    queryRunner: QueryRunner,
+    seminars: CreateSeminarProgramOfferingDto[],
+    idProgramOffering: string,
+  ) {
+    const idsSeminars = seminars.map((seminar) => seminar.idSeminar);
+
+    const seminarsEntities = await queryRunner.manager
+      .getRepository(SeminarEntity)
+      .find({
+        where: {
+          id: In(idsSeminars),
+        },
+        select: {
+          id: true,
+        },
+      });
+
+    if (seminarsEntities.length !== idsSeminars.length) {
+      throw new NotFoundException('One or more seminars not found');
+    }
+
+    const seminarProgramOfferings = seminarsEntities.map((seminar) => {
+      return queryRunner.manager
+        .getRepository(SeminarProgramOfferingEntity)
+        .create({
+          idSeminar: seminar.id,
+          idProgramOffering,
+        });
+    });
+
+    return await queryRunner.manager.save(seminarProgramOfferings);
   }
 
   private async createProgramOfferings(
@@ -585,6 +631,11 @@ export class ProgramService {
       .leftJoin('programPlacement.faculty', 'faculty')
       .leftJoin('programPlacement.methodology', 'methodology')
       .leftJoin('offering.pensum', 'pensum')
+      .leftJoin('offering.seminarProgramOfferings', 'seminarProgramOfferings')
+      .leftJoin('seminarProgramOfferings.seminar', 'seminar')
+      .leftJoin('seminar.seminarDocent', 'seminarDocent')
+      .leftJoin('seminarDocent.docent', 'docent')
+      .leftJoin('seminarDocent.schoolGrade', 'schoolGrade')
       .select([
         'offering.id',
         'offering.cohort',
@@ -628,6 +679,36 @@ export class ProgramService {
         'pensum.startYear',
         'pensum.status',
         'pensum.credits',
+        // Seminar info
+        'seminarProgramOfferings.id',
+        'seminar.id',
+        'seminar.name',
+        'seminar.createdAt',
+        'seminar.updatedAt',
+        'seminar.credits',
+        'seminar.payment_type',
+        'seminar.is_active',
+        // Seminar Docent info
+        'seminarDocent.id',
+        'seminarDocent.vinculation',
+        'seminarDocent.createdAt',
+        'seminarDocent.updatedAt',
+        // Docent info
+        'docent.id',
+        'docent.name',
+        'docent.nationality',
+        'docent.document_type',
+        'docent.document_number',
+        'docent.address',
+        'docent.phone',
+        'docent.createdAt',
+        'docent.updatedAt',
+        // School Grade info
+        'schoolGrade.id',
+        'schoolGrade.name',
+        'schoolGrade.level',
+        'schoolGrade.createdAt',
+        'schoolGrade.updatedAt',
       ]);
 
     const offering = await queryBuilder.getOne();

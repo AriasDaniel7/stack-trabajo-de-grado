@@ -11,6 +11,7 @@ export interface ProgramCreate {
   pensum: PensumCreate;
   discounts: DiscountCreate[];
   programOffering: ProgramOfferingCreate;
+  seminars: SeminarProgramOfferingCreate[];
 }
 
 export interface ProgramOfferingCreate {
@@ -30,4 +31,8 @@ export interface PensumCreate {
 export interface DiscountCreate {
   percentage: number;
   numberOfApplicants: number;
+}
+
+export interface SeminarProgramOfferingCreate {
+  idSeminar: string;
 }

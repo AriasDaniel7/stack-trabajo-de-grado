@@ -50,10 +50,7 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.get(`${BASE_URL}/logout`, { withCredentials: true }).pipe(
-      map(() => this.handleLogout()),
-      catchError((err) => this.handleAuthError(err))
-    );
+    return of(this.handleLogout());
   }
 
   private handleAuthSuccess(res: AuthResponse) {

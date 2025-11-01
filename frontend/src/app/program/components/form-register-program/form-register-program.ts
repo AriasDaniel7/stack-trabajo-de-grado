@@ -28,6 +28,11 @@ import { PaginationComponent } from '@core/shared/components/pagination/paginati
 import { PensumList } from '../pensum-list/pensum-list';
 import { CardProgram } from '../card-program/card-program';
 import { TableProgram } from '../table-program/table-program';
+import { ModalService } from '@core/shared/components/modal/modal.service';
+import { ModalComponent } from '@core/shared/components/modal/modal.component';
+import { SelectedSeminar } from '../selected-seminar/selected-seminar';
+import { Seminar } from '@core/interfaces/seminar';
+import { TableComponent } from '@seminar/components/table/table.component';
 
 @Component({
   selector: 'program-form-register',
@@ -39,6 +44,9 @@ import { TableProgram } from '../table-program/table-program';
     CurrencyPipe,
     IconComponent,
     TableProgram,
+    ModalComponent,
+    SelectedSeminar,
+    TableComponent,
   ],
   templateUrl: './form-register-program.html',
   styleUrl: './form-register-program.css',
@@ -50,10 +58,12 @@ export class FormRegisterProgram {
   private programService = inject(ProgramService);
   private paginationService = inject(PaginationService);
   private alertService = inject(AlertService);
+  private modalService = inject(ModalService);
 
   educationLevelPostgrado = input<SchoolGradeExisting | null>(null);
   smmlvs = input<SmmlvResponse | null>(null);
   fees = input<FeeResponse | null>(null);
+  isOpenModal = this.modalService.isOpen;
 
   programQuery = this.programService.programAllQuery;
   currentPage = this.paginationService.currentPage;
@@ -62,6 +72,7 @@ export class FormRegisterProgram {
   searchTerm = signal('');
   programSelected = signal<Program | null>(null);
   pensumSelected = signal<Pensum | null>(null);
+  seminars = signal<Seminar[]>([]);
 
   formUtil = FormUtil;
 
@@ -226,12 +237,34 @@ export class FormRegisterProgram {
   });
 
   addDiscount() {
-    const discountGroup = this.fb.group({
-      percentage: [null, [Validators.required, Validators.min(1), Validators.max(100)]],
-      numberOfApplicants: [null, [Validators.required, Validators.min(1)]],
-    });
+    if (this.discounts.length < 8) {
+      const discountGroup = this.fb.group({
+        percentage: [null, [Validators.required, Validators.min(1), Validators.max(100)]],
+        numberOfApplicants: [null, [Validators.required, Validators.min(1)]],
+      });
 
-    this.discounts.push(discountGroup);
+      this.discounts.push(discountGroup);
+    }
+  }
+
+  addSeminar(seminar: Seminar) {
+    this.alertService.close();
+    const currentSeminars = this.seminars();
+    const isDuplicate = currentSeminars.some((s) => s.id === seminar.id);
+
+    if (!isDuplicate) {
+      this.seminars.set([...currentSeminars, seminar]);
+    } else {
+      this.alertService.open({
+        message: 'El seminario ya ha sido agregado al programa.',
+        type: 'error',
+      });
+    }
+  }
+
+  removeSeminar(seminar: Seminar) {
+    const currentSeminars = this.seminars();
+    this.seminars.set(currentSeminars.filter((s) => s.id !== seminar.id));
   }
 
   removeDiscount(index: number) {
@@ -249,7 +282,12 @@ export class FormRegisterProgram {
     if (this.myForm.invalid) return;
     this.alertService.close();
 
-    if (this.programSelected() && this.pensumSelected() && this.feeSelected()) {
+    if (
+      this.programSelected() &&
+      this.pensumSelected() &&
+      this.feeSelected() &&
+      this.seminars().length > 0
+    ) {
       const programCreate: ProgramCreate = {
         idProgramExternal: this.programSelected()!.idProgramExternal
           ? this.programSelected()!.idProgramExternal
@@ -282,6 +320,9 @@ export class FormRegisterProgram {
           percentage: Number(discount.percentage),
           numberOfApplicants: Number(discount.numberOfApplicants),
         })),
+        seminars: this.seminars().map((seminar) => ({
+          idSeminar: seminar.id,
+        })),
       };
 
       this.programService.create(programCreate).subscribe({
@@ -293,6 +334,7 @@ export class FormRegisterProgram {
           this.myForm.reset();
           this.deleteSelection();
           this.myForm.controls.discounts.clear();
+          this.seminars.set([]);
         },
         error: (err) => {
           this.alertService.open({
@@ -302,5 +344,12 @@ export class FormRegisterProgram {
         },
       });
     }
+  }
+
+  openModal() {
+    this.modalService.open({
+      title: 'Agregar Seminario',
+      subTitle: ' Selecciona el seminario que deseas agregar al programa académico.',
+    });
   }
 }

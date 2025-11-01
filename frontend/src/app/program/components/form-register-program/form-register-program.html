@@ -136,130 +136,179 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div>
-          <div
-            class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-300"
-          >
-            <div class="flex items-center gap-2">
-              <shared-icon icon="discount" classList="w-3.5 h-3.5" />
-              <h3 class="text-sm font-semibold">Descuentos:</h3>
-            </div>
-            <button
-              type="button"
-              (click)="addDiscount()"
-              class="mt-4 mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full md:w-fit flex items-center gap-2 justify-center"
-            >
-              <shared-icon icon="add" />
-              <span>Agregar Descuento</span>
-            </button>
+    <div class="p-4 border border-gray-300 shadow-xs rounded-md xl:col-span-7 flex flex-col gap-6">
+      <div>
+        <div
+          class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-300"
+        >
+          <div class="flex items-center gap-2">
+            <shared-icon icon="discount" classList="w-3.5 h-3.5" />
+            <h3 class="text-sm font-semibold">Descuentos:</h3>
           </div>
-          <div>
-            <div class="my-4">
-              <h3 class="text-sm text-center font-semibold">
-                Aspirantes con Descuentos Institucionales (Opcional):
-              </h3>
-              <p class="text-sm text-gray-500 text-center">
-                (Egresado, Certificado Electoral, Convención Colectiva)
-              </p>
-            </div>
-            <div class="overflow-x-auto">
-              <table
-                class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
-              >
-                <thead>
-                  <tr class="h-10 bg-gray-100">
-                    <th
-                      class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                    >
-                      Porcentaje del Descuento
-                    </th>
-                    <th
-                      class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                    >
-                      Numero de Aspirantes
-                    </th>
-                    <th
-                      class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                    >
-                      $ Ingresos con Descuento
-                    </th>
-                    <th
-                      class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
-                    ></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (discount of discounts.controls; track $index; let last = $last) {
-                  <tr class="h-10" [formGroup]="discount">
-                    <td class="p-2 border-gray-200 border-b">
-                      <div class="flex flex-col">
-                        <input
-                          class="h-full w-full text-center"
-                          formControlName="percentage"
-                          type="number"
-                          min="0"
-                          max="100"
-                        />
-                        @if (formUtil.isValidField(discount, 'percentage')) {
-                        <span class="text-xs text-red-400">
-                          {{ formUtil.getFieldError(discount, 'percentage') }}
-                        </span>
-                        }
-                      </div>
-                    </td>
-                    <td class="p-2 border-gray-200 border-b">
-                      <div class="flex flex-col">
-                        <input
-                          class="h-full w-full text-center"
-                          type="number"
-                          min="0"
-                          formControlName="numberOfApplicants"
-                        />
-                        @if (formUtil.isValidField(discount, 'numberOfApplicants')) {
-                        <span class="text-xs text-red-400">
-                          {{ formUtil.getFieldError(discount, 'numberOfApplicants') }}
-                        </span>
-                        }
-                      </div>
-                    </td>
-                    <td class="text-right p-2 border-gray-200 border-b">
-                      {{ discountedIncomeValue($index) | currency : 'COP' : 'symbol' : '1.0-0' }}
-                    </td>
-                    <td class="p-2 border-gray-200 border-b">
-                      <button
-                        type="button"
-                        (click)="removeDiscount($index)"
-                        class="border border-red-300 bg-red-100 h-8 w-8 flex justify-center items-center"
-                      >
-                        <shared-icon icon="delete" classList="text-red-600 w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                  }
-                  <tr>
-                    <td class="p-2 text-sm font-semibold text-center">Total:</td>
-                    <td class="p-2 text-center">{{ totals().totalApplicants }}</td>
-                    <td class="text-right p-2">
-                      {{ totals().totalDiscountedIncome | currency : 'COP' : 'symbol' : '1.0-0' }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end">
           <button
-            type="submit"
-            class="bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium hover:bg-emerald-700 px-4 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap"
+            type="button"
+            (click)="addDiscount()"
+            class="mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full md:w-fit flex items-center gap-2 justify-center"
           >
-            <shared-icon icon="save" />
-            <span>Crear</span>
+            <shared-icon icon="add" />
+            <span>Agregar Descuento</span>
           </button>
         </div>
+        <div>
+          <div class="my-4">
+            <h3 class="text-sm text-center font-semibold">
+              Aspirantes con Descuentos Institucionales (Opcional):
+            </h3>
+            <p class="text-sm text-gray-500 text-center">
+              (Egresado, Certificado Electoral, Convención Colectiva)
+            </p>
+          </div>
+          <div class="overflow-x-auto">
+            <table
+              class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+            >
+              <thead>
+                <tr class="h-10 bg-gray-100">
+                  <th
+                    class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  >
+                    Porcentaje del Descuento
+                  </th>
+                  <th
+                    class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  >
+                    Numero de Aspirantes
+                  </th>
+                  <th
+                    class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  >
+                    $ Ingresos con Descuento
+                  </th>
+                  <th
+                    class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
+                  ></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (discount of discounts.controls; track $index; let last = $last) {
+                <tr class="h-10" [formGroup]="discount">
+                  <td class="p-2 border-gray-200 border-b">
+                    <div class="flex flex-col">
+                      <input
+                        class="h-full w-full text-center"
+                        formControlName="percentage"
+                        type="number"
+                        min="0"
+                        max="100"
+                      />
+                      @if (formUtil.isValidField(discount, 'percentage')) {
+                      <span class="text-xs text-red-400">
+                        {{ formUtil.getFieldError(discount, 'percentage') }}
+                      </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="p-2 border-gray-200 border-b">
+                    <div class="flex flex-col">
+                      <input
+                        class="h-full w-full text-center"
+                        type="number"
+                        min="0"
+                        formControlName="numberOfApplicants"
+                      />
+                      @if (formUtil.isValidField(discount, 'numberOfApplicants')) {
+                      <span class="text-xs text-red-400">
+                        {{ formUtil.getFieldError(discount, 'numberOfApplicants') }}
+                      </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="text-right p-2 border-gray-200 border-b">
+                    {{ discountedIncomeValue($index) | currency : 'COP' : 'symbol' : '1.0-0' }}
+                  </td>
+                  <td class="p-2 border-gray-200 border-b">
+                    <button
+                      type="button"
+                      (click)="removeDiscount($index)"
+                      class="border border-red-300 bg-red-100 h-8 w-8 flex justify-center items-center"
+                    >
+                      <shared-icon icon="delete" classList="text-red-600 w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+                }
+                <tr>
+                  <td class="p-2 text-sm font-semibold text-center">Total:</td>
+                  <td class="p-2 text-center">{{ totals().totalApplicants }}</td>
+                  <td class="text-right p-2">
+                    {{ totals().totalDiscountedIncome | currency : 'COP' : 'symbol' : '1.0-0' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border border-gray-300 shadow-xs rounded-md xl:col-span-7 flex flex-col gap-6">
+      <div>
+        <div
+          class="flex flex-col md:flex-row md:justify-between md:items-center border-b border-gray-300"
+        >
+          <div class="flex items-center gap-2">
+            <shared-icon icon="seminary" classList="w-3.5 h-3.5" />
+            <h3 class="text-sm font-semibold">Asociar Seminarios (Opcional):</h3>
+          </div>
+          <button
+            type="button"
+            (click)="openModal()"
+            class="mb-2 border border-gray-300 shadow-xs font-semibold text-sm hover:bg-gray-100 w-full md:w-fit flex items-center gap-2 justify-center"
+          >
+            <shared-icon icon="add" />
+            <span>Agregar Seminario</span>
+          </button>
+        </div>
+        <div class="mt-6">
+          <seminar-table
+            [seminaries]="seminars()"
+            (onDelete)="removeSeminar($event)"
+            [showEdit]="false"
+          />
+        </div>
+        <!-- <div class="space-y-4 mt-6">
+          @for (seminar of seminars(); track seminar.id) {
+          <div class="px-10">
+            <seminar-card [seminar]="seminar" (onDelete)="removeSeminar($event)" />
+          </div>
+          }@empty {
+          <div class="px-10">
+            <div class="border p-4 rounded-md border-gray-300">
+              <p class="text-sm text-gray-500 text-center">No hay seminarios asociados.</p>
+            </div>
+          </div>
+          }
+        </div> -->
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium hover:bg-emerald-700 px-4 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap"
+        >
+          <shared-icon icon="save" />
+          <span>Crear</span>
+        </button>
       </div>
     </div>
   </div>
 </form>
+
+@if(isOpenModal()){
+<shared-modal>
+  <program-selected-seminar (seminarSelected)="addSeminar($event)" />
+</shared-modal>
+}

@@ -6,8 +6,6 @@ import { Offering } from '@core/interfaces/program';
 import { HeaderService } from '@dashboard/components/header/header.service';
 import { ProgramService } from '@program/services/program.service';
 import { map } from 'rxjs';
-import { CardProgram } from '@program/components/card-program/card-program';
-import { CardPensum } from '@program/components/card-pensum/card-pensum';
 import { FormOffering } from '@program/components/form-offering/form-offering';
 import { SmmlvService } from '@smmlv/services/smmlv.service';
 import { SmmlvResponse } from '@core/interfaces/smmlv';
@@ -16,7 +14,7 @@ import { FeeResponse } from '@core/interfaces/fee';
 
 @Component({
   selector: 'app-offering-page',
-  imports: [CardProgram, CardPensum, FormOffering],
+  imports: [FormOffering],
   templateUrl: './offering-page.html',
   styleUrl: './offering-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

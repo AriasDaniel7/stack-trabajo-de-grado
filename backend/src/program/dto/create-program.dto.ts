@@ -15,6 +15,7 @@ import {
   PensumCreate,
   ProgramCreate,
   ProgramOfferingCreate,
+  SeminarProgramOfferingCreate,
 } from '../interfaces/program';
 
 export class CreatePensumDto implements PensumCreate {
@@ -63,6 +64,15 @@ export class CreateProgramOfferingDto implements ProgramOfferingCreate {
   @IsString()
   @IsNotEmpty()
   codeCDP?: string;
+}
+
+export class CreateSeminarProgramOfferingDto
+  implements SeminarProgramOfferingCreate
+{
+  @IsString()
+  @IsUUID()
+  @IsNotEmpty()
+  idSeminar: string;
 }
 
 export class CreateProgramDto implements ProgramCreate {
@@ -123,4 +133,10 @@ export class CreateProgramDto implements ProgramCreate {
   @Type(() => CreateDiscountDto)
   @IsNotEmpty()
   discounts: CreateDiscountDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateSeminarProgramOfferingDto)
+  @ArrayNotEmpty()
+  seminars: CreateSeminarProgramOfferingDto[];
 }
