@@ -27,6 +27,11 @@
           Tipo de Pago
         </th>
         <th
+          class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300 w-4"
+        >
+          Transporte/Alojamiento
+        </th>
+        <th
           class="px-2 text-center text-gray-800 text-sm whitespace-nowrap border-b border-gray-300"
         >
           Estado
@@ -101,7 +106,6 @@
             >
           </div>
         </td>
-
         <td
           [class.border-b]="!last"
           class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
@@ -110,6 +114,31 @@
             <span class="text-xs text-gray-500">{{
               seminar.payment_type | i18nSelect : paymentTypeMapping
             }}</span>
+          </div>
+        </td>
+        <td
+          [class.border-b]="!last"
+          class="px-2 py-4 text-center whitespace-nowrap border-gray-300"
+        >
+          <div class="flex justify-center items-center">
+            <button
+              (click)="toggleRow(seminar.id)"
+              type="button"
+              class="flex justify-between items-center gap-2 hover:bg-blue-100 p-2 rounded-md"
+            >
+              <span>
+                <shared-icon icon="airplane" classList="text-blue-600 w-4 h-4" />
+              </span>
+              <span>
+                <shared-icon icon="transportation" classList="text-emerald-600 w-4 h-4" />
+              </span>
+              <span>
+                <shared-icon icon="accommodation" classList="text-purple-600 w-4 h-4" />
+              </span>
+              <span [class.rotate-180]="isRowExpanded(seminar.id)" class="transition-transform">
+                <shared-icon icon="row-down" classList="text-blue-600 w-4 h-4" />
+              </span>
+            </button>
           </div>
         </td>
         <td
@@ -150,9 +179,102 @@
           </div>
         </td>
       </tr>
+      <tr>
+        <td colspan="9" class="overflow-hidden">
+          <div
+            [class.max-h-0]="!isRowExpanded(seminar.id)"
+            [class.border-b]="isRowExpanded(seminar.id) && !last"
+            [class.border-t]="last && isRowExpanded(seminar.id)"
+            [class.max-h-96]="isRowExpanded(seminar.id)"
+            [class.opacity-0]="!isRowExpanded(seminar.id)"
+            [class.opacity-100]="isRowExpanded(seminar.id)"
+            class="border-gray-300 transition-all duration-300 ease-in-out"
+          >
+            <div class="grid grid-cols-3 gap-4 p-4">
+              <div class="border p-4 border-blue-300 rounded-md bg-blue-50">
+                <div class="flex justify-start items-center gap-2">
+                  <span>
+                    <shared-icon icon="airplane" classList="text-blue-600 w-4 h-4" />
+                  </span>
+                  <h4 class="text-sm font-semibold text-blue-900">Transporte Aéreo</h4>
+                </div>
+                <div>
+                  <p class="mt-2 text-sm text-gray-600 font-semibold">
+                    Valor:
+                    <span class="font-normal">{{
+                      (seminar.airTransportValue | currency : 'COP' : 'symbol' : '1.0-0') ||
+                        'No Registrado'
+                    }}</span>
+                  </p>
+                  <p class="text-sm text-gray-600 font-semibold">
+                    Ruta:
+                    <span class="font-normal">{{
+                      (seminar.airTransportRoute | titlecase) || 'No Registrada'
+                    }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="border p-4 border-emerald-300 rounded-md bg-emerald-50">
+                <div class="flex justify-start items-center gap-2">
+                  <span>
+                    <shared-icon icon="transportation" classList="text-emerald-600 w-4 h-4" />
+                  </span>
+                  <h4 class="text-sm font-semibold text-emerald-900">Transporte Terrestre</h4>
+                </div>
+                <div>
+                  <p class="mt-2 text-sm text-gray-600 font-semibold">
+                    Valor:
+                    <span class="font-normal">{{
+                      (seminar.landTransportValue | currency : 'COP' : 'symbol' : '1.0-0') ||
+                        'No Registrado'
+                    }}</span>
+                  </p>
+                  <p class="text-sm text-gray-600 font-semibold">
+                    Ruta:
+                    <span class="font-normal">{{
+                      (seminar.landTransportRoute | titlecase) || 'No Registrada'
+                    }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="border p-4 border-purple-300 rounded-md bg-purple-50">
+                <div class="flex justify-start items-center gap-2">
+                  <span>
+                    <shared-icon icon="accommodation" classList="text-purple-600 w-4 h-4" />
+                  </span>
+                  <h4 class="text-sm font-semibold text-purple-900">Alojamiento</h4>
+                </div>
+                <div>
+                  <p class="mt-2 text-sm text-gray-600 font-semibold">
+                    Ayuda:
+                    <span class="font-normal">{{
+                      (seminar.foodAndLodgingAid | currency : 'COP' : 'symbol' : '1.0-0') ||
+                        'No Registrada'
+                    }}</span>
+                  </p>
+                  <p class="text-sm text-gray-600 font-semibold">
+                    Días:
+                    <span class="font-normal">{{ seminar.eventStayDays || 'No Registrada' }}</span>
+                  </p>
+                  <p class="text-sm text-gray-600 font-semibold">
+                    Ubicación:
+                    <span class="font-normal">{{
+                      (seminar.hotelLocation | titlecase) || 'No Registrada'
+                    }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!--  -->
       }@empty {
       <tr class="h-10">
-        <td colspan="7" class="px-2 text-center text-sm text-gray-500 whitespace-nowrap">
+        <td colspan="9" class="px-2 text-center text-sm text-gray-500 whitespace-nowrap">
           No hay datos disponibles
         </td>
       </tr>

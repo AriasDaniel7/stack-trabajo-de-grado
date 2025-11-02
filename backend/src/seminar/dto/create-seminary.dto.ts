@@ -23,6 +23,52 @@ import {
 } from 'class-validator';
 
 export class CreateSeminarDto implements Seminar {
+  @ApiProperty({ type: Number, minimum: 0 })
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  airTransportValue?: number;
+
+  @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  airTransportRoute?: string;
+
+  @ApiProperty({ type: Number, minimum: 0 })
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  landTransportValue?: number;
+
+  @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  landTransportRoute?: string;
+
+  @ApiProperty({ type: Number, minimum: 0 })
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  foodAndLodgingAid?: number;
+
+  @ApiProperty({ type: Number, minimum: 0 })
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  eventStayDays?: number;
+
+  @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  hotelLocation?: string;
+
   @ApiProperty({ type: String, minLength: 3 })
   @IsString()
   @MinLength(3)

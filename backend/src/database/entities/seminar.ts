@@ -5,7 +5,6 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
 } from 'typeorm';
@@ -15,6 +14,54 @@ import { SeminarProgramOfferingEntity } from './seminar-program-offering';
 
 @Entity('seminaries')
 export class SeminarEntity extends BaseEntity implements Seminar {
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+    nullable: true,
+  })
+  airTransportValue?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  airTransportRoute?: string;
+
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+    nullable: true,
+  })
+  landTransportValue?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  landTransportRoute?: string;
+
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+    nullable: true,
+  })
+  foodAndLodgingAid?: number;
+
+  @Column({ type: 'int', nullable: true })
+  eventStayDays?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  hotelLocation?: string;
+
   @Column({ type: 'varchar', unique: true })
   name: string;
 
@@ -39,6 +86,15 @@ export class SeminarEntity extends BaseEntity implements Seminar {
   @BeforeInsert()
   beforeInsert() {
     this.name = this.name.toLowerCase().trim();
+    if (this.airTransportRoute) {
+      this.airTransportRoute = this.airTransportRoute?.toLowerCase().trim();
+    }
+    if (this.landTransportRoute) {
+      this.landTransportRoute = this.landTransportRoute?.toLowerCase().trim();
+    }
+    if (this.hotelLocation) {
+      this.hotelLocation = this.hotelLocation?.toLowerCase().trim();
+    }
   }
 
   @BeforeUpdate()

@@ -24,7 +24,14 @@ export interface Seminar {
   name: string;
   credits: number;
   payment_type: string;
-  is_active: boolean;
+  airTransportValue?: number;
+  airTransportRoute?: string;
+  landTransportValue?: number;
+  landTransportRoute?: string;
+  foodAndLodgingAid?: number;
+  eventStayDays?: number;
+  hotelLocation?: string;
+  is_active?: boolean;
   dates: DateElement[];
   seminarDocent: SeminarDocent;
 }

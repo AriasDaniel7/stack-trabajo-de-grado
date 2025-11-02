@@ -67,6 +67,13 @@ export interface Seminar {
   name: string; // Nombre del seminario
   credits: number; // Créditos del seminario
   payment_type: PaymentType; // Tipo de pago
+  airTransportValue?: number; // Valor del transporte aéreo
+  airTransportRoute?: string; // Ruta del transporte aéreo
+  landTransportValue?: number; // Valor del transporte terrestre
+  landTransportRoute?: string; // Ruta del transporte terrestre
+  foodAndLodgingAid?: number; // Auxilio de alimentación y alojamiento
+  eventStayDays?: number; // Días de estadía en la ciudad del evento
+  hotelLocation?: string; // Ciudad donde se prestará el servicio de alojamiento
   is_active?: boolean; // Estado del seminario
 }
 
