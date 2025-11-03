@@ -146,7 +146,7 @@
         >
           <div class="flex items-center gap-2">
             <shared-icon icon="discount" classList="w-3.5 h-3.5" />
-            <h3 class="text-sm font-semibold">Descuentos:</h3>
+            <h3 class="text-sm font-semibold">Descuentos (Opcional):</h3>
           </div>
           <button
             type="button"
@@ -261,7 +261,7 @@
         >
           <div class="flex items-center gap-2">
             <shared-icon icon="seminary" classList="w-3.5 h-3.5" />
-            <h3 class="text-sm font-semibold">Asociar Seminarios (Opcional):</h3>
+            <h3 class="text-sm font-semibold">Asociar Seminarios:</h3>
           </div>
           <button
             type="button"
@@ -277,21 +277,10 @@
             [seminaries]="seminars()"
             (onDelete)="removeSeminar($event)"
             [showEdit]="false"
+            [messageNoData]="'Registrar al menos un seminario para la oferta académica'"
+            colorMessageNoData="text-red-400"
           />
         </div>
-        <!-- <div class="space-y-4 mt-6">
-          @for (seminar of seminars(); track seminar.id) {
-          <div class="px-10">
-            <seminar-card [seminar]="seminar" (onDelete)="removeSeminar($event)" />
-          </div>
-          }@empty {
-          <div class="px-10">
-            <div class="border p-4 rounded-md border-gray-300">
-              <p class="text-sm text-gray-500 text-center">No hay seminarios asociados.</p>
-            </div>
-          </div>
-          }
-        </div> -->
       </div>
 
       <div class="flex justify-end">

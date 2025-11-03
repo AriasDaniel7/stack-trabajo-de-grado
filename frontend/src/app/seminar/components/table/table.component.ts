@@ -21,6 +21,8 @@ export class TableComponent {
   onEdit = output<Seminar>();
   onDelete = output<Seminar>();
   showEdit = input<boolean>(true);
+  messageNoData = input<string>('No hay seminarios registrados');
+  colorMessageNoData = input<string>('text-gray-500');
 
   expandedRows = signal<Set<string>>(new Set());
 

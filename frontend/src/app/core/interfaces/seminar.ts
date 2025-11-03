@@ -59,5 +59,12 @@ export interface SeminarCreate {
   docent_vinculation: VinculationType;
   dates: Date[];
   payment_type: PaymentType;
+  airTransportValue?: number;
+  airTransportRoute?: string;
+  landTransportValue?: number;
+  landTransportRoute?: string;
+  foodAndLodgingAid?: number;
+  eventStayDays?: number;
+  hotelLocation?: string;
   is_active?: boolean;
 }

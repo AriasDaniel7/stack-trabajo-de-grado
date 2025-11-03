@@ -20,10 +20,11 @@ import { DocentService } from '@docent/services/docent.service';
 import { tzDate, parse, format } from '@formkit/tempo';
 import { SeminarService } from '@seminar/services/seminar.service';
 import { AutoCompleteComponent } from '@core/shared/components/auto-complete/auto-complete.component';
+import { NumberFormatDirective } from '@core/shared/directives/numberFormat.directive';
 
 @Component({
   selector: 'seminar-form',
-  imports: [ReactiveFormsModule, IconComponent, AutoCompleteComponent],
+  imports: [ReactiveFormsModule, IconComponent, AutoCompleteComponent, NumberFormatDirective],
   templateUrl: './form.component.html',
   styleUrl: './form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +37,8 @@ export class FormComponent implements OnInit {
   private numberPipe = new DecimalPipe('es-CO');
   private seminarService = inject(SeminarService);
   private alertService = inject(AlertService);
+
+  openOptions = signal(false);
 
   autoComplete = viewChild<AutoCompleteComponent<Docent>>('autoComplete');
   docentQuery = this.docentService.docentQuery;
@@ -81,6 +84,13 @@ export class FormComponent implements OnInit {
     docent_id: [null, [Validators.required]],
     dates: this.fb.array([], [Validators.required]),
     is_active: [true, [Validators.required]],
+    airTransportValue: [null],
+    airTransportRoute: [null],
+    landTransportValue: [null],
+    landTransportRoute: [null],
+    foodAndLodgingAid: [null],
+    eventStayDays: [null, [Validators.min(1), Validators.max(30)]],
+    hotelLocation: [null],
   });
 
   get datesArray() {
@@ -89,6 +99,10 @@ export class FormComponent implements OnInit {
 
   deleteDate(index: number) {
     this.datesArray.removeAt(index);
+  }
+
+  toggleActive() {
+    this.openOptions.update((state) => !state);
   }
 
   addDate() {
@@ -114,6 +128,18 @@ export class FormComponent implements OnInit {
         is_active: this.seminarInfo()!.is_active,
         docent_id: this.seminarInfo()!.seminarDocent.docent.id,
         dates: this.seminarInfo()!.dates.map(({ date }) => format(date, 'YYYY-MM-DD')),
+        airTransportValue: this.numberPipe.transform(
+          this.seminarInfo()!.airTransportValue,
+          '1.0-0'
+        ),
+        landTransportValue: this.numberPipe.transform(
+          this.seminarInfo()!.landTransportValue,
+          '1.0-0'
+        ),
+        foodAndLodgingAid: this.numberPipe.transform(
+          this.seminarInfo()!.foodAndLodgingAid,
+          '1.0-0'
+        ),
       });
       this.docentInfo.set(this.seminarInfo()!.seminarDocent.docent);
     }
@@ -137,6 +163,19 @@ export class FormComponent implements OnInit {
         return tzDate(parsedDate, 'America/Bogota');
       }),
       is_active: this.myForm.value.is_active!,
+      airTransportValue: this.myForm.value.airTransportValue
+        ? Number(String(this.myForm.value.airTransportValue).replace(/\./g, '').replace(',', '.'))
+        : undefined,
+      airTransportRoute: this.myForm.value.airTransportRoute || undefined,
+      landTransportValue: this.myForm.value.landTransportValue
+        ? Number(String(this.myForm.value.landTransportValue).replace(/\./g, '').replace(',', '.'))
+        : undefined,
+      landTransportRoute: this.myForm.value.landTransportRoute || undefined,
+      foodAndLodgingAid: this.myForm.value.foodAndLodgingAid
+        ? Number(String(this.myForm.value.foodAndLodgingAid).replace(/\./g, '').replace(',', '.'))
+        : undefined,
+      eventStayDays: this.myForm.value.eventStayDays || undefined,
+      hotelLocation: this.myForm.value.hotelLocation || undefined,
     };
 
     if (this.seminarInfo()) {

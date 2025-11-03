@@ -1,5 +1,6 @@
 import { Fee } from './fee';
 import { Pensum } from './pensum';
+import { Seminar } from './seminar';
 import { Smmlv } from './smmlv';
 
 export interface ProgramResponse {
@@ -79,6 +80,7 @@ export interface Offering {
   discounts: Discount[];
   pensum: Pensum;
   smmlv: Smmlv;
+  seminars: Seminar[];
 }
 
 export interface Discount {

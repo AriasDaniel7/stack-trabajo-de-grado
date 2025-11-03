@@ -274,8 +274,12 @@
       <!--  -->
       }@empty {
       <tr class="h-10">
-        <td colspan="9" class="px-2 text-center text-sm text-gray-500 whitespace-nowrap">
-          No hay datos disponibles
+        <td
+          colspan="9"
+          class="px-2 text-center text-sm whitespace-nowrap"
+          [class]="colorMessageNoData()"
+        >
+          {{ messageNoData() }}
         </td>
       </tr>
       }

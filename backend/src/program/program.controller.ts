@@ -69,9 +69,12 @@ export class ProgramController {
     return this.programService.findPensumByIdProgram(id, pagination);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProgramDto: UpdateProgramDto) {
-    return this.programService.update(+id, updateProgramDto);
+  @Patch('offering/:id')
+  updateOffering(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateProgramDto: UpdateProgramDto,
+  ) {
+    return this.programService.updateOffering(id, updateProgramDto);
   }
 
   @Delete(':id')

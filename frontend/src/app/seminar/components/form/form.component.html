@@ -142,6 +142,117 @@
     }
   </div>
 
+  <div
+    (click)="toggleActive()"
+    class="border border-gray-300 rounded-md mt-4 flex items-center justify-between cursor-pointer px-3 py-1.5 hover:bg-gray-100"
+  >
+    <div class="flex gap-2 items-center justify-start">
+      <shared-icon icon="airplane" classList="w-4 h-4" />
+      <h4 class="text-sm font-semibold w-full">Transporte y Alojamiento (Opcional)</h4>
+    </div>
+    <div [class.rotate-180]="openOptions()" class="transition-transform">
+      <shared-icon icon="row-down" classList="w-4 h-4" />
+    </div>
+  </div>
+
+  <div
+    [class.max-h-0]="!openOptions()"
+    [class.max-h-[50rem]]="openOptions()"
+    [class.mt-4]="openOptions()"
+    class="space-y-4 overflow-hidden transition-all duration-300 ease-in-out"
+  >
+    <div class="border border-blue-300 rounded-md bg-blue-50 px-3 py-2">
+      <div class="flex justify-start items-center gap-2">
+        <shared-icon icon="airplane" classList="w-4 h-4 text-blue-600" />
+        <h4 class="text-sm text-blue-900 font-medium">Transporte Aéreo</h4>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 mb-1">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="airTransportValue"
+            >Valor ($):</label
+          >
+          <input
+            appNumberFormat
+            [maxIntegerDigits]="10"
+            [maxDecimalDigits]="0"
+            type="text"
+            formControlName="airTransportValue"
+            id="airTransportValue"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="airTransportRoute">Ruta:</label>
+          <input type="text" formControlName="airTransportRoute" id="airTransportRoute" />
+        </div>
+      </div>
+    </div>
+
+    <div class="border border-emerald-300 rounded-md bg-emerald-50 px-3 py-2">
+      <div class="flex justify-start items-center gap-2">
+        <shared-icon icon="transportation" classList="w-4 h-4 text-emerald-600" />
+        <h4 class="text-sm text-emerald-900 font-medium">Transporte Terrestre</h4>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 mb-1">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="landTransportValue"
+            >Valor ($):</label
+          >
+          <input
+            appNumberFormat
+            [maxIntegerDigits]="10"
+            [maxDecimalDigits]="0"
+            type="text"
+            formControlName="landTransportValue"
+            id="landTransportValue"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="landTransportRoute">Ruta:</label>
+          <input type="text" formControlName="landTransportRoute" id="landTransportRoute" />
+        </div>
+      </div>
+    </div>
+
+    <div class="border border-purple-300 rounded-md bg-purple-50 px-3 py-2">
+      <div class="flex justify-start items-center gap-2">
+        <shared-icon icon="accommodation" classList="w-4 h-4 text-purple-600" />
+        <h4 class="text-sm text-purple-900 font-medium">Transporte Terrestre</h4>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3 mb-1">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="foodAndLodgingAid"
+            >Ayuda ($):</label
+          >
+          <input
+            appNumberFormat
+            [maxIntegerDigits]="10"
+            [maxDecimalDigits]="0"
+            type="text"
+            formControlName="foodAndLodgingAid"
+            id="foodAndLodgingAid"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="eventStayDays"
+            >Días de Estadía:</label
+          >
+          <input type="number" min="1" formControlName="eventStayDays" id="eventStayDays" />
+          @if (formUtil.isValidField(myForm, 'eventStayDays')) {
+          <span class="text-xs text-red-400">
+            {{ formUtil.getFieldError(myForm, 'eventStayDays') }}
+          </span>
+          }
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-800" for="hotelLocation"
+            >Ubicación Hotel:</label
+          >
+          <input type="text" formControlName="hotelLocation" id="hotelLocation" />
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="flex justify-end">
     <button
       type="submit"

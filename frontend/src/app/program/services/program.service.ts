@@ -18,7 +18,7 @@ import {
   ParamProgramAllInternal,
 } from '@program/interfaces/param-program';
 import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { map, firstValueFrom, tap, catchError, throwError, delay, of } from 'rxjs';
+import { firstValueFrom, tap, catchError, throwError, delay, of } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/program';
 const {
@@ -109,6 +109,27 @@ export class ProgramService {
       }),
       catchError((err) => this.handleError(err))
     );
+  }
+
+  updateOffering(idProgramOffering: string, body: Partial<ProgramCreate>) {
+    return this.http
+      .patch(`${BASE_URL}/offering/${idProgramOffering}`, body, { withCredentials: true })
+      .pipe(
+        tap(() => {
+          this.queryClient.invalidateQueries({ queryKey: [LIST_KEY], exact: false });
+          this.queryClient.invalidateQueries({ queryKey: [LIST_INTERNAL_KEY], exact: false });
+          this.queryClient.invalidateQueries({ queryKey: [OFFERINGS_KEY], exact: false });
+          this.queryClient.invalidateQueries({
+            queryKey: [BY_ID_PROGRAM_OFFERING_KEY, idProgramOffering],
+            exact: true,
+          });
+          this.queryClient.refetchQueries({
+            queryKey: [BY_ID_PROGRAM_OFFERING_KEY, idProgramOffering],
+            exact: true,
+          });
+        }),
+        catchError((err) => this.handleError(err))
+      );
   }
 
   deletePlacement(id: string) {

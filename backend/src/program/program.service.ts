@@ -71,7 +71,7 @@ export class ProgramService {
         workday,
         discounts,
         programOffering,
-        seminars, // TODO: Falta implementar la creación de seminarios
+        seminars,
         ...programData
       } = createProgramDto;
 
@@ -129,17 +129,16 @@ export class ProgramService {
         programOffering,
       );
 
-      programOfferingEntity.discounts = await this.createDiscounts(
-        queryRunner,
-        discounts,
-        programOfferingEntity.id,
-      );
+      const [discountsEntity, seminarProgramOfferings] = await Promise.all([
+        this.createDiscounts(queryRunner, discounts, programOfferingEntity.id),
+        this.assingSeminarProgramOfferings(
+          queryRunner,
+          seminars,
+          programOfferingEntity.id,
+        ),
+      ]);
 
-      const seminarProgramOfferings = await this.assingSeminarProgramOfferings(
-        queryRunner,
-        seminars,
-        programOfferingEntity.id,
-      );
+      programOfferingEntity.discounts = discountsEntity;
 
       programOfferingEntity.seminarProgramOfferings = seminarProgramOfferings;
 
@@ -688,6 +687,13 @@ export class ProgramService {
         'seminar.credits',
         'seminar.payment_type',
         'seminar.is_active',
+        'seminar.airTransportValue',
+        'seminar.airTransportRoute',
+        'seminar.landTransportValue',
+        'seminar.landTransportRoute',
+        'seminar.foodAndLodgingAid',
+        'seminar.eventStayDays',
+        'seminar.hotelLocation',
         // Seminar Docent info
         'seminarDocent.id',
         'seminarDocent.vinculation',
@@ -997,6 +1003,85 @@ export class ProgramService {
     throw new BadRequestException(
       'Invalid program ID format is UUID or number',
     );
+  }
+
+  async updateOffering(id: string, updateProgramDto: UpdateProgramDto) {
+    if (!updateProgramDto) {
+      throw new BadRequestException('No data provided for update');
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const { seminars, discounts, idFee, idSmmlv, programOffering } =
+        updateProgramDto;
+
+      const offering = await queryRunner.manager.findOne(
+        ProgramOfferingEntity,
+        {
+          where: { id },
+        },
+      );
+
+      if (!offering) {
+        throw new NotFoundException('Program offering not found');
+      }
+
+      if (idFee) {
+        const feeEntity = await this.createFee(queryRunner, idFee);
+        offering.idFee = feeEntity.id;
+      }
+
+      if (idSmmlv) {
+        const smmlvEntity = await this.createSmmlv(queryRunner, idSmmlv);
+        offering.idSmmlv = smmlvEntity.id;
+      }
+
+      if (programOffering) {
+        Object.assign(offering, programOffering);
+      }
+
+      if (discounts) {
+        // Remove existing discounts
+        await queryRunner.manager.getRepository(DiscountEntity).delete({
+          idProgramOffering: offering.id,
+        });
+
+        const discountsEntity = await this.createDiscounts(
+          queryRunner,
+          discounts,
+          offering.id,
+        );
+
+        offering.discounts = discountsEntity;
+      }
+
+      if (seminars) {
+        // Remove existing seminar program offerings
+        await queryRunner.manager
+          .getRepository(SeminarProgramOfferingEntity)
+          .delete({
+            idProgramOffering: offering.id,
+          });
+
+        const seminarProgramOfferings =
+          await this.assingSeminarProgramOfferings(
+            queryRunner,
+            seminars,
+            offering.id,
+          );
+        offering.seminarProgramOfferings = seminarProgramOfferings;
+      }
+      await queryRunner.manager.save(offering);
+      await queryRunner.commitTransaction();
+      return offering;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.handleError(error);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   update(id: number, updateProgramDto: UpdateProgramDto) {

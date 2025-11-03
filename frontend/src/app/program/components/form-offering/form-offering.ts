@@ -1,28 +1,62 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FeeResponse } from '@core/interfaces/fee';
-import { Offering } from '@core/interfaces/program';
+import { Offering, ProgramCreate } from '@core/interfaces/program';
 import { SmmlvResponse } from '@core/interfaces/smmlv';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
 import { FormUtil } from '@core/utils/form';
 import { CardProgram } from '../card-program/card-program';
 import { CardPensum } from '../card-pensum/card-pensum';
+import { TableComponent } from '@seminar/components/table/table.component';
+import { Seminar } from '@core/interfaces/seminar';
+import { AlertService } from '@core/shared/components/alert/alert.service';
+import { ModalService } from '@core/shared/components/modal/modal.service';
+import { ModalComponent } from '@core/shared/components/modal/modal.component';
+import { SelectedSeminar } from '../selected-seminar/selected-seminar';
+import { ProgramService } from '@program/services/program.service';
 
 @Component({
   selector: 'program-form-offering',
-  imports: [IconComponent, ReactiveFormsModule, CurrencyPipe, CardProgram, CardPensum],
+  imports: [
+    IconComponent,
+    ReactiveFormsModule,
+    CurrencyPipe,
+    CardProgram,
+    CardPensum,
+    TableComponent,
+    ModalComponent,
+    SelectedSeminar,
+  ],
   templateUrl: './form-offering.html',
   styleUrl: './form-offering.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormOffering {
   private fb = inject(FormBuilder);
+  private alertService = inject(AlertService);
+  private modalService = inject(ModalService);
+  private programService = inject(ProgramService);
 
   offering = input<Offering | null>();
   smmlvs = input<SmmlvResponse | null>(null);
   fees = input<FeeResponse | null>(null);
+  isOpenModal = this.modalService.isOpen;
+
+  private _seminars = computed(() => {
+    return this.offering()?.seminars || [];
+  });
+
+  seminars = linkedSignal<Seminar[]>(this._seminars);
 
   formUtil = FormUtil;
 
@@ -167,5 +201,78 @@ export class FormOffering {
 
   removeDiscount(index: number) {
     this.discounts.removeAt(index);
+  }
+
+  addSeminar(seminar: Seminar) {
+    this.alertService.close();
+    const currentSeminars = this.seminars();
+    const isDuplicate = currentSeminars.some((s) => s.id === seminar.id);
+
+    if (!isDuplicate) {
+      const updatedSeminars = [...currentSeminars, seminar].sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      this.seminars.set(updatedSeminars);
+    } else {
+      this.alertService.open({
+        message: 'El seminario ya ha sido agregado al programa.',
+        type: 'error',
+      });
+    }
+  }
+
+  removeSeminar(seminar: Seminar) {
+    const currentSeminars = this.seminars();
+    this.seminars.set(currentSeminars.filter((s) => s.id !== seminar.id));
+  }
+
+  openModal() {
+    this.modalService.open({
+      title: 'Agregar Seminario',
+      subTitle: ' Selecciona el seminario que deseas agregar al programa académico.',
+    });
+  }
+
+  onSubmit() {
+    this.myForm.markAllAsTouched();
+
+    if (this.myForm.invalid) return;
+    this.alertService.close();
+
+    if (this.feeSelected() && this.seminars().length > 0 && this.offering()) {
+      const programUpdate: Partial<ProgramCreate> = {
+        programOffering: {
+          cohort: Number(this.myForm.value.programOffering!.cohort),
+          semester: Number(this.myForm.value.programOffering!.semester),
+          codeCDP: this.myForm.value.programOffering!.codeCDP
+            ? this.myForm.value.programOffering!.codeCDP!
+            : undefined,
+        },
+        idSmmlv: this.myForm.value.idSmmlv!,
+        idFee: this.feeSelected()!.id,
+        discounts: this.myForm.value.discounts!.map((discount) => ({
+          percentage: Number(discount.percentage),
+          numberOfApplicants: Number(discount.numberOfApplicants),
+        })),
+        seminars: this.seminars().map((seminar) => ({
+          idSeminar: seminar.id,
+        })),
+      };
+
+      this.programService.updateOffering(this.offering()!.id, programUpdate).subscribe({
+        next: () => {
+          this.alertService.open({
+            message: 'Oferta académica actualizada exitosamente.',
+            type: 'success',
+          });
+        },
+        error: (err) => {
+          this.alertService.open({
+            type: 'error',
+            message: err.message,
+          });
+        },
+      });
+    }
   }
 }
