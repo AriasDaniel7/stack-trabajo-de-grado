@@ -17,6 +17,7 @@ import { Auth } from '@auth/decorators/auth.decorator';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 
+@Auth()
 @ApiTags('Modalidad')
 @Controller('modality')
 export class ModalityController {

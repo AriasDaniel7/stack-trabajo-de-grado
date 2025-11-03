@@ -16,6 +16,7 @@ import { ParamDto } from './dto/param.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth } from '@auth/decorators/auth.decorator';
 
+@Auth()
 @ApiTags('Seminarios')
 @Controller('seminar')
 export class SeminarController {

@@ -12,10 +12,11 @@ import {
 import { FacultyService } from './faculty.service';
 import { CreateFacultyDto } from './dto/create-faculty.dto';
 import { UpdateFacultyDto } from './dto/update-faculty.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ParamDto } from './dto/param.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 
+@Auth()
 @ApiTags('Facultades')
 @Controller('faculty')
 export class FacultyController {
