@@ -94,8 +94,15 @@ export class FacultyService {
   }
 
   private handleError(error: any) {
+    const message = error?.detail || error?.message || '';
     if (error.code === '23505') {
       throw new ConflictException('Faculty already exists');
+    }
+
+    if (message.includes('"program_placements"')) {
+      throw new ConflictException(
+        'Cannot delete faculty with associated program placements.',
+      );
     }
 
     this.logger.error(error);

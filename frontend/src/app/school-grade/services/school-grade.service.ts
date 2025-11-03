@@ -99,11 +99,11 @@ export class SchoolGradeService {
 
     if (err.status === 409) {
       if (message === 'A school grade with that level already exists') {
-        return throwError(() => new Error('Ya existe un grado escolar con ese nivel'));
+        return throwError(() => new Error('Ya existe un nivel académico con ese nivel'));
       }
 
       if (message === 'A school grade with that name already exists') {
-        return throwError(() => new Error('Ya existe un grado escolar con ese nombre'));
+        return throwError(() => new Error('Ya existe un nivel académico con ese nombre'));
       }
 
       if (
@@ -112,7 +112,7 @@ export class SchoolGradeService {
         return throwError(
           () =>
             new Error(
-              'No se puede eliminar el grado escolar porque está asociado a uno o más docentes'
+              'No se puede eliminar el nivel académico porque está asociado a uno o más docentes'
             )
         );
       }

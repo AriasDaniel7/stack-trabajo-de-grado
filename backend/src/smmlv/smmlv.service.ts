@@ -81,13 +81,24 @@ export class SmmlvService {
 
   async remove(id: string) {
     const smmlv = await this.findOne(id);
-    await this.smmlvRepository.remove(smmlv);
-    return { message: 'Smmlv removed successfully' };
+    try {
+      await this.smmlvRepository.remove(smmlv);
+      return { message: 'Smmlv removed successfully' };
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   private handleError(err: any) {
+    const message: string = err?.detail || err?.message || '';
     if (err.code === '23505') {
       throw new ConflictException('The year already exists');
+    }
+
+    if (message.includes('"program_offerings"')) {
+      throw new ConflictException(
+        'Cannot delete SMMLV with associated program offerings.',
+      );
     }
 
     this.logger.error(err);

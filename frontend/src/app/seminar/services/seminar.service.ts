@@ -77,6 +77,15 @@ export class SeminarService {
       }
     }
 
+    if (message === 'Cannot delete seminar with associated program offerings.') {
+      return throwError(
+        () =>
+          new Error(
+            'No se puede eliminar el seminario porque está asociado a ofertas de programas.'
+          )
+      );
+    }
+
     return throwError(() => new Error(message));
   }
 }

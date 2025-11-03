@@ -80,6 +80,13 @@ export class SmmlvService {
       return throwError(() => new Error('El año ya existe'));
     }
 
+    if (message === 'Cannot delete SMMLV with associated program offerings.') {
+      return throwError(
+        () =>
+          new Error('No se puede eliminar el SMMLV porque está asociado a ofertas de programas.')
+      );
+    }
+
     return throwError(() => new Error(message));
   }
 }

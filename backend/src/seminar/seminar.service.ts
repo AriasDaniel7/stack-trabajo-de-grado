@@ -186,11 +186,20 @@ export class SeminarService {
   }
 
   private handleError(err: any) {
+    const message: string = err?.detail || err?.message || '';
+
     if (err instanceof NotFoundException) throw err;
 
     if (err.code === '23505') {
       throw new ConflictException('Seminary with that name already exists');
     }
+
+    if (message.includes('"seminar_program_offerings"')) {
+      throw new ConflictException(
+        'Cannot delete seminar with associated program offerings.',
+      );
+    }
+
     this.logger.error(err);
     throw new InternalServerErrorException('Please contact support');
   }

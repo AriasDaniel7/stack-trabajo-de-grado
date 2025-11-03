@@ -19,7 +19,9 @@ export class SeminarProgramOfferingEntity
   @JoinColumn({ name: 'idSeminar' })
   seminar: SeminarEntity;
 
-  @ManyToOne(() => ProgramOfferingEntity, (po) => po.seminarProgramOfferings)
+  @ManyToOne(() => ProgramOfferingEntity, (po) => po.seminarProgramOfferings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'idProgramOffering' })
   programOffering: ProgramOfferingEntity;
 }

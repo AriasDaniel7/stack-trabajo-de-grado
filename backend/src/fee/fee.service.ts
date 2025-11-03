@@ -105,8 +105,13 @@ export class FeeService {
 
   async remove(id: string) {
     const fee = await this.findOne(id);
-    await this.feeRepository.remove(fee);
-    return { message: 'Fee removed successfully' };
+
+    try {
+      await this.feeRepository.remove(fee);
+      return { message: 'Fee removed successfully' };
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   private async assignmentModality(modality_id: string) {
@@ -115,11 +120,18 @@ export class FeeService {
   }
 
   private handleError(err: any) {
+    const message: string = err?.detail || err?.message || '';
     if (err.code === '23505') {
       throw new ConflictException('The rate with this modality already exists');
     }
 
     if (err instanceof NotFoundException) throw err;
+
+    if (message.includes('"program_offerings"')) {
+      throw new ConflictException(
+        'Cannot delete fee with associated program offerings.',
+      );
+    }
 
     this.logger.error(err);
     throw new InternalServerErrorException('Please contact support');

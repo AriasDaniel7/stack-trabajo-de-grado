@@ -75,6 +75,10 @@ export class FacultyService {
       return throwError(() => new Error('La facultad ya existe'));
     }
 
+    if (message === 'Cannot delete faculty with associated program placements.') {
+      return throwError(() => new Error('No se puede eliminar la facultad porque está asociada a programas.'));
+    }
+
     return throwError(() => new Error(message));
   }
 }

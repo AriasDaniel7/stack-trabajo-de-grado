@@ -96,6 +96,12 @@ export class MethodologyService {
       return throwError(() => new Error('La metodología ya existe'));
     }
 
+    if (message === 'Cannot delete methodology with associated program placements.') {
+      return throwError(
+        () => new Error('No se puede eliminar la metodología porque está asociada a programas.')
+      );
+    }
+
     return throwError(() => new Error(message));
   }
 }

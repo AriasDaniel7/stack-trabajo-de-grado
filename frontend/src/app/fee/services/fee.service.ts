@@ -79,6 +79,13 @@ export class FeeService {
     if (message === 'The rate with this modality already exists') {
       return throwError(() => new Error('La tarifa con esta modalidad ya existe'));
     }
+
+    if (message === 'Cannot delete fee with associated program offerings.') {
+      return throwError(
+        () =>
+          new Error('No se puede eliminar la tarifa porque está asociada a ofertas de programas.')
+      );
+    }
     return throwError(() => new Error(message));
   }
 }

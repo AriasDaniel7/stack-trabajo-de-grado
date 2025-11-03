@@ -141,8 +141,15 @@ export class MethodologyService {
   }
 
   private handleError(error: any): void {
+    const message = error?.detail || error?.message || '';
     if (error.code === '23505') {
       throw new ConflictException('Methodology already exists');
+    }
+
+    if(message.includes('"program_placements"')) {
+      throw new ConflictException(
+        'Cannot delete methodology with associated program placements.',
+      );
     }
 
     this.logger.error(error);
