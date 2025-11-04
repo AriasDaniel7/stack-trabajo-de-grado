@@ -1,6 +1,6 @@
 import { DatePipe, I18nSelectPipe, SlicePipe, TitleCasePipe, UpperCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, output, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@auth/services/auth.service';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
 
@@ -22,6 +22,7 @@ import { IconComponent } from '@core/shared/components/icon/icon.component';
 })
 export class MenuComponent {
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   onClick = output<void>();
   user = this.authService.user;
@@ -29,11 +30,6 @@ export class MenuComponent {
   openMenuIndex = signal<number | null>(null);
 
   listItem = signal([
-    {
-      icon: 'home',
-      label: 'Panel Principal',
-      route: '',
-    },
     {
       icon: 'layers',
       label: 'Niveles Académicos',
@@ -107,5 +103,15 @@ export class MenuComponent {
 
   toggleSubMenu(index: number): void {
     this.openMenuIndex.update((currentIndex) => (currentIndex === index ? null : index));
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: (res) => {
+        if (res) {
+          this.router.navigateByUrl('/auth/login');
+        }
+      },
+    });
   }
 }

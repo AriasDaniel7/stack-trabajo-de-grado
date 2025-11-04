@@ -7,10 +7,6 @@ export const dashboardRoutes: Routes = [
     component: DashboardLayoutComponent,
     children: [
       {
-        path: '',
-        loadComponent: () => import('./pages/home-page/home-page.component'),
-      },
-      {
         path: 'school-grades',
         loadChildren: () => import('@school-grade/school-grade.routes'),
       },
@@ -40,7 +36,7 @@ export const dashboardRoutes: Routes = [
       },
       {
         path: '**',
-        redirectTo: '',
+        redirectTo: 'school-grades',
       },
     ],
   },
