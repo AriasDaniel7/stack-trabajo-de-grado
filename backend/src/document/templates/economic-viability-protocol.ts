@@ -34,11 +34,6 @@ export class EconomicViabilityProtocolTemplate {
     try {
       await workbook.xlsx.readFile(templatePath);
 
-      // Configurar cálculo automático
-      workbook.calcProperties = {
-        fullCalcOnLoad: true,
-      };
-
       const worksheet = workbook.getWorksheet(1);
 
       if (worksheet) {
@@ -54,8 +49,10 @@ export class EconomicViabilityProtocolTemplate {
 
           worksheet.getCell(`E${rowNumber}`).value =
             `${modalityName} = ${fee.factor_smmlv} SMMLV`;
+
           worksheet.getCell(`F${rowNumber}`).value = {
             formula: `C7*${fee.factor_smmlv}`,
+            result: offering.smmlv.value * fee.factor_smmlv,
           };
 
           worksheet.getCell(`T${rowNumber + 1}`).value = modalityName;
