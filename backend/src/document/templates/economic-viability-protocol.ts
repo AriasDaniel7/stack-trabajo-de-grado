@@ -58,8 +58,10 @@ export class EconomicViabilityProtocolTemplate {
           worksheet.getCell(`T${rowNumber + 1}`).value = modalityName;
           worksheet.getCell(`V${rowNumber + 1}`).value =
             `${fee.credit_value_smmlv} SMMLV`;
+
           worksheet.getCell(`W${rowNumber + 1}`).value = {
             formula: `C7*${fee.credit_value_smmlv}`,
+            result: offering.smmlv.value * fee.credit_value_smmlv,
           };
 
           feeFactorSmmlvMap.set(modalityName, `F${rowNumber}`);
@@ -72,6 +74,9 @@ export class EconomicViabilityProtocolTemplate {
         if (targetCell) {
           worksheet.getCell('C8').value = {
             formula: `C9*${targetCell}`,
+            result:
+              offering.pensum.credits *
+              Number(worksheet.getCell(targetCell).value),
           };
         } else {
           worksheet.getCell('C8').value = 0;
