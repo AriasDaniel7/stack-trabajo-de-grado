@@ -34,6 +34,11 @@ export class EconomicViabilityProtocolTemplate {
     try {
       await workbook.xlsx.readFile(templatePath);
 
+      // Configurar cálculo automático
+      workbook.calcProperties = {
+        fullCalcOnLoad: true,
+      };
+
       const worksheet = workbook.getWorksheet(1);
 
       if (worksheet) {
@@ -375,6 +380,14 @@ export class EconomicViabilityProtocolTemplate {
             };
           }
         }
+
+        worksheet.eachRow((row) => {
+          row.eachCell((cell) => {
+            if (cell.type === ExcelJS.ValueType.Formula) {
+              cell.value = cell.value; // Forzar reevaluación
+            }
+          });
+        });
       }
 
       res.setHeader(
@@ -386,6 +399,8 @@ export class EconomicViabilityProtocolTemplate {
         'Content-Disposition',
         `attachment; filename=protocolo-viabilidad-${Date.now()}.xlsx`,
       );
+
+      // Recalcular todas las fórmulas
 
       await workbook.xlsx.write(res);
       res.end();
