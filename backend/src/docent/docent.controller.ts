@@ -13,12 +13,13 @@ import { DocentService } from './docent.service';
 import { CreateDocentDto } from './dto/create-docent.dto';
 import { UpdateDocentDto } from './dto/update-docent.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { DocentEntity } from '@database/entities/docent';
 import { createPaginatedResponseDto } from '@shared/dtos/paginated-response.dto';
 import { ParamDto } from './dto/param.dto';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Docentes')
 @Controller('docent')
 export class DocentController {

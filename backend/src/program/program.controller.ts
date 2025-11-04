@@ -12,7 +12,7 @@ import {
 import { ProgramService } from './program.service';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { UpdateProgramDto } from './dto/update-program.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 import { ParamProgramAllDto } from './dto/param-program-all.dto';
 import { ParamProgramAllInternalDto } from './dto/param-program-all-internal.dto';
@@ -20,6 +20,7 @@ import { ParamOfferingDto } from './dto/param-offering.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Programas')
 @Controller('program')
 export class ProgramController {

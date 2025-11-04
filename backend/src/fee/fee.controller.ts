@@ -14,8 +14,10 @@ import { CreateFeeDto } from './dto/create-fee.dto';
 import { UpdateFeeDto } from './dto/update-fee.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 import { ParamDto } from './dto/param.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Auth()
+@ApiBearerAuth()
 @Controller('fee')
 export class FeeController {
   constructor(private readonly feeService: FeeService) {}

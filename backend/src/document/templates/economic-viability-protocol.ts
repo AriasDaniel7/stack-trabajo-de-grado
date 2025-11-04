@@ -1,5 +1,6 @@
 import {
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { existsSync } from 'fs';
@@ -11,6 +12,7 @@ import { PaymentType, VinculationType } from '@database/interfaces/data';
 import { ProgramOfferingMapResponse } from '@program/maps/program.map';
 
 export class EconomicViabilityProtocolTemplate {
+  private logger = new Logger(EconomicViabilityProtocolTemplate.name);
   async generate(
     res: Response,
     fees: FeeEntity[],
@@ -391,6 +393,7 @@ export class EconomicViabilityProtocolTemplate {
       await workbook.xlsx.write(res);
       res.end();
     } catch (error) {
+      this.logger.error(error);
       throw new InternalServerErrorException('Error generating document', {
         cause: error,
       });

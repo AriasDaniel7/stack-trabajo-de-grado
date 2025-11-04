@@ -12,12 +12,13 @@ import {
 import { MethodologyService } from './methodology.service';
 import { CreateMethodologyDto } from './dto/create-methodology.dto';
 import { UpdateMethodologyDto } from './dto/update-methodology.dto';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ParamDto } from './dto/param.dto';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Metodologia')
 @Controller('methodology')
 export class MethodologyController {

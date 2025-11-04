@@ -13,11 +13,12 @@ import { SchoolGradeService } from './school-grade.service';
 import { CreateSchoolGradeDto } from './dto/create-school-grade.dto';
 import { UpdateSchoolGradeDto } from './dto/update-school-grade.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ParamDto } from './dto/param.dto';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Niveles académicos')
 @Controller('school-grade')
 export class SchoolGradeController {

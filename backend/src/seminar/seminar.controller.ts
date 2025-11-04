@@ -13,10 +13,11 @@ import { SeminarService } from './seminar.service';
 import { CreateSeminarDto } from './dto/create-seminary.dto';
 import { UpdateSeminarDto } from './dto/update-seminary.dto';
 import { ParamDto } from './dto/param.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth } from '@auth/decorators/auth.decorator';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Seminarios')
 @Controller('seminar')
 export class SeminarController {

@@ -14,10 +14,11 @@ import { CreateModalityDto } from './dto/create-modality.dto';
 import { UpdateModalityDto } from './dto/update-modality.dto';
 import { ParamDto } from './dto/param.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '@shared/dtos/pagination.dto';
 
 @Auth()
+@ApiBearerAuth()
 @ApiTags('Modalidad')
 @Controller('modality')
 export class ModalityController {

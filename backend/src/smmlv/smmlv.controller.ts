@@ -14,8 +14,10 @@ import { CreateSmmlvDto } from './dto/create-smmlv.dto';
 import { UpdateSmmlvDto } from './dto/update-smmlv.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 import { ParamDto } from './dto/param.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Auth()
+@ApiBearerAuth()
 @Controller('smmlv')
 export class SmmlvController {
   constructor(private readonly smmlvService: SmmlvService) {}

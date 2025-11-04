@@ -2,8 +2,10 @@ import { Controller, Get, Param, ParseUUIDPipe, Res } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import type { Response } from 'express';
 import { Auth } from '@auth/decorators/auth.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Auth()
+@ApiBearerAuth()
 @Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
