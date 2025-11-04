@@ -8,6 +8,7 @@ export interface ProgramCreate {
   workday: string;
   idSmmlv: string;
   idFee: string;
+  idDocent: string;
   pensum: PensumCreate;
   discounts: DiscountCreate[];
   programOffering: ProgramOfferingCreate;

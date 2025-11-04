@@ -16,7 +16,7 @@ export interface Docent {
   document_number: string;
   address: string;
   phone: string;
-  school_grade: SchoolGrade;
+  schoolGrade: SchoolGrade;
 }
 
 export interface DocentCreate {

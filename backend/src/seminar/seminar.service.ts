@@ -77,9 +77,9 @@ export class SeminarService {
               document_number: docent_document_number
                 ? docent_document_number.trim()
                 : undefined,
-            },
-            schoolGrade: {
-              id: id_school_grade ? id_school_grade.trim() : undefined,
+              schoolGrade: {
+                id: id_school_grade ? id_school_grade.trim() : undefined,
+              },
             },
           },
         },
@@ -90,8 +90,9 @@ export class SeminarService {
         },
         relations: {
           seminarDocent: {
-            docent: true,
-            schoolGrade: true,
+            docent: {
+              schoolGrade: true,
+            },
           },
           dates: true,
         },
@@ -111,9 +112,11 @@ export class SeminarService {
       where: { id },
       relations: {
         seminarDocent: {
-          docent: true,
-          schoolGrade: true,
+          docent: {
+            schoolGrade: true,
+          },
         },
+
         dates: true,
       },
     });
@@ -209,8 +212,23 @@ export class SeminarService {
     docent_id: string,
     docent_vinculation: VinculationType,
   ) {
-    const { school_grade, ...docent } =
+    const { schoolGrade, ...docent } =
       await this.docentService.findOne(docent_id);
+
+    let schoolGradeSeminar = await queryRunner.manager.findOneBy(
+      SchoolGradeSeminarEntity,
+      { id: schoolGrade.id },
+    );
+
+    if (!schoolGradeSeminar) {
+      schoolGradeSeminar = queryRunner.manager.create(
+        SchoolGradeSeminarEntity,
+        {
+          ...schoolGrade,
+        },
+      );
+      await queryRunner.manager.save(schoolGradeSeminar);
+    }
 
     let docentSeminar = await queryRunner.manager.findOneBy(
       DocentSeminarEntity,
@@ -222,23 +240,9 @@ export class SeminarService {
     if (!docentSeminar) {
       docentSeminar = queryRunner.manager.create(DocentSeminarEntity, {
         ...docent,
+        schoolGrade: schoolGradeSeminar,
       });
       await queryRunner.manager.save(docentSeminar);
-    }
-
-    let schoolGradeSeminar = await queryRunner.manager.findOneBy(
-      SchoolGradeSeminarEntity,
-      { id: school_grade.id },
-    );
-
-    if (!schoolGradeSeminar) {
-      schoolGradeSeminar = queryRunner.manager.create(
-        SchoolGradeSeminarEntity,
-        {
-          ...school_grade,
-        },
-      );
-      await queryRunner.manager.save(schoolGradeSeminar);
     }
 
     const seminarDocent = queryRunner.manager.create(SeminarDocentEntity, {

@@ -35,7 +35,7 @@ export class DocentService {
 
       const docent = queryRunner.manager.create(DocentEntity, {
         ...createDocentDto,
-        school_grade: schoolGrade,
+        schoolGrade: schoolGrade,
       });
 
       await queryRunner.manager.save(docent);
@@ -58,7 +58,7 @@ export class DocentService {
       'docent',
     );
 
-    queryBuilder.leftJoinAndSelect('docent.school_grade', 'school_grade');
+    queryBuilder.leftJoinAndSelect('docent.schoolGrade', 'schoolGrade');
 
     if (query) {
       queryBuilder.where(
@@ -85,7 +85,7 @@ export class DocentService {
     const docent = await this.dataSource.getRepository(DocentEntity).findOne({
       where: { id },
       relations: {
-        school_grade: true,
+        schoolGrade: true,
       },
     });
 
@@ -104,7 +104,7 @@ export class DocentService {
       const schoolGrade = await this.sGService.findOne(
         updateDocentDto.id_school_grade,
       );
-      docent.school_grade = schoolGrade;
+      docent.schoolGrade = schoolGrade;
     }
 
     try {

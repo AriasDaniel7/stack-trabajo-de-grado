@@ -1,3 +1,4 @@
+import { Docent } from './docent';
 import { Fee } from './fee';
 import { Pensum } from './pensum';
 import { Seminar } from './seminar';
@@ -32,6 +33,7 @@ export interface ProgramCreate {
   unity: string;
   workday: string;
   idSmmlv: string;
+  idDocent: string;
   idFee: string;
   pensum: PensumCreate;
   discounts: DiscountCreate[];
@@ -81,6 +83,7 @@ export interface Offering {
   pensum: Pensum;
   smmlv: Smmlv;
   seminars: Seminar[];
+  director: Docent;
 }
 
 export interface Discount {

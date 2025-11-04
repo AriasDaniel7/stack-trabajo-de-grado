@@ -49,7 +49,7 @@ export interface SeminarDocent {
   updatedAt: Date;
   vinculation: VinculationType;
   docent: Docent;
-  schoolGrade: SchoolGrade;
+
 }
 
 export interface SeminarCreate {

@@ -32,6 +32,11 @@ export interface Docent {
   phone: string; // Teléfono
 }
 
+export interface DocentSchoolGrade {
+  idDocent: string; // ID del docente
+  idSchoolGrade: string; // ID del grado escolar
+}
+
 export enum DocumentType {
   CC = 'cc', // Cédula de ciudadanía
   CE = 'ce', // Cédula de extranjería
@@ -112,6 +117,7 @@ export interface ProgramOffering {
   idSmmlv: string; // ID del SMMLV
   idPensum: string; // ID del pensum
   idFee: string; // ID de la tarifa
+  idDocent: string; // ID del docente
   cohort: number; // Cohorte
   semester: number; // Semestre
   codeCDP?: string; // Código CDP

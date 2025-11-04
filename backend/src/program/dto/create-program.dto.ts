@@ -114,6 +114,11 @@ export class CreateProgramDto implements ProgramCreate {
   @IsString()
   @IsUUID()
   @IsNotEmpty()
+  idDocent: string;
+
+  @IsString()
+  @IsUUID()
+  @IsNotEmpty()
   idFee: string;
 
   @IsObject()

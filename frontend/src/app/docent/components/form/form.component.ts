@@ -30,6 +30,7 @@ export class FormComponent implements OnInit {
     { label: 'Colombiano', value: 'colombiano' },
     { label: 'Extranjero', value: 'extranjero' },
   ]);
+  
   formUtil = FormUtil;
 
   typeDocuments = signal([
@@ -61,7 +62,7 @@ export class FormComponent implements OnInit {
     if (this.docentInfo()) {
       this.myForm.patchValue({
         ...(this.docentInfo() as any),
-        id_school_grade: this.docentInfo()!.school_grade.id,
+        id_school_grade: this.docentInfo()!.schoolGrade.id,
         document_number: this.decimalPipe.transform(this.docentInfo()!.document_number, '1.0-0'),
       });
     }

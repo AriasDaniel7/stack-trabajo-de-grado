@@ -14,7 +14,7 @@ export class SchoolGradeEntity extends BaseEntity implements SchoolGrade {
   @Column({ type: 'varchar', unique: true })
   name: string;
 
-  @OneToMany(() => DocentEntity, (docent) => docent.school_grade)
+  @OneToMany(() => DocentEntity, (docent) => docent.schoolGrade)
   docents: DocentEntity[];
 
   @BeforeInsert()

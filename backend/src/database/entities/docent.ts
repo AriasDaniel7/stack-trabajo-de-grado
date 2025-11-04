@@ -30,8 +30,8 @@ export class DocentEntity extends BaseEntity implements Docent {
   @Column({ type: 'varchar' })
   phone: string;
 
-  @ManyToOne(() => SchoolGradeEntity, (school_grade) => school_grade.docents)
-  school_grade: SchoolGradeEntity;
+  @ManyToOne(() => SchoolGradeEntity, (schoolGrade) => schoolGrade.docents)
+  schoolGrade: SchoolGradeEntity;
 
   @BeforeInsert()
   beforeInsert() {

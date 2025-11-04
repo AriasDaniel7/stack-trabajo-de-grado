@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,6 +7,9 @@ import {
   inject,
   input,
   linkedSignal,
+  PLATFORM_ID,
+  signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -24,6 +27,10 @@ import { ModalService } from '@core/shared/components/modal/modal.service';
 import { ModalComponent } from '@core/shared/components/modal/modal.component';
 import { SelectedSeminar } from '../selected-seminar/selected-seminar';
 import { ProgramService } from '@program/services/program.service';
+import { AutoCompleteComponent } from '@core/shared/components/auto-complete/auto-complete.component';
+import { DocentService } from '@docent/services/docent.service';
+import { Docent } from '@core/interfaces/docent';
+import { LoadingComponent } from '@core/shared/components/loading/loading.component';
 
 @Component({
   selector: 'program-form-offering',
@@ -36,6 +43,8 @@ import { ProgramService } from '@program/services/program.service';
     TableComponent,
     ModalComponent,
     SelectedSeminar,
+    AutoCompleteComponent,
+    LoadingComponent,
   ],
   templateUrl: './form-offering.html',
   styleUrl: './form-offering.css',
@@ -46,11 +55,19 @@ export class FormOffering {
   private alertService = inject(AlertService);
   private modalService = inject(ModalService);
   private programService = inject(ProgramService);
+  private docentService = inject(DocentService);
+  private platformId = inject(PLATFORM_ID);
+  private numberPipe = new DecimalPipe('es-CO');
 
   offering = input<Offering | null>();
   smmlvs = input<SmmlvResponse | null>(null);
   fees = input<FeeResponse | null>(null);
   isOpenModal = this.modalService.isOpen;
+
+  docentQuery = this.docentService.docentQuery;
+  docentSearchTerm = signal('');
+  isDownloading = signal(false);
+  docentInfo = signal<Docent | null>(null);
 
   private _seminars = computed(() => {
     return this.offering()?.seminars || [];
@@ -62,6 +79,7 @@ export class FormOffering {
 
   myForm = this.fb.group({
     idSmmlv: [null, [Validators.required]],
+    idDocent: [null, [Validators.required]],
     programOffering: this.fb.group({
       cohort: [null, [Validators.required, Validators.min(1)]],
       semester: [null, [Validators.required, Validators.min(1)]],
@@ -73,6 +91,20 @@ export class FormOffering {
   private idSmmlv = toSignal(this.myForm.controls.idSmmlv.valueChanges);
   private discountsChanges = toSignal(this.myForm.controls.discounts.valueChanges, {
     initialValue: [],
+  });
+
+  docentEffect = effect(() => {
+    const term = this.docentSearchTerm();
+
+    if (!term) return;
+
+    untracked(() => {
+      this.docentService.setPagination({
+        limit: 10,
+        offset: 0,
+        q: term,
+      });
+    });
   });
 
   offeringEffect = effect(() => {
@@ -98,6 +130,8 @@ export class FormOffering {
         });
       }
 
+      this.docentInfo.set(value.director);
+
       this.myForm.patchValue({
         idSmmlv: value.smmlv.id as any,
         programOffering: {
@@ -105,6 +139,7 @@ export class FormOffering {
           semester: value.semester as any,
           codeCDP: value.codeCDP as any,
         },
+        idDocent: value.director.id as any,
       });
     }
   });
@@ -226,11 +261,53 @@ export class FormOffering {
     this.seminars.set(currentSeminars.filter((s) => s.id !== seminar.id));
   }
 
+  setSeletedDocent(docent: Docent | null) {
+    if (docent) {
+      this.myForm.patchValue({ idDocent: docent.id as any });
+    } else {
+      this.myForm.patchValue({ idDocent: null });
+    }
+  }
+
+  getDocentDisplay = (docent: Docent) => {
+    return `${docent.name.toUpperCase()} - ${docent.document_type.toUpperCase()}: ${this.numberPipe.transform(
+      docent.document_number
+    )}`;
+  };
+
   openModal() {
     this.modalService.open({
       title: 'Agregar Seminario',
       subTitle: ' Selecciona el seminario que deseas agregar al programa académico.',
     });
+  }
+
+  downloadDocument() {
+    this.isDownloading.set(true);
+
+    if (this.offering()) {
+      this.programService.downloadEconomicViabilityProtocol(this.offering()!.id).subscribe({
+        next: (blob) => {
+          if (isPlatformBrowser(this.platformId)) {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${this.offering()!.program.name.toUpperCase()} - COHORTE ${
+              this.offering()!.cohort
+            } - SEMESTRE ${this.offering()!.semester}.xlsx`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            this.isDownloading.set(false);
+          }
+        },
+        error: (err) => {
+          this.alertService.open({
+            type: 'error',
+            message: err.message,
+          });
+        },
+      });
+    }
   }
 
   onSubmit() {
@@ -250,6 +327,7 @@ export class FormOffering {
         },
         idSmmlv: this.myForm.value.idSmmlv!,
         idFee: this.feeSelected()!.id,
+        idDocent: this.myForm.value.idDocent!,
         discounts: this.myForm.value.discounts!.map((discount) => ({
           percentage: Number(discount.percentage),
           numberOfApplicants: Number(discount.numberOfApplicants),

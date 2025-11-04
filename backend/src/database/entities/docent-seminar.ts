@@ -1,7 +1,17 @@
 import { Docent, DocumentType } from '@database/interfaces/data';
 import { BaseEntity } from './base';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { SeminarDocentEntity } from './seminar-docent';
+import { SchoolGradeSeminarEntity } from './school-grade-seminar';
+import { ProgramOfferingEntity } from './program-offering';
 
 @Entity('docent_seminars')
 export class DocentSeminarEntity extends BaseEntity implements Docent {
@@ -23,8 +33,21 @@ export class DocentSeminarEntity extends BaseEntity implements Docent {
   @Column({ type: 'varchar' })
   phone: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  idSchoolGrade: string;
+
   @OneToMany(() => SeminarDocentEntity, (seminarDocent) => seminarDocent.docent)
   seminarDocent: SeminarDocentEntity[];
+
+  @ManyToOne(
+    () => SchoolGradeSeminarEntity,
+    (schoolGrade) => schoolGrade.docentSeminar,
+  )
+  @JoinColumn({ name: 'idSchoolGrade' })
+  schoolGrade: SchoolGradeSeminarEntity;
+
+  @OneToMany(() => ProgramOfferingEntity, (offering) => offering.docentSeminar)
+  offerings: ProgramOfferingEntity[];
 
   @BeforeInsert()
   beforeInsert() {

@@ -30,14 +30,13 @@ import { NumberFormatDirective } from '@core/shared/directives/numberFormat.dire
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormComponent implements OnInit {
-  seminarInfo = input<Seminar | null>(null);
-
   private fb = inject(FormBuilder);
   private docentService = inject(DocentService);
   private numberPipe = new DecimalPipe('es-CO');
   private seminarService = inject(SeminarService);
   private alertService = inject(AlertService);
 
+  seminarInfo = input<Seminar | null>(null);
   openOptions = signal(false);
 
   autoComplete = viewChild<AutoCompleteComponent<Docent>>('autoComplete');
@@ -47,6 +46,7 @@ export class FormComponent implements OnInit {
     { label: 'Interno', value: 'INTERNAL' },
     { label: 'Externo', value: 'EXTERNAL' },
   ]);
+
   paymentTypeOptions = signal([
     { label: 'Bonificaciones Planta Admin', value: 'BONIFICACIONES_PLANTA_ADMIN' },
     { label: 'Docente Externo OPS', value: 'DOCENTE_EXTERNO_OPS' },

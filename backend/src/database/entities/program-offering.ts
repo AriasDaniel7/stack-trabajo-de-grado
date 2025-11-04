@@ -16,6 +16,7 @@ import { ProgramPlacementEntity } from './program-placement';
 import { FeeEntity } from './rates';
 import { DiscountEntity } from './discount';
 import { SeminarProgramOfferingEntity } from './seminar-program-offering';
+import { DocentSeminarEntity } from './docent-seminar';
 
 @Entity('program_offerings')
 @Unique('UQ_PROGRAM_COHORT_SEMESTER_PENSUM', [
@@ -39,6 +40,9 @@ export class ProgramOfferingEntity
   idSmmlv: string;
 
   @Column({ type: 'uuid', nullable: true })
+  idDocent: string;
+
+  @Column({ type: 'uuid', nullable: true })
   idFee: string;
 
   @Column({ type: 'uuid', nullable: true })
@@ -56,6 +60,10 @@ export class ProgramOfferingEntity
   @ManyToOne(() => SmmlvEntity, (smmlv) => smmlv.offerings)
   @JoinColumn({ name: 'idSmmlv' })
   smmlv: SmmlvEntity;
+
+  @ManyToOne(() => DocentSeminarEntity, (ds) => ds.offerings)
+  @JoinColumn({ name: 'idDocent' })
+  docentSeminar: DocentSeminarEntity;
 
   @ManyToOne(() => ProgramPlacementEntity, (pp) => pp.offerings, {
     onDelete: 'CASCADE',

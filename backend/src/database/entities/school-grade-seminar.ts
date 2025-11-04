@@ -1,7 +1,7 @@
 import { SchoolGrade } from '@database/interfaces/data';
 import { BaseEntity } from './base';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
-import { SeminarDocentEntity } from './seminar-docent';
+import { DocentSeminarEntity } from './docent-seminar';
 
 @Entity('school_grade_seminars')
 export class SchoolGradeSeminarEntity
@@ -15,10 +15,10 @@ export class SchoolGradeSeminarEntity
   name: string;
 
   @OneToMany(
-    () => SeminarDocentEntity,
-    (seminarDocent) => seminarDocent.schoolGrade,
+    () => DocentSeminarEntity,
+    (docentSeminar) => docentSeminar.schoolGrade,
   )
-  seminarDocent: SeminarDocentEntity[];
+  docentSeminar: DocentSeminarEntity[];
 
   @BeforeInsert()
   beforeInsert() {

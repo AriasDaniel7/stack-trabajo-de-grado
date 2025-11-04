@@ -35,6 +35,28 @@
               <label class="text-sm font-semibold text-gray-800" for="codeCDP">Código CDP:</label>
               <input type="text" formControlName="codeCDP" />
             </div>
+
+            <div class="flex flex-col gap-1 col-span-2">
+              <label class="text-sm font-semibold text-gray-800" for="docent_search"
+                >Director de Programa:</label
+              >
+              <shared-auto-complete
+                #autoComplete
+                [isLoading]="docentQuery.isLoading()"
+                (searchChange)="docentSearchTerm.set($event)"
+                (selectedItem)="setSeletedDocent($event)"
+                [items]="docentQuery.data()?.data"
+                [displayWith]="getDocentDisplay"
+                [initialValue]="docentInfo()"
+                placeholder="Buscar por nombre o identificación"
+              />
+
+              @if (formUtil.isValidField(myForm, 'idDocent')) {
+              <span class="text-xs text-red-400">
+                {{ formUtil.getFieldError(myForm, 'idDocent') }}
+              </span>
+              }
+            </div>
           </div>
         </div>
 
@@ -245,7 +267,19 @@
         </div>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end gap-4">
+        <button
+          class="bg-gray-600 text-white flex items-center justify-center gap-2 font-medium hover:bg-gray-700 px-4 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap"
+          type="button"
+          (click)="downloadDocument()"
+        >
+          @if(isDownloading()){
+          <shared-loading classList="border-3 border-white w-4 h-4" />
+          }@else {
+          <shared-icon icon="document" />
+          <span>Protocolo de Viabilidad Económica</span>
+          }
+        </button>
         <button
           type="submit"
           class="bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium hover:bg-emerald-700 px-4 py-2 rounded-md cursor-pointer text-sm whitespace-nowrap"

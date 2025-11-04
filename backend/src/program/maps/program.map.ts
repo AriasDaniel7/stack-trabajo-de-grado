@@ -1,6 +1,12 @@
+import { DiscountEntity } from '@database/entities/discount';
+import { DocentSeminarEntity } from '@database/entities/docent-seminar';
+import { PensumEntity } from '@database/entities/pensum';
 import { ProgramEntity } from '@database/entities/program';
 import { ProgramOfferingEntity } from '@database/entities/program-offering';
 import { ProgramPlacementEntity } from '@database/entities/program-placement';
+import { FeeEntity } from '@database/entities/rates';
+import { SeminarEntity } from '@database/entities/seminar';
+import { SmmlvEntity } from '@database/entities/smmlv';
 import { Program } from '@program/interfaces/program-external';
 
 export interface ProgramMapResponse {
@@ -15,6 +21,33 @@ export interface ProgramMapResponse {
   educationalLevel: string;
   name: string;
   faculty: string | null;
+}
+
+export interface ProgramOfferingMapResponse {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  cohort: number;
+  semester: number;
+  codeCDP: string | undefined;
+  program: {
+    id: string;
+    idUnityProgram: string;
+    idProgramPlacement: string;
+    idProgramExternal: number | undefined;
+    unity: string;
+    workday: string;
+    modality: string;
+    methodology: string;
+    name: string;
+    faculty: string | null;
+  };
+  fee: FeeEntity;
+  discounts: DiscountEntity[];
+  pensum: PensumEntity;
+  smmlv: SmmlvEntity;
+  seminars: SeminarEntity[];
+  director: DocentSeminarEntity;
 }
 
 export class ProgramMap {
@@ -69,7 +102,9 @@ export class ProgramMap {
     };
   }
 
-  static toProgramResponseByIdOffering(offering: ProgramOfferingEntity) {
+  static toProgramResponseByIdOffering(
+    offering: ProgramOfferingEntity,
+  ): ProgramOfferingMapResponse {
     return {
       id: offering.id,
       createdAt: offering.createdAt,
@@ -96,6 +131,7 @@ export class ProgramMap {
       pensum: offering.pensum,
       smmlv: offering.smmlv,
       seminars: offering.seminarProgramOfferings.map((spo) => spo.seminar),
+      director: offering.docentSeminar,
     };
   }
 }

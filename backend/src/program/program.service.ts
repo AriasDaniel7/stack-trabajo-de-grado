@@ -41,6 +41,9 @@ import { ParamOfferingDto } from './dto/param-offering.dto';
 import { DiscountEntity } from '@database/entities/discount';
 import { SeminarEntity } from '@database/entities/seminar';
 import { SeminarProgramOfferingEntity } from '@database/entities/seminar-program-offering';
+import { DocentEntity } from '@database/entities/docent';
+import { DocentSeminarEntity } from '@database/entities/docent-seminar';
+import { SchoolGradeSeminarEntity } from '@database/entities/school-grade-seminar';
 
 @Injectable()
 export class ProgramService {
@@ -66,6 +69,7 @@ export class ProgramService {
         methodology,
         idSmmlv,
         idFee,
+        idDocent, // TODO: Use idDocent when creating seminars
         pensum,
         unity,
         workday,
@@ -81,12 +85,14 @@ export class ProgramService {
         facultyEntity,
         smmlvEntity,
         feeEntity,
+        docentEntity,
       ] = await Promise.all([
         this.createProgramModality(queryRunner, modality),
         this.createMethodology(queryRunner, methodology),
         this.createProgramFaculty(queryRunner, faculty),
         this.createSmmlv(queryRunner, idSmmlv),
         this.createFee(queryRunner, idFee),
+        this.assingDocent(queryRunner, idDocent),
       ]);
 
       let program = await queryRunner.manager.findOne(ProgramEntity, {
@@ -126,6 +132,7 @@ export class ProgramService {
         pensumEntity.id,
         program.id,
         feeEntity.id,
+        docentEntity.id,
         programOffering,
       );
 
@@ -139,7 +146,6 @@ export class ProgramService {
       ]);
 
       programOfferingEntity.discounts = discountsEntity;
-
       programOfferingEntity.seminarProgramOfferings = seminarProgramOfferings;
 
       programPlacementEntity.offerings = [programOfferingEntity];
@@ -155,6 +161,55 @@ export class ProgramService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  private async assingDocent(queryRunner: QueryRunner, idDocent: string) {
+    const docentEntity = await queryRunner.manager.findOne(DocentEntity, {
+      where: { id: idDocent },
+      relations: {
+        schoolGrade: true,
+      },
+    });
+
+    if (!docentEntity) {
+      throw new NotFoundException('Docent not found');
+    }
+
+    const { schoolGrade, ...docent } = docentEntity;
+
+    let schoolGradeSeminar = await queryRunner.manager.findOneBy(
+      SchoolGradeSeminarEntity,
+      {
+        id: schoolGrade.id,
+      },
+    );
+
+    if (!schoolGradeSeminar) {
+      schoolGradeSeminar = queryRunner.manager.create(
+        SchoolGradeSeminarEntity,
+        {
+          ...schoolGrade,
+        },
+      );
+      await queryRunner.manager.save(schoolGradeSeminar);
+    }
+
+    let docentSeminar = await queryRunner.manager.findOneBy(
+      DocentSeminarEntity,
+      {
+        id: docent.id,
+      },
+    );
+
+    if (!docentSeminar) {
+      docentSeminar = queryRunner.manager.create(DocentSeminarEntity, {
+        ...docent,
+        schoolGrade: schoolGradeSeminar,
+      });
+      await queryRunner.manager.save(docentSeminar);
+    }
+
+    return docentSeminar;
   }
 
   private async createDiscounts(
@@ -213,6 +268,7 @@ export class ProgramService {
     idPensum: string,
     idProgram: string,
     idFee: string,
+    idDocent: string,
     programOffering: CreateProgramOfferingDto,
   ) {
     const offering = queryRunner.manager.create(ProgramOfferingEntity, {
@@ -221,6 +277,7 @@ export class ProgramService {
       idSmmlv,
       idPensum,
       idProgram,
+      idDocent,
       idFee,
     });
 
@@ -625,6 +682,7 @@ export class ProgramService {
       .leftJoin('offering.smmlv', 'smmlv')
       .leftJoin('offering.discounts', 'discounts')
       .leftJoin('offering.fee', 'fee')
+      .leftJoin('offering.docentSeminar', 'docentSeminar')
       .leftJoin('programPlacement.program', 'program')
       .leftJoin('programPlacement.modality', 'modality')
       .leftJoin('programPlacement.faculty', 'faculty')
@@ -632,9 +690,10 @@ export class ProgramService {
       .leftJoin('offering.pensum', 'pensum')
       .leftJoin('offering.seminarProgramOfferings', 'seminarProgramOfferings')
       .leftJoin('seminarProgramOfferings.seminar', 'seminar')
+      .leftJoin('seminar.dates', 'seminarDates')
       .leftJoin('seminar.seminarDocent', 'seminarDocent')
       .leftJoin('seminarDocent.docent', 'docent')
-      .leftJoin('seminarDocent.schoolGrade', 'schoolGrade')
+      .leftJoin('docent.schoolGrade', 'schoolGrade')
       .select([
         'offering.id',
         'offering.cohort',
@@ -642,6 +701,16 @@ export class ProgramService {
         'offering.codeCDP',
         'offering.createdAt',
         'offering.updatedAt',
+        // Docent Seminar info
+        'docentSeminar.id',
+        'docentSeminar.name',
+        'docentSeminar.nationality',
+        'docentSeminar.document_type',
+        'docentSeminar.document_number',
+        'docentSeminar.address',
+        'docentSeminar.phone',
+        'docentSeminar.createdAt',
+        'docentSeminar.updatedAt',
         // Program Placement info
         'programPlacement.id',
         'programPlacement.unity',
@@ -694,6 +763,11 @@ export class ProgramService {
         'seminar.foodAndLodgingAid',
         'seminar.eventStayDays',
         'seminar.hotelLocation',
+        // Seminar Dates info
+        'seminarDates.id',
+        'seminarDates.date',
+        'seminarDates.createdAt',
+        'seminarDates.updatedAt',
         // Seminar Docent info
         'seminarDocent.id',
         'seminarDocent.vinculation',
@@ -1014,7 +1088,7 @@ export class ProgramService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const { seminars, discounts, idFee, idSmmlv, programOffering } =
+      const { seminars, discounts, idFee, idSmmlv, idDocent, programOffering } =
         updateProgramDto;
 
       const offering = await queryRunner.manager.findOne(
@@ -1036,6 +1110,11 @@ export class ProgramService {
       if (idSmmlv) {
         const smmlvEntity = await this.createSmmlv(queryRunner, idSmmlv);
         offering.idSmmlv = smmlvEntity.id;
+      }
+
+      if(idDocent){
+        const docentEntity = await this.assingDocent(queryRunner, idDocent);
+        offering.idDocent = docentEntity.id;
       }
 
       if (programOffering) {

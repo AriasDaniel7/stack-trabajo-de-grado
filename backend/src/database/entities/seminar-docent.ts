@@ -3,7 +3,6 @@ import { BaseEntity } from './base';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { SeminarEntity } from './seminar';
 import { DocentSeminarEntity } from './docent-seminar';
-import { SchoolGradeSeminarEntity } from './school-grade-seminar';
 
 @Entity('seminar_docents')
 export class SeminarDocentEntity extends BaseEntity implements SeminarDocent {
@@ -16,10 +15,4 @@ export class SeminarDocentEntity extends BaseEntity implements SeminarDocent {
 
   @ManyToOne(() => DocentSeminarEntity, (docent) => docent.seminarDocent)
   docent: DocentSeminarEntity;
-
-  @ManyToOne(
-    () => SchoolGradeSeminarEntity,
-    (schoolGrade) => schoolGrade.seminarDocent,
-  )
-  schoolGrade: SchoolGradeSeminarEntity;
 }

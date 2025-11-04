@@ -27,5 +27,6 @@ import { DiscountEntity } from '@database/entities/discount';
   ],
   controllers: [ProgramController],
   providers: [ProgramService],
+  exports: [ProgramService],
 })
 export class ProgramModule {}

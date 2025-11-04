@@ -12,6 +12,7 @@ import { ModalityModule } from '@modality/modality.module';
 import { MethodologyModule } from '@methodology/methodology.module';
 import { FacultyModule } from '@faculty/faculty.module';
 import { ProgramModule } from '@program/program.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProgramModule } from '@program/program.module';
     FacultyModule,
     ProgramModule,
     SeminarModule,
+    DocumentModule,
   ],
 })
 export class AppModule {}

@@ -18,8 +18,8 @@ import { DocentEntity } from '@database/entities/docent';
 import { createPaginatedResponseDto } from '@shared/dtos/paginated-response.dto';
 import { ParamDto } from './dto/param.dto';
 
-@ApiTags('Docentes')
 @Auth()
+@ApiTags('Docentes')
 @Controller('docent')
 export class DocentController {
   constructor(private readonly docentService: DocentService) {}

@@ -7,6 +7,7 @@ import {
   input,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -23,7 +24,7 @@ import { FormUtil } from '@core/utils/form';
 import { NormalizedUtil } from '@core/utils/normalized';
 import { ProgramService } from '@program/services/program.service';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DecimalPipe, JsonPipe } from '@angular/common';
 import { PaginationComponent } from '@core/shared/components/pagination/pagination.component';
 import { PensumList } from '../pensum-list/pensum-list';
 import { CardProgram } from '../card-program/card-program';
@@ -33,6 +34,9 @@ import { ModalComponent } from '@core/shared/components/modal/modal.component';
 import { SelectedSeminar } from '../selected-seminar/selected-seminar';
 import { Seminar } from '@core/interfaces/seminar';
 import { TableComponent } from '@seminar/components/table/table.component';
+import { AutoCompleteComponent } from '@core/shared/components/auto-complete/auto-complete.component';
+import { DocentService } from '@docent/services/docent.service';
+import { Docent } from '@core/interfaces/docent';
 
 @Component({
   selector: 'program-form-register',
@@ -47,6 +51,7 @@ import { TableComponent } from '@seminar/components/table/table.component';
     ModalComponent,
     SelectedSeminar,
     TableComponent,
+    AutoCompleteComponent,
   ],
   templateUrl: './form-register-program.html',
   styleUrl: './form-register-program.css',
@@ -59,17 +64,23 @@ export class FormRegisterProgram {
   private paginationService = inject(PaginationService);
   private alertService = inject(AlertService);
   private modalService = inject(ModalService);
+  private docentService = inject(DocentService);
+  private numberPipe = new DecimalPipe('es-CO');
 
   educationLevelPostgrado = input<SchoolGradeExisting | null>(null);
   smmlvs = input<SmmlvResponse | null>(null);
   fees = input<FeeResponse | null>(null);
   isOpenModal = this.modalService.isOpen;
+  autoComplete = viewChild<AutoCompleteComponent<Docent>>('autoComplete');
 
   programQuery = this.programService.programAllQuery;
   currentPage = this.paginationService.currentPage;
   pensumQuery = this.programService.pensumQuery;
+  docentQuery = this.docentService.docentQuery;
 
   searchTerm = signal('');
+  docentSearchTerm = signal('');
+  docentInfo = signal<Docent | null>(null);
   programSelected = signal<Program | null>(null);
   pensumSelected = signal<Pensum | null>(null);
   seminars = signal<Seminar[]>([]);
@@ -78,6 +89,7 @@ export class FormRegisterProgram {
 
   myForm = this.fb.group({
     idSmmlv: [null, [Validators.required]],
+    idDocent: [null, [Validators.required]],
     programOffering: this.fb.group({
       cohort: [null, [Validators.required, Validators.min(1)]],
       semester: [null, [Validators.required, Validators.min(1)]],
@@ -128,6 +140,20 @@ export class FormRegisterProgram {
         }
       }
     }
+  });
+
+  docentEffect = effect(() => {
+    const term = this.docentSearchTerm();
+
+    if (!term) return;
+
+    untracked(() => {
+      this.docentService.setPagination({
+        limit: 10,
+        offset: 0,
+        q: term,
+      });
+    });
   });
 
   onSelectProgram = effect(() => {
@@ -276,6 +302,20 @@ export class FormRegisterProgram {
     this.pensumSelected.set(null);
   }
 
+  setSeletedDocent(docent: Docent | null) {
+    if (docent) {
+      this.myForm.patchValue({ idDocent: docent.id as any });
+    } else {
+      this.myForm.patchValue({ idDocent: null });
+    }
+  }
+
+  getDocentDisplay = (docent: Docent) => {
+    return `${docent.name.toUpperCase()} - ${docent.document_type.toUpperCase()}: ${this.numberPipe.transform(
+      docent.document_number
+    )}`;
+  };
+
   onSubmit() {
     this.myForm.markAllAsTouched();
 
@@ -315,6 +355,7 @@ export class FormRegisterProgram {
           credits: this.pensumSelected()!.credits ? this.pensumSelected()!.credits! : 0,
         },
         idSmmlv: this.myForm.value.idSmmlv!,
+        idDocent: this.myForm.value.idDocent!,
         idFee: this.feeSelected()!.id,
         discounts: this.myForm.value.discounts!.map((discount) => ({
           percentage: Number(discount.percentage),
@@ -335,6 +376,7 @@ export class FormRegisterProgram {
           this.deleteSelection();
           this.myForm.controls.discounts.clear();
           this.seminars.set([]);
+          this.autoComplete()?.clearInput();
         },
         error: (err) => {
           this.alertService.open({

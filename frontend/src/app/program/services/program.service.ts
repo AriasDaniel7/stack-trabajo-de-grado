@@ -18,9 +18,10 @@ import {
   ParamProgramAllInternal,
 } from '@program/interfaces/param-program';
 import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { firstValueFrom, tap, catchError, throwError, delay, of } from 'rxjs';
+import { firstValueFrom, tap, catchError, throwError, of } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/program';
+const BASE_URL_DOCUMENT = environment.apiUrl + '/document';
 const {
   LIST_KEY,
   BY_ID_PROGRAM_OFFERING_KEY,
@@ -130,6 +131,15 @@ export class ProgramService {
         }),
         catchError((err) => this.handleError(err))
       );
+  }
+
+  downloadEconomicViabilityProtocol(offeringId: string) {
+    return this.http.get(
+      `${BASE_URL_DOCUMENT}/offering/${offeringId}/economic-viability-protocol`,
+      {
+        responseType: 'blob',
+      }
+    );
   }
 
   deletePlacement(id: string) {
