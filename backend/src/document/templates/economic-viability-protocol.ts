@@ -74,9 +74,7 @@ export class EconomicViabilityProtocolTemplate {
         if (targetCell) {
           worksheet.getCell('C8').value = {
             formula: `C9*${targetCell}`,
-            result:
-              offering.pensum.credits *
-              Number(worksheet.getCell(targetCell).value),
+            result: offering.pensum.credits * offering.fee.factor_smmlv,
           };
         } else {
           worksheet.getCell('C8').value = 0;
