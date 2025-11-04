@@ -14,6 +14,7 @@ RUN npm run build
 FROM base AS production
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=install /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/documents ./documents
 
 USER node
 
