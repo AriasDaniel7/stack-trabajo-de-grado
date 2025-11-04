@@ -72,8 +72,6 @@ export class EconomicViabilityProtocolTemplate {
         const targetCell = feeFactorSmmlvMap.get(programModality);
 
         if (targetCell) {
-          console.log(offering.pensum.credits);
-          console.log(offering.fee.factor_smmlv);
 
           worksheet.getCell('C8').value = {
             formula: `C9*${targetCell}`,
@@ -96,6 +94,11 @@ export class EconomicViabilityProtocolTemplate {
         worksheet.getCell('C16').value = offering.program.unity.toUpperCase();
         worksheet.getCell('C17').value = offering.director.name.toUpperCase();
 
+        const creditSmmlvValue =
+          offering.fee.factor_smmlv * offering.smmlv.value;
+
+        const tuitionValue = creditSmmlvValue * (offering.pensum.credits || 0);
+
         if (offering.discounts && offering.discounts.length > 0) {
           const templateRowDiscounts = 9;
           offering.discounts.forEach((discount, index) => {
@@ -105,8 +108,33 @@ export class EconomicViabilityProtocolTemplate {
 
             worksheet.getCell(`J${rowNumber}`).value =
               discount.numberOfApplicants;
+
+            worksheet.getCell(`K${rowNumber}`).value = {
+              formula: `(C8*${`J${rowNumber}`})-((C8*${`I${rowNumber}`})*${`J${rowNumber}`})`,
+              result:
+                tuitionValue * discount.numberOfApplicants -
+                tuitionValue *
+                  (discount.percentage / 100) *
+                  discount.numberOfApplicants,
+            };
           });
         }
+
+        worksheet.getCell('K17').value = {
+          formula: `SUMA(K9:K16)`,
+          result:
+            offering.discounts && offering.discounts.length > 0
+              ? offering.discounts.reduce((total, discount) => {
+                  return (
+                    total +
+                    tuitionValue * discount.numberOfApplicants -
+                    tuitionValue *
+                      (discount.percentage / 100) *
+                      discount.numberOfApplicants
+                  );
+                }, 0)
+              : 0,
+        };
 
         if (offering.seminars && offering.seminars.length > 0) {
           const seminars = offering.seminars;
