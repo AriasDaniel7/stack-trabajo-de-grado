@@ -19,10 +19,7 @@ export class EconomicViabilityProtocolTemplate {
     offering: ProgramOfferingMapResponse,
   ) {
     const templatePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      '..',
+      process.cwd(),
       'documents',
       'protocolo-2025.xlsx',
     );
