@@ -72,17 +72,21 @@ export class EconomicViabilityProtocolTemplate {
         const targetCell = feeFactorSmmlvMap.get(programModality);
 
         if (targetCell) {
+          console.log(offering.pensum.credits);
+          console.log(offering.fee.factor_smmlv);
+
           worksheet.getCell('C8').value = {
             formula: `C9*${targetCell}`,
-            result: offering.pensum.credits * offering.fee.factor_smmlv,
+            result:
+              offering.pensum.credits *
+              (offering.smmlv.value * offering.fee.factor_smmlv),
           };
-        } else {
-          worksheet.getCell('C8').value = 0;
         }
 
         worksheet.getCell('C13').value = offering.program.faculty
           ? offering.program.faculty.toUpperCase()
           : '';
+
         worksheet.getCell('C14').value = offering.program.name.toUpperCase();
         worksheet.getCell('C15').value = offering.cohort;
         worksheet.getCell('E15').value = offering.semester;
@@ -172,6 +176,8 @@ export class EconomicViabilityProtocolTemplate {
               if (targetCellCredit) {
                 worksheet.getCell(`O${rowNumber}`).value = {
                   formula: targetCellCredit,
+                  result:
+                    offering.smmlv.value * offering.fee.credit_value_smmlv,
                 };
               } else {
                 worksheet.getCell(`O${rowNumber}`).value = 0;
@@ -181,6 +187,9 @@ export class EconomicViabilityProtocolTemplate {
 
               worksheet.getCell(`Q${rowNumber}`).value = {
                 formula: `O${rowNumber}*P${rowNumber}`,
+                result:
+                  seminar.credits *
+                  (offering.smmlv.value * offering.fee.credit_value_smmlv),
               };
 
               if (seminar.airTransportValue) {
@@ -221,28 +230,68 @@ export class EconomicViabilityProtocolTemplate {
 
             const totalBonificationRow = lastBonificationRow + 1;
 
+            const total = seminarBonifications.reduce(
+              (totals, current) => {
+                return {
+                  totalCredits: totals.totalCredits + current.credits,
+                  totalFee:
+                    totals.totalFee +
+                    current.credits *
+                      (offering.smmlv.value * offering.fee.credit_value_smmlv),
+                  totalAirTransportValue:
+                    totals.totalAirTransportValue +
+                    (current.airTransportValue ? current.airTransportValue : 0),
+                  totalLandTransportValue:
+                    totals.totalLandTransportValue +
+                    (current.landTransportValue
+                      ? current.landTransportValue
+                      : 0),
+                  totalFoodAndLodgingAid:
+                    totals.totalFoodAndLodgingAid +
+                    (current.foodAndLodgingAid ? current.foodAndLodgingAid : 0),
+                  totalEventStayDays:
+                    totals.totalEventStayDays +
+                    (current.eventStayDays ? current.eventStayDays : 0),
+                };
+              },
+              {
+                totalCredits: 0,
+                totalFee: 0,
+                totalAirTransportValue: 0,
+                totalLandTransportValue: 0,
+                totalFoodAndLodgingAid: 0,
+                totalEventStayDays: 0,
+              },
+            );
+
             worksheet.getCell(`P${totalBonificationRow}`).value = {
               formula: `SUM(P${templateRowBonifications}:P${lastBonificationRow})`,
+              result: total.totalCredits,
             };
 
             worksheet.getCell(`Q${totalBonificationRow}`).value = {
               formula: `SUM(Q${templateRowBonifications}:Q${lastBonificationRow})`,
+              result: total.totalFee,
             };
 
             worksheet.getCell(`R${totalBonificationRow}`).value = {
               formula: `SUM(R${templateRowBonifications}:R${lastBonificationRow})`,
+              result: total.totalAirTransportValue,
             };
 
             worksheet.getCell(`T${totalBonificationRow}`).value = {
               formula: `SUM(T${templateRowBonifications}:T${lastBonificationRow})`,
+              result: total.totalLandTransportValue,
             };
 
             worksheet.getCell(`V${totalBonificationRow}`).value = {
               formula: `SUM(V${templateRowBonifications}:V${lastBonificationRow})`,
+              result: total.totalFoodAndLodgingAid,
             };
 
             worksheet.getCell(`W${totalBonificationRow}`).value = {
               formula: `SUM(W${templateRowBonifications}:W${lastBonificationRow})`,
+              result: total.totalEventStayDays,
             };
           }
 
@@ -306,6 +355,8 @@ export class EconomicViabilityProtocolTemplate {
               if (targetCellCredit) {
                 worksheet.getCell(`O${rowNumber}`).value = {
                   formula: targetCellCredit,
+                  result:
+                    offering.smmlv.value * offering.fee.credit_value_smmlv,
                 };
               } else {
                 worksheet.getCell(`O${rowNumber}`).value = 0;
@@ -315,6 +366,9 @@ export class EconomicViabilityProtocolTemplate {
 
               worksheet.getCell(`Q${rowNumber}`).value = {
                 formula: `O${rowNumber}*P${rowNumber}`,
+                result:
+                  seminar.credits *
+                  (offering.smmlv.value * offering.fee.credit_value_smmlv),
               };
 
               if (seminar.airTransportValue) {
@@ -353,41 +407,73 @@ export class EconomicViabilityProtocolTemplate {
               }
             });
 
+            const total = seminarDocentExternal.reduce(
+              (totals, current) => {
+                return {
+                  totalCredits: totals.totalCredits + current.credits,
+                  totalFee:
+                    totals.totalFee +
+                    current.credits *
+                      (offering.smmlv.value * offering.fee.credit_value_smmlv),
+                  totalAirTransportValue:
+                    totals.totalAirTransportValue +
+                    (current.airTransportValue ? current.airTransportValue : 0),
+                  totalLandTransportValue:
+                    totals.totalLandTransportValue +
+                    (current.landTransportValue
+                      ? current.landTransportValue
+                      : 0),
+                  totalFoodAndLodgingAid:
+                    totals.totalFoodAndLodgingAid +
+                    (current.foodAndLodgingAid ? current.foodAndLodgingAid : 0),
+                  totalEventStayDays:
+                    totals.totalEventStayDays +
+                    (current.eventStayDays ? current.eventStayDays : 0),
+                };
+              },
+              {
+                totalCredits: 0,
+                totalFee: 0,
+                totalAirTransportValue: 0,
+                totalLandTransportValue: 0,
+                totalFoodAndLodgingAid: 0,
+                totalEventStayDays: 0,
+              },
+            );
+
             const totalExternalRow = lastExternalRow + 1;
 
             worksheet.getCell(`P${totalExternalRow}`).value = {
               formula: `SUM(P${startRowExternal}:P${lastExternalRow})`,
+              result: total.totalCredits,
             };
 
             worksheet.getCell(`Q${totalExternalRow}`).value = {
               formula: `SUM(Q${startRowExternal}:Q${lastExternalRow})`,
+              result: total.totalFee,
             };
 
             worksheet.getCell(`R${totalExternalRow}`).value = {
               formula: `SUM(R${startRowExternal}:R${lastExternalRow})`,
+              result: total.totalAirTransportValue,
             };
 
             worksheet.getCell(`T${totalExternalRow}`).value = {
               formula: `SUM(T${startRowExternal}:T${lastExternalRow})`,
+              result: total.totalLandTransportValue,
             };
 
             worksheet.getCell(`V${totalExternalRow}`).value = {
               formula: `SUM(V${startRowExternal}:V${lastExternalRow})`,
+              result: total.totalFoodAndLodgingAid,
             };
 
             worksheet.getCell(`W${totalExternalRow}`).value = {
               formula: `SUM(W${startRowExternal}:W${lastExternalRow})`,
+              result: total.totalEventStayDays,
             };
           }
         }
-
-        worksheet.eachRow((row) => {
-          row.eachCell((cell) => {
-            if (cell.type === ExcelJS.ValueType.Formula) {
-              cell.value = cell.value; // Forzar reevaluación
-            }
-          });
-        });
       }
 
       res.setHeader(
@@ -399,8 +485,6 @@ export class EconomicViabilityProtocolTemplate {
         'Content-Disposition',
         `attachment; filename=protocolo-viabilidad-${Date.now()}.xlsx`,
       );
-
-      // Recalcular todas las fórmulas
 
       await workbook.xlsx.write(res);
       res.end();
