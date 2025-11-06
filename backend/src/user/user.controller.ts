@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,8 +21,21 @@ import { Auth } from '@auth/decorators/auth.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post('setup-admin')
+  async create(@Body() createUserDto: CreateUserDto) {
+    const userCount = await this.userService.count();
+
+    if (userCount === 0) {
+      return this.userService.create({ ...createUserDto, role: Rol.ADMIN });
+    }
+
+    throw new UnauthorizedException('Only admins can create new users');
+  }
+
+  @ApiBearerAuth()
+  @Auth(Rol.ADMIN)
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  createByAdmin(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
@@ -50,7 +64,7 @@ export class UserController {
   }
 
   @ApiBearerAuth()
-  @Auth()
+  @Auth(Rol.ADMIN)
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.remove(id);

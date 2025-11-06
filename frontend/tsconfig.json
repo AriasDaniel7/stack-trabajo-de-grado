@@ -28,7 +28,8 @@
       "@modality/*": ["src/app/modality/*"],
       "@program/*": ["src/app/program/*"],
       "@methodology/*": ["src/app/methodology/*"],
-      "@faculty/*": ["src/app/faculty/*"]
+      "@faculty/*": ["src/app/faculty/*"],
+      "@profile/*": ["src/app/profile/*"]
     }
   },
   "angularCompilerOptions": {

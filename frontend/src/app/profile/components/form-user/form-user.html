@@ -1,0 +1,44 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div>
+    <div class="text-base font-semibold">Información Personal</div>
+    <div class="text-sm text-gray-500">Actualiza tu nombre y correo electrónico</div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 py-4">
+    <div class="flex flex-col gap-1">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <shared-icon icon="user-check" classList="text-gray-800 w-4 h-4" />
+        <label class="font-semibold text-gray-800" for="name">Nombre Completo:</label>
+      </div>
+      <input id="name" type="text" formControlName="name" />
+      @if (formUtil.isValidField(myForm, 'name')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'name') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <shared-icon icon="email" classList="text-gray-800 w-4 h-4" />
+        <label class="font-semibold text-gray-800" for="email">Correo Electrónico:</label>
+      </div>
+      <input id="email" type="text" formControlName="email" />
+      @if (formUtil.isValidField(myForm, 'email')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'email') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2"
+      type="submit"
+    >
+      <shared-icon icon="save" />
+      <span>Guardar Cambios</span>
+    </button>
+  </div>
+</form>

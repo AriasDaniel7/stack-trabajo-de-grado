@@ -104,7 +104,11 @@
 
     <!-- User Info -->
     <div class="p-4">
-      <div class="flex items-center space-x-2 transition-colors hover:bg-gray-200 p-2 rounded-lg">
+      <a
+        (click)="onClick.emit()"
+        [routerLink]="['/auth/profile']"
+        class="flex items-center space-x-2 transition-colors hover:bg-gray-200 p-2 rounded-lg cursor-pointer"
+      >
         <div class="h-10 w-10 bg-emerald-600 rounded-full flex justify-center items-center">
           <span class="text-white font-semibold">{{
             user()?.name | slice : 0 : 2 | uppercase
@@ -116,7 +120,7 @@
             {{ user()?.role | i18nSelect : rolMap }}
           </p>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </nav>

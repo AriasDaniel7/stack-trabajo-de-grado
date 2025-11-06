@@ -1,12 +1,10 @@
 import { Routes } from '@angular/router';
 import { isLoggedGuard } from '@auth/guards/isLogged.guard';
-import { notLoggedGuard } from '@auth/guards/notLogged.guard';
 
 export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('@auth/auth.routes'),
-    canMatch: [notLoggedGuard],
   },
   {
     path: 'dashboard',

@@ -9,4 +9,13 @@ export interface User {
   name: string;
   isActive: boolean;
   role: Rol;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserUpdate {
+  email: string;
+  name: string;
+  role: Rol;
+  isActive?: boolean;
 }

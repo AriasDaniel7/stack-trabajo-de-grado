@@ -1,13 +1,1 @@
-@if (status() === 'not-authenticated') {
-
-<main
-  class="w-full h-[calc(100vh-73px)] md:h-[calc(100vh-53px)] flex items-center justify-center px-6"
->
-  <router-outlet />
-</main>
-<shared-footer />
-}@else {
-<div class="flex items-center justify-center h-screen w-full">
-  <shared-loading classList="border-4 border-gray-500 w-12 h-12" />
-</div>
-}
+<router-outlet />

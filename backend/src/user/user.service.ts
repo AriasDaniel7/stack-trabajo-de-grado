@@ -77,13 +77,8 @@ export class UserService {
     const user = await this.findOne(id);
     Object.assign(user, userData);
 
-    if (password) {
-      user.password = await hash(password, 10);
-    }
-
     try {
       await this.userRepository.save(user);
-
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (error) {
@@ -96,6 +91,10 @@ export class UserService {
     await this.userRepository.remove(user);
 
     return { message: 'User removed successfully' };
+  }
+
+  async count() {
+    return await this.userRepository.count();
   }
 
   private handleError(error: any) {
@@ -113,4 +112,3 @@ export class UserService {
     throw new InternalServerErrorException('Please contact support');
   }
 }
-

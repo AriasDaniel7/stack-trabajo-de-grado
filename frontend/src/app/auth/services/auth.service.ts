@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { AuthResponse, AuthStatus, Login } from '@core/interfaces/auth';
-import { User } from '@core/interfaces/user';
+import { User, UserUpdate } from '@core/interfaces/user';
 import { LocalStorageService } from '@core/services/local-storage.service';
 import { authKeys } from '@core/utils/keys';
 import { environment } from '@env/environment';
@@ -9,6 +9,7 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
 import { catchError, map, of, throwError } from 'rxjs';
 
 const BASE_URL = environment.apiUrl + '/auth';
+const BASE_URL_USER = environment.apiUrl + '/user';
 const { STATUS_KEY, TOKEN_KEY } = authKeys;
 
 @Injectable({
@@ -35,6 +36,10 @@ export class AuthService {
     return this.queryClient.getQueryData<boolean>([STATUS_KEY]);
   }
 
+  setUser(user: User | null) {
+    this._user.set(user);
+  }
+
   login(login: Login) {
     return this.http.post<AuthResponse>(`${BASE_URL}/login`, login, { withCredentials: true }).pipe(
       map((res) => this.handleAuthSuccess(res)),
@@ -47,6 +52,12 @@ export class AuthService {
       map((res) => this.handleAuthSuccess(res)),
       catchError((err) => this.handleAuthError(err))
     );
+  }
+
+  updateUser(id: string, user: Partial<UserUpdate>) {
+    return this.http
+      .patch<AuthResponse>(`${BASE_URL_USER}/${id}`, user, { withCredentials: true })
+      .pipe(catchError((err) => this.handleAuthError(err)));
   }
 
   logout() {
