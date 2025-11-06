@@ -4,6 +4,20 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@auth/services/auth.service';
 import { IconComponent } from '@core/shared/components/icon/icon.component';
 
+interface SubMenuItem {
+  icon: string;
+  label: string;
+  route: string;
+  skipParentRoute?: boolean;
+}
+
+interface MenuItem {
+  icon: string;
+  label: string;
+  route?: string;
+  subMenu?: SubMenuItem[];
+}
+
 @Component({
   selector: 'dashboard-menu',
   imports: [
@@ -27,28 +41,45 @@ export class MenuComponent {
   onClick = output<void>();
   user = this.authService.user;
 
-  openMenuIndex = signal<number | null>(null);
+  openMenuIndexes = signal<Set<number>>(new Set([0, 1, 2]));
 
-  listItem = signal([
+  listItem = signal<MenuItem[]>([
     {
       icon: 'layers',
-      label: 'Niveles Académicos',
-      route: 'school-grades',
+      label: 'Niveles',
+      subMenu: [
+        {
+          icon: '',
+          label: 'Niveles Académicos',
+          route: 'school-grades',
+        },
+        {
+          icon: '',
+          label: 'Modalidades',
+          route: 'modalities',
+        },
+      ],
     },
     {
-      icon: 'user-check',
-      label: 'Docentes',
-      route: 'docents',
-    },
-    {
-      icon: 'seminary',
-      label: 'Seminarios',
-      route: 'seminars',
-    },
-    {
-      icon: 'smmlv',
-      label: 'SMMLV',
-      route: 'smmlvs',
+      icon: 'document',
+      label: 'Archivos',
+      subMenu: [
+        {
+          icon: '',
+          label: 'Docentes',
+          route: 'docents',
+        },
+        {
+          icon: '',
+          label: 'Tarifas de Posgrado',
+          route: 'rates',
+        },
+        {
+          icon: '',
+          label: 'SMMLV',
+          route: 'smmlvs',
+        },
+      ],
     },
     {
       icon: 'program',
@@ -67,20 +98,16 @@ export class MenuComponent {
         },
         {
           icon: '',
-          label: 'Gestión de Programas',
+          label: 'Programas de posgrado',
           route: 'program-management',
         },
+        {
+          icon: '',
+          label: 'Asignación de Seminarios',
+          route: 'seminars',
+          skipParentRoute: true,
+        },
       ],
-    },
-    {
-      icon: 'fee',
-      label: 'Tarifas de Posgrado',
-      route: 'rates',
-    },
-    {
-      icon: 'modality',
-      label: 'Modalidades',
-      route: 'modalities',
     },
   ]);
 
@@ -102,7 +129,15 @@ export class MenuComponent {
   });
 
   toggleSubMenu(index: number): void {
-    this.openMenuIndex.update((currentIndex) => (currentIndex === index ? null : index));
+    this.openMenuIndexes.update((indexes) => {
+      const newIndexes = new Set(indexes);
+      if (newIndexes.has(index)) {
+        newIndexes.delete(index);
+      } else {
+        newIndexes.add(index);
+      }
+      return newIndexes;
+    });
   }
 
   logout() {

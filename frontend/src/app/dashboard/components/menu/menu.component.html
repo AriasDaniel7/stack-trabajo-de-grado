@@ -30,11 +30,10 @@
       <div class="space-y-1 p-4">
         @for (item of listItem(); track $index) {
         <!--  -->
-
         @if (item.subMenu && item.subMenu.length > 0) {
         <div
-          [class.max-h-[38px]]="openMenuIndex() === null"
-          [class.max-h-[500px]]="openMenuIndex() === $index"
+          [class.max-h-[38px]]="!openMenuIndexes().has($index)"
+          [class.max-h-[500px]]="openMenuIndexes().has($index)"
           class="overflow-hidden transition-all duration-200 ease-in-out space-y-1"
         >
           <button
@@ -47,7 +46,7 @@
               <span>{{ item.label }}</span>
             </div>
 
-            @if(openMenuIndex() === null){
+            @if(!openMenuIndexes().has($index)){
             <shared-icon classList="w-4 h-4 ml-auto" icon="row" />
             }@else{
             <shared-icon classList="w-4 h-4 ml-auto" icon="row-down" />
@@ -57,7 +56,13 @@
           <div class="space-y-1 flex flex-col">
             @for (itemMenu of item.subMenu; track $index) {
             <a
-              [routerLink]="['/dashboard', item.route, itemMenu.route]"
+              [routerLink]="
+                itemMenu.skipParentRoute
+                  ? ['/dashboard', itemMenu.route]
+                  : item.route
+                  ? ['/dashboard', item.route, itemMenu.route]
+                  : ['/dashboard', itemMenu.route]
+              "
               [routerLinkActiveOptions]="{ exact: true }"
               #rla2="routerLinkActive"
               [class.hover:bg-gray-200]="!rla2.isActive"
@@ -81,28 +86,6 @@
             }
           </div>
         </div>
-        }@else {
-        <a
-          [routerLink]="item.route ? ['/dashboard', item.route] : ['/dashboard']"
-          [routerLinkActiveOptions]="{ exact: true }"
-          #rla1="routerLinkActive"
-          routerLinkActive="bg-emerald-100 text-emerald-700 border-emerald-200"
-          class="cursor-pointer border border-white w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-          [class.text-gray-700]="!rla1.isActive"
-          [class.hover:bg-gray-200]="!rla1.isActive"
-          (click)="onClick.emit()"
-        >
-          <div class="flex items-center gap-3 w-full">
-            <!-- Icono -->
-            <shared-icon classList="w-4 h-4" [icon]="item.icon" />
-            <span>{{ item.label }}</span>
-          </div>
-          <!--  -->
-
-          @if (rla1.isActive) {
-          <shared-icon classList="w-4 h-4 ml-auto" icon="row" />
-          }
-        </a>
         }
         <!--  -->
         }
