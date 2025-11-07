@@ -5,13 +5,16 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@database/entities/user';
 import { Repository } from 'typeorm';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
+import { Rol } from '@database/interfaces/data';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 export class UserService {
@@ -68,14 +71,61 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    if (!updatePasswordDto) {
+      throw new BadRequestException('Update data is required');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    const { currentPassword, newPassword } = updatePasswordDto;
+    const isPasswordValid = await compare(currentPassword, user.password || '');
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    user.password = await hash(newPassword, 10);
+
+    try {
+      await this.userRepository.save(user);
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    currentUser: UserEntity,
+  ) {
     if (!updateUserDto) {
       throw new BadRequestException('Update data is required');
     }
 
-    const { password, ...userData } = updateUserDto;
+    const { password, role, ...userData } = updateUserDto;
+
+    if (role && currentUser.role !== Rol.ADMIN) {
+      throw new UnauthorizedException('Only admins can change roles');
+    }
+
     const user = await this.findOne(id);
     Object.assign(user, userData);
+
+    if (password) {
+      user.password = await hash(password, 10);
+    }
 
     try {
       await this.userRepository.save(user);

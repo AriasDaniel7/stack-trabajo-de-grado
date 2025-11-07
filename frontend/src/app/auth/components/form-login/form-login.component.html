@@ -38,13 +38,22 @@
         <div class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4">
           <shared-icon classList="w-4 h-4 text-gray-500" icon="password" />
         </div>
-        <input
-          placeholder="*********"
-          class="pl-10"
-          type="password"
-          formControlName="password"
-          id="password"
-        />
+        <div class="relative">
+          <input
+            placeholder="*********"
+            class="pl-10"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            id="password"
+          />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+          >
+            <shared-icon [icon]="showPassword() ? 'view-password' : 'no-view-password'" />
+          </button>
+        </div>
       </div>
 
       @if (formUtil.isValidField(myForm, 'password')) {

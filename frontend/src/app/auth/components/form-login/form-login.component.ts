@@ -24,10 +24,16 @@ export class FormLoginComponent {
   isLoading = signal(false);
   formUtil = FormUtil;
 
+  showPassword = signal(false);
+
   myForm = this.fb.group({
     email: [null, [Validators.required, Validators.email]],
     password: [null, [Validators.required]],
   });
+
+  togglePasswordVisibility() {
+    this.showPassword.update((v) => !v);
+  }
 
   onSubmit() {
     this.myForm.markAllAsTouched();

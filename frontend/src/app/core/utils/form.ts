@@ -1,4 +1,4 @@
-import { FormArray, FormGroup, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup, ValidationErrors } from '@angular/forms';
 
 export class FormUtil {
   static getTextError(errors: ValidationErrors) {
@@ -14,6 +14,10 @@ export class FormUtil {
           return `El valor debe ser menor o igual a ${errors[key].max}`;
         case 'maxlength':
           return `El valor debe tener máximo ${errors[key].requiredLength} caracteres`;
+        case 'minlength':
+          return `El valor debe tener mínimo ${errors[key].requiredLength} caracteres`;
+        case 'passwordsMismatch':
+          return 'Las contraseñas no coinciden';
         default:
           return `Error de validación no controlado ${key}`;
       }
@@ -44,6 +48,29 @@ export class FormUtil {
     if (!form.controls[fieldName]) return null;
 
     const errors = form.controls[fieldName].errors ?? {};
+
+    return FormUtil.getTextError(errors);
+  }
+
+  static isFieldOneEqualToFieldTwo(field1: string, field2: string) {
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      const value1 = formGroup.get(field1)?.value;
+      const value2 = formGroup.get(field2)?.value;
+
+      if (value1 && value2 && value1 !== value2) {
+        const confirmField = formGroup.get(field2);
+        confirmField?.setErrors({ ...confirmField.errors, passwordsMismatch: true });
+        return { passwordsMismatch: true };
+      }
+
+      return null;
+    };
+  }
+
+  static getFormError(form: FormGroup): string | null {
+    const errors = form.errors ?? {};
+
+    if (Object.keys(errors).length === 0) return null;
 
     return FormUtil.getTextError(errors);
   }

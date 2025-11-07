@@ -26,8 +26,12 @@ export class UserEntity extends BaseEntity implements User {
 
   @BeforeInsert()
   beforeInsert() {
-    this.email = this.email.toLowerCase().trim();
-    this.name = this.name.toLowerCase().trim();
+    if (this.email) {
+      this.email = this.email.toLowerCase().trim();
+    }
+    if (this.name) {
+      this.name = this.name.toLowerCase().trim();
+    }
   }
 
   @BeforeUpdate()

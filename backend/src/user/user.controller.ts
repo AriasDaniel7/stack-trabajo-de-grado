@@ -15,6 +15,9 @@ import { UserService } from './user.service';
 import { Rol } from '@database/interfaces/data';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from '@auth/decorators/auth.decorator';
+import { GetUser } from '@auth/decorators/get-user.decorator';
+import { UserEntity } from '@database/entities/user';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @ApiTags('Usuarios')
 @Controller('user')
@@ -55,12 +58,23 @@ export class UserController {
 
   @ApiBearerAuth()
   @Auth()
+  @Patch(':id/update-password')
+  updatePassword(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return this.userService.updatePassword(id, updatePasswordDto);
+  }
+
+  @ApiBearerAuth()
+  @Auth()
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @GetUser() user: UserEntity,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return this.userService.update(id, updateUserDto, user);
   }
 
   @ApiBearerAuth()

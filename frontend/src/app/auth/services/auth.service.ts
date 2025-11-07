@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { AuthResponse, AuthStatus, Login } from '@core/interfaces/auth';
+import { AuthResponse, AuthStatus, Login, PasswordUpdate } from '@core/interfaces/auth';
 import { User, UserUpdate } from '@core/interfaces/user';
 import { LocalStorageService } from '@core/services/local-storage.service';
 import { authKeys } from '@core/utils/keys';
@@ -57,7 +57,15 @@ export class AuthService {
   updateUser(id: string, user: Partial<UserUpdate>) {
     return this.http
       .patch<AuthResponse>(`${BASE_URL_USER}/${id}`, user, { withCredentials: true })
-      .pipe(catchError((err) => this.handleAuthError(err)));
+      .pipe(catchError((err) => this.handleUpdateUser(err)));
+  }
+
+  updatePassword(id: string, updatePassword: PasswordUpdate) {
+    return this.http
+      .patch<AuthResponse>(`${BASE_URL_USER}/${id}/update-password`, updatePassword, {
+        withCredentials: true,
+      })
+      .pipe(catchError((err) => this.handleUpdateUser(err)));
   }
 
   logout() {
@@ -87,8 +95,8 @@ export class AuthService {
   }
 
   private handleAuthError(err: HttpErrorResponse) {
-    this.handleLogout();
     const message = err.error.message;
+    this.handleLogout();
 
     if (message === 'Invalid email or password') {
       return throwError(() => new Error('Correo o contraseña incorrectos'));
@@ -99,5 +107,19 @@ export class AuthService {
     }
 
     return of(false);
+  }
+
+  private handleUpdateUser(err: HttpErrorResponse) {
+    const message = err.error.message;
+
+    if (message === 'Current password is incorrect') {
+      return throwError(() => new Error('La contraseña actual es incorrecta'));
+    }
+
+    if (message === 'Email already exists') {
+      return throwError(() => new Error('El correo electrónico ya está en uso'));
+    }
+
+    return throwError(() => new Error(message || 'Error desconocido'));
   }
 }
