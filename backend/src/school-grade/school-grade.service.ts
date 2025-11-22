@@ -100,7 +100,9 @@ export class SchoolGradeService {
       };
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(
+        'Please contact support regarding school grade retrieval',
+      );
     }
   }
 
