@@ -146,6 +146,10 @@ export class UserService {
     const user = await this.findOne(id);
     Object.assign(user, userData);
 
+    if (role && currentUser.role === Rol.ADMIN) {
+      user.role = role;
+    }
+
     if (password) {
       user.password = await hash(password, 10);
     }
