@@ -13,6 +13,7 @@ interface SubMenuItem {
 
 interface MenuItem {
   icon: string;
+  isAdmin?: boolean;
   label: string;
   route?: string;
   subMenu?: SubMenuItem[];
@@ -108,6 +109,12 @@ export class MenuComponent {
           skipParentRoute: true,
         },
       ],
+    },
+    {
+      icon: 'user-check',
+      label: 'Gestión de Usuarios',
+      route: 'users',
+      isAdmin: true,
     },
   ]);
 

@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtil } from '@core/utils/form';
-import { IconComponent } from '@core/shared/components/icon/icon.component';
-import { AuthService } from '@auth/services/auth.service';
+import { User } from '@core/interfaces/user';
 import { AlertService } from '@core/shared/components/alert/alert.service';
-import { UserUpdate } from '@core/interfaces/user';
+import { IconComponent } from '@core/shared/components/icon/icon.component';
+import { FormUtil } from '@core/utils/form';
+import { UserService } from '@user/services/user.service';
 
 @Component({
-  selector: 'profile-form-user',
+  selector: 'user-form',
   imports: [ReactiveFormsModule, IconComponent],
   templateUrl: './form-user.html',
   styleUrl: './form-user.css',
@@ -16,23 +16,29 @@ import { UserUpdate } from '@core/interfaces/user';
 export class FormUser {
   private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
-  private authService = inject(AuthService);
+  private userService = inject(UserService);
 
-  user = this.authService.user;
+  user = input<User | null>(null);
+
   formUtil = FormUtil;
-
-  userEffect = effect(() => {
-    if (this.user()) {
-      this.myForm.patchValue({
-        name: this.user()!.name as any,
-        email: this.user()!.email as any,
-      });
-    }
-  });
 
   myForm = this.fb.group({
     email: [null, [Validators.required, Validators.email]],
     name: [null, [Validators.required]],
+    role: ['user', [Validators.required]],
+    isActive: [true, [Validators.required]],
+  });
+
+  changeData = effect(() => {
+    const user = this.user();
+    if (user) {
+      this.myForm.patchValue({
+        email: user.email as any,
+        name: user.name as any,
+        role: user.role as any,
+        isActive: user.isActive as any,
+      });
+    }
   });
 
   onSubmit() {
@@ -42,21 +48,19 @@ export class FormUser {
 
     this.alertService.close();
 
-    const data: Partial<UserUpdate> = {
+    const data: Partial<User> = {
       name: this.myForm.value.name!,
       email: this.myForm.value.email!,
+      role: this.myForm.value.role! as any,
+      isActive: this.myForm.value.isActive!,
     };
 
     if (this.user()?.id) {
-      this.authService.updateUser(this.user()!.id, data).subscribe({
+      this.userService.updateUser(this.user()!.id, data).subscribe({
         next: () => {
           this.alertService.open({
             type: 'success',
             message: 'Usuario actualizado con éxito',
-          });
-          this.authService.setUser({
-            ...this.user()!,
-            ...data,
           });
         },
         error: (err) => {

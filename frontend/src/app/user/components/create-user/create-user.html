@@ -1,0 +1,122 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div>
+    <div class="text-base font-semibold">Información Personal</div>
+    <div class="text-sm text-gray-500">Datos Personales</div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 py-4">
+    <div class="flex flex-col gap-1 xl:col-span-2">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <shared-icon icon="user-check" classList="text-gray-800 w-4 h-4" />
+        <label class="font-semibold text-gray-800" for="name">Nombre Completo:</label>
+      </div>
+      <input id="name" type="text" formControlName="name" />
+      @if (formUtil.isValidField(myForm, 'name')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'name') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <shared-icon icon="email" classList="text-gray-800 w-4 h-4" />
+        <label class="font-semibold text-gray-800" for="email">Correo Electrónico:</label>
+      </div>
+      <input id="email" type="text" formControlName="email" />
+      @if (formUtil.isValidField(myForm, 'email')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'email') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 w-full">
+      <div class="text-sm flex justify-start items-center gap-2 w-full">
+        <shared-icon icon="security" classList="text-gray-800 w-4 h-4" />
+        <label class="font-semibold text-gray-800" for="role">Rol:</label>
+      </div>
+      <select class="w-full" name="role" id="role" formControlName="role">
+        <option value="admin">Administrator</option>
+        <option value="user">Usuario</option>
+      </select>
+      @if (formUtil.isValidField(myForm, 'role')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'role') }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 py-4">
+    <div class="flex flex-col gap-1">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <label class="font-semibold text-gray-800" for="newPassword">Contraseña:</label>
+      </div>
+      <div class="relative">
+        <input
+          id="newPassword"
+          [type]="showNewPassword() ? 'text' : 'password'"
+          formControlName="newPassword"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility('new')"
+          class="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        >
+          <shared-icon [icon]="showNewPassword() ? 'view-password' : 'no-view-password'" />
+        </button>
+      </div>
+      @if (formUtil.isValidField(myForm, 'newPassword')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'newPassword') }}
+      </span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="text-sm flex justify-start items-center gap-2">
+        <label class="font-semibold text-gray-800" for="confirmNewPassword"
+          >Confirmar Contraseña:</label
+        >
+      </div>
+      <div class="relative">
+        <input
+          id="confirmNewPassword"
+          [type]="showConfirmPassword() ? 'text' : 'password'"
+          formControlName="confirmNewPassword"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility('confirm')"
+          class="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        >
+          <shared-icon [icon]="showConfirmPassword() ? 'view-password' : 'no-view-password'" />
+        </button>
+      </div>
+      @if (formUtil.isValidField(myForm, 'confirmNewPassword')) {
+      <span class="text-xs text-red-400">
+        {{ formUtil.getFieldError(myForm, 'confirmNewPassword') }}
+      </span>
+      }
+    </div>
+
+    <div class="border xl:col-span-2 border-blue-200 p-4 rounded-md bg-blue-50">
+      <p class="text-sm text-blue-800"><strong>Requisitos de contraseña:</strong></p>
+      <ul class="text-xs text-blue-700 mt-1 ml-4 list-disc">
+        <li>Mínimo 8 caracteres</li>
+        <li>Se recomienda usar mayúsculas, minúsculas, números y símbolos</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <button
+      class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2"
+      type="submit"
+    >
+      <shared-icon icon="save" />
+      <span>Crear</span>
+    </button>
+  </div>
+</form>

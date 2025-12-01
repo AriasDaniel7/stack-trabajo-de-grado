@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { isAdminGuard } from '@auth/guards/isAdmin.guard';
 
 export const dashboardRoutes: Routes = [
   {
@@ -33,6 +34,11 @@ export const dashboardRoutes: Routes = [
       {
         path: 'programs',
         loadChildren: () => import('@program/program.routes'),
+      },
+      {
+        path: 'users',
+        canMatch: [isAdminGuard],
+        loadChildren: () => import('@user/user.routes'),
       },
       {
         path: '**',

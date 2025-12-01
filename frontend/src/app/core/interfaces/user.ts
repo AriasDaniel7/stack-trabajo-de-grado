@@ -3,6 +3,12 @@ export enum Rol {
   USER = 'user',
 }
 
+export interface UserResponse {
+  count: number;
+  pages: number;
+  data: User[];
+}
+
 export interface User {
   id: string;
   email: string;

@@ -6,11 +6,11 @@ import { AlertService } from '@core/shared/components/alert/alert.service';
 import { LoadingComponent } from '@core/shared/components/loading/loading.component';
 import { AuthService } from '@auth/services/auth.service';
 import { Login } from '@core/interfaces/auth';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'auth-form-login',
-  imports: [ReactiveFormsModule, IconComponent, LoadingComponent],
+  imports: [ReactiveFormsModule, IconComponent, LoadingComponent, RouterLink],
   templateUrl: './form-login.component.html',
   styleUrl: './form-login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

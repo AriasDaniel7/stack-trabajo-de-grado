@@ -13,6 +13,7 @@ import { MethodologyModule } from '@methodology/methodology.module';
 import { FacultyModule } from '@faculty/faculty.module';
 import { ProgramModule } from '@program/program.module';
 import { DocumentModule } from './document/document.module';
+import { SmtpModule } from './smtp/smtp.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DocumentModule } from './document/document.module';
     ProgramModule,
     SeminarModule,
     DocumentModule,
+    SmtpModule,
   ],
 })
 export class AppModule {}

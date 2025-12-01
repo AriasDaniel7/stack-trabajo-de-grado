@@ -19,6 +19,10 @@ export const authRoutes: Routes = [
         canMatch: [isLoggedGuard],
       },
       {
+        path: 'recovery-password',
+        loadComponent: () => import('./pages/recovery-password-page/recovery-password-page')
+      },
+      {
         path: '**',
         redirectTo: 'login',
       },

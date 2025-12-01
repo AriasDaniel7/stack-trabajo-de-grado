@@ -1,0 +1,38 @@
+<div class="p-6">
+  <user-info [userResponse]="userQuery.data()" />
+</div>
+
+<div class="px-6">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <div>
+      <p class="font-medium text-base">Listado de Usuarios</p>
+      <p class="text-sm text-gray-500">Gestiona los usuarios del sistema</p>
+    </div>
+    <button
+      [routerLink]="['new']"
+      type="button"
+      class="w-full md:w-fit bg-emerald-600 text-white flex items-center justify-center gap-2 font-medium transition-colors hover:bg-emerald-700"
+    >
+      <shared-icon icon="add" classList="w-4 h-4" />
+      <span class="text-sm">Agregar</span>
+    </button>
+  </div>
+</div>
+
+<div class="px-6 mt-4">
+  <user-table
+    (onDelete)="onDelete($event)"
+    [isLoading]="userQuery.isLoading()"
+    [users]="userQuery.data()?.data"
+  />
+
+  <div class="mt-4 h-[30px]">
+    @if(userQuery.isSuccess()){
+    <shared-pagination [currentPage]="currentPage()" [pages]="userQuery.data().pages" />
+    }
+  </div>
+</div>
+
+@if(isOpenModalConfirmation()){
+<shared-modal-confirmation />
+}

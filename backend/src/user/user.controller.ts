@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,11 +19,18 @@ import { Auth } from '@auth/decorators/auth.decorator';
 import { GetUser } from '@auth/decorators/get-user.decorator';
 import { UserEntity } from '@database/entities/user';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { ParamDto } from './dto/param.dto';
+import { SendEmailDto } from './dto/send-email.dto';
 
 @ApiTags('Usuarios')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('recovery-password')
+  async sendRecoveryEmail(@Body() sendEmail: SendEmailDto) {
+    return this.userService.sendRecoveryEmail(sendEmail);
+  }
 
   @Post('setup-admin')
   async create(@Body() createUserDto: CreateUserDto) {
@@ -45,8 +53,8 @@ export class UserController {
   @ApiBearerAuth()
   @Auth(Rol.ADMIN)
   @Get('all')
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() paramDto: ParamDto, @GetUser() user: UserEntity) {
+    return this.userService.findAll(paramDto, user);
   }
 
   @ApiBearerAuth()

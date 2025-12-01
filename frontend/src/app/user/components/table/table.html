@@ -1,0 +1,122 @@
+<div class="overflow-x-auto">
+  <table
+    class="table-auto min-w-full border-separate border-spacing-0 border border-gray-300 rounded-md overflow-hidden"
+  >
+    <thead>
+      <tr class="h-10 bg-gray-100">
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Nombre
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Email
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Rol
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Estado
+        </th>
+        <th class="px-2 text-left text-gray-800 text-sm whitespace-nowrap border-b border-gray-300">
+          Fecha de Creación
+        </th>
+        <th
+          class="px-2 text-right text-gray-800 text-sm whitespace-nowrap border-b border-gray-300 w-6"
+        >
+          Acciones
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @if(isLoading()){
+      <!--  -->
+      @for (item of '0123456789'; track $index; let last = $last) {
+      <tr class="h-10">
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-200">
+          <div class="w-full bg-gray-300 h-2 animate-pulse"></div>
+        </td>
+      </tr>
+      }
+      <!--  -->
+      }@else {
+      <!--  -->
+      @for (user of users(); track user.id; let last = $last) {
+      <tr class="h-10 hover:bg-gray-100">
+        <td [class.border-b]="!last" class="p-2 text-left text-xs md:text-sm border-gray-300">
+          {{ user.name | titlecase }}
+        </td>
+        <td [class.border-b]="!last" class="p-2 text-left text-xs md:text-sm border-gray-300">
+          {{ user.email | lowercase }}
+        </td>
+        <td [class.border-b]="!last" class="p-2 text-left text-xs border-gray-300">
+          <span
+            [class.text-blue-600]="user.role === 'admin'"
+            [class.text-gray-600]="user.role !== 'admin'"
+            [class.bg-blue-100]="user.role === 'admin'"
+            [class.bg-gray-200]="user.role !== 'admin'"
+            [class.text-gray-900]="user.role !== 'admin'"
+            class="font-semibold px-2 py-1 rounded-md"
+          >
+            {{ user.role | titlecase }}
+          </span>
+        </td>
+        <td [class.border-b]="!last" class="p-2 text-left text-xs border-gray-300">
+          <span
+            [class.text-green-600]="user.isActive"
+            [class.text-red-600]="!user.isActive"
+            [class.bg-green-100]="user.isActive"
+            [class.bg-red-100]="!user.isActive"
+            class="font-semibold px-2 py-1 rounded-md"
+          >
+            {{ user.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        <td [class.border-b]="!last" class="p-2 text-left text-xs border-gray-300">
+          <span class="text-gray-900 font-semibold bg-gray-200 px-2 py-1 rounded-md">
+            {{ user.createdAt | date : 'short' }}
+          </span>
+        </td>
+        <td [class.border-b]="!last" class="p-2 border-gray-300">
+          <div class="flex justify-center items-center gap-2">
+            <button
+              [routerLink]="[user.id]"
+              class="border rounded-md h-full p-1.5 flex justify-center items-center border-emerald-300 bg-emerald-100 hover:bg-emerald-200"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-emerald-600" icon="row" />
+            </button>
+
+            <button
+              (click)="onDelete.emit(user)"
+              class="border rounded-md h-full p-1.5 flex justify-center items-center border-red-300 bg-red-100 hover:bg-red-200"
+              type="button"
+            >
+              <shared-icon classList="w-4 h-4 text-red-600" icon="delete" />
+            </button>
+          </div>
+        </td>
+      </tr>
+      }@empty {
+      <tr class="h-10">
+        <td colspan="6" class="p-2 text-center text-gray-600">No se encontraron usuarios.</td>
+      </tr>
+      }
+      <!--  -->
+      }
+    </tbody>
+  </table>
+</div>

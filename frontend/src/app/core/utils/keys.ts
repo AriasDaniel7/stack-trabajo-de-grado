@@ -35,6 +35,11 @@ export const facultyKeys = {
   LIST_KEY: 'faculty-list',
 };
 
+export const userKeys = {
+  LIST_KEY: 'user-list',
+  BY_ID_KEY: 'user-by-id',
+};
+
 export const programKeys = {
   LIST_KEY: 'program-list',
   LIST_INTERNAL_KEY: 'program-list-internal',

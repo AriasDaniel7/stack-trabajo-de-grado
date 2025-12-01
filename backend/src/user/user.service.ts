@@ -11,10 +11,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@database/entities/user';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { compare, hash } from 'bcrypt';
 import { Rol } from '@database/interfaces/data';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { ParamDto } from './dto/param.dto';
+import { OrderType } from '@shared/dtos/pagination.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { SendEmailDto } from './dto/send-email.dto';
+import { RecoveryPasswordTemplate } from './templates/recovery-password';
 
 @Injectable()
 export class UserService {
@@ -23,6 +28,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -44,8 +50,25 @@ export class UserService {
     }
   }
 
-  async findAll() {
-    return await this.userRepository.find();
+  async findAll(paramDto: ParamDto, user: UserEntity) {
+    const { limit = 10, offset = 0, order = OrderType.DESC } = paramDto;
+
+    const [data, count] = await this.userRepository.findAndCount({
+      where: {
+        id: Not(user.id),
+      },
+      skip: offset,
+      take: limit,
+      order: {
+        email: order,
+      },
+    });
+
+    return {
+      count,
+      pages: Math.ceil(count / limit),
+      data,
+    };
   }
 
   async findOne(id: string) {
@@ -133,6 +156,56 @@ export class UserService {
       return userWithoutPassword;
     } catch (error) {
       this.handleError(error);
+    }
+  }
+
+  async updatePasswordByEmail(email: string, newPassword: string) {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    user.password = await hash(newPassword, 10);
+
+    try {
+      await this.userRepository.save(user);
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  private generatorPassword(longitud: number = 10): string {
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+
+    for (let i = 0; i < longitud; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    return password;
+  }
+
+  async sendRecoveryEmail(sendEmail: SendEmailDto) {
+    const newPassword = this.generatorPassword(10);
+    await this.updatePasswordByEmail(sendEmail.email, newPassword);
+    try {
+      await this.mailerService.sendMail({
+        to: sendEmail.email,
+        subject: 'Recuperación de contraseña',
+        html: RecoveryPasswordTemplate.generateTemplate(newPassword),
+      });
+      return { message: 'Recovery email sent successfully' };
+    } catch (error) {
+      throw new ConflictException('Error sending recovery email');
     }
   }
 
